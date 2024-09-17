@@ -71,20 +71,31 @@
 	"lastNames": "",
 	"relationshipWithTheUniversity": "",
 	"mail": "",
-	"password": """type": """inService": """quadrant": ""
+	"password": "",
+	"type": "",
+	"inService": "",
+	"quadrant": ""
 }
 
 #Reports form Comunity UPB
 {
 	"reporter": {
-		"names": """lastNames": """relationshipWithTheUniversity": ""
+		"names": "",
+		"lastNames": "",
+		"relationshipWithTheUniversity": ""
 	}
 	"location": {
-		"quadrant": "",
 		"block": "",
 		"classroom": "",
 		"pointOfReference": "",
 	}
 	"date": "",
 	"hourRequest": ""
+}
+#traker
+
+{
+	"`":"",
+
+
 }
