@@ -1,0 +1,90 @@
+#Full Reports
+{
+	"date": {
+		"date": "",
+		"hourRequest": "",
+		"hourGetRequest": "",
+		"hourArrive": "",
+		"hourCloseAttentionn": ""
+	},
+	"location": {
+		"quadrant": "",
+		"block": "",
+		"classroom": "",
+		"pointOfReference": ""
+	},
+	"reporter": {
+		"names": "",
+		"lastNames": "",
+		"relationshipWithTheUniversity": ""
+	},
+	"aphThatTakeCare": "",
+	"classificationAttention": "",
+	"patient": {
+		"names": "",
+		"lastNames": "",
+		"typeDocument": "",
+		"numberOfDocument": "",
+		"gender": "",
+		"age": "",
+		"relationshipWithTheUniversity": ""
+	},
+	"contact": {
+		"attentionForSecureLine": "",
+		"meansOfAttention": "",
+		"startedInformation": ""
+	},
+	"Evaluation": {
+		"reasonForConsultatiopn": "",
+		"disease": "",
+		"physicalExam": "",
+		"record": "",
+		"sentTo": "",
+		"diagnosticImpression": "",
+		"treatment": "",
+		"followUp": ""
+	},
+	"attendnt": {
+		"callHour": "",
+		"calattendntName": ""
+	},
+	"equipment": {
+		"quantity": "",
+		"type": "",
+		"source": "",
+	},
+	"noteForFollowUp": ""
+}
+
+#Acount ComunidadUPB
+{
+	"names": "",
+	"lastNames": "",
+	"relationshipWithTheUniversity": "",
+	"mail": "",
+	"password": """type": ""
+}
+
+#Acount Brigadistas
+{
+	"names": "",
+	"lastNames": "",
+	"relationshipWithTheUniversity": "",
+	"mail": "",
+	"password": """type": """inService": """quadrant": ""
+}
+
+#Reports form Comunity UPB
+{
+	"reporter": {
+		"names": """lastNames": """relationshipWithTheUniversity": ""
+	}
+	"location": {
+		"quadrant": "",
+		"block": "",
+		"classroom": "",
+		"pointOfReference": "",
+	}
+	"date": "",
+	"hourRequest": ""
+}
