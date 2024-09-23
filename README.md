@@ -29,7 +29,33 @@
 ## Project setup
 
 ```bash
+#installas nestjs
+
+$ https://nodejs.org/en/download/package-manager
+
+#Installar dependencias
+$ npm install -g @nestjs/cli
+$ npm install --save-dev @nestjs/cli
 $ npm install
+$ npm install --save-dev @types/node
+
+#NestJS y su CLI:
+$ npm install @nestjs/common @nestjs/core
+
+#Azure Key Vault y Azure Identity:
+$ npm install @azure/keyvault-secrets @azure/identity
+
+#Dotenv:
+$ npm install dotenv
+
+#Installar cli de zure
+$ https://learn.microsoft.com/en-us/cli/azure/install-azure-cli#install
+
+#Logear en azure para usar los secretos
+$ az login
+
+#agregar el archivo .env con los secretos
+#SE ENCUENTRA EN LA WIKI DE LA API EN EL DOCUMETNO "SECRETOS"
 ```
 
 ## Compile and run the project
