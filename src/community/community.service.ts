@@ -44,4 +44,21 @@ export class CommunityService {
       console.log(error);
     }
   }
+
+  /**
+   * Transforma el resultado de la consulta para que los items no tengan información de la DB
+   * */
+  async GetCommunityByEmail(Email: string): Promise<Community> {
+    try {
+      // Convierte la consulta en un DTO
+      // Ocultar información de la base de datos
+      const resultRepository =
+        this.communityRepository.GetCommunityByEmail(Email);
+
+      // Devolvemos una lista con los objetos convertidos
+      return plainToClass(Community, resultRepository);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }

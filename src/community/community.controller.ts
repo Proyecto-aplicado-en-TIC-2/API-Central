@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 import { CommunityService } from './community.service';
 
 // todo falta el Guards
@@ -20,5 +20,10 @@ export class CommunityController {
     @Param('CommunityKey') CommunityKey: string,
   ) {
     return this.communityService.GetCommunityById(Id, CommunityKey);
+  }
+
+  @Get('/:Email')
+  async GetCommunityByEmail(@Param('Email') Email: string) {
+    return this.communityService.GetCommunityByEmail(Email);
   }
 }

@@ -53,4 +53,35 @@ export class CommunityRepository {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
     }
   }
+
+  /**
+   * Obtiene un item por email del contendor **Community**
+   * */
+  async GetCommunityByEmail(Email: string): Promise<Community> {
+    try {
+      // Query para cosmos DB
+      const querySpec = {
+        query: 'SELECT * FROM c WHERE c.email = @Email',
+        parameters: [
+          {
+            name: '@Email',
+            value: Email,
+          },
+        ],
+      };
+
+      // Parámetros de consulta
+      const { resources: results } = await this.client
+        .getDbConnection()
+        .database(databaseID)
+        .container(containerID)
+        .items.query(querySpec)
+        .fetchAll();
+
+      // Devolvemos resultado
+      return results;
+    } catch (e) {
+      throw new BadGatewayException('Error en GetCommunityById ' + e);
+    }
+  }
 }
