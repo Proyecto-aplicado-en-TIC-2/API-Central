@@ -19,7 +19,7 @@ jobs:
 
     - name: Build and Push Docker image to ACR
       run: |
-        az acr login --name gdrdockerimage.azurecr.io
+        az acr login --name GDRDockerImage
         docker build -t gdr-api:latest .
         docker push gdr-api:latest:latest
 
