@@ -22,14 +22,14 @@ jobs:
         az acr login --name GDRDockerImage
         docker build -t gdr-api:latest .
         docker tag gdr-api:latest gdrdockerimage.azurecr.io/gdr-api:latest
-        docker push GDRDockerImage.azurecr.io/gdr-api:latest
+        docker pushgdrdockerimage.azurecr.io/gdr-api:latest
 
     - name: Deploy to Azure Container Apps
       run: |
         az containerapp update \
           --name gdr-container \
           --resource-group GestionDeRiesgosUPB \
-          --image GDRDockerImage.azurecr.io/gdr-api:latest \
+          --image gdrdockerimage.azurecr.io/gdr-api:latest \
           --set-env-vars KEY_VAULT_NAME=${{ secrets.KEY_VAULT_NAME }} \
                           SECRET_NAME_API_KEY=${{ secrets.SECRET_NAME_API_KEY }} \
                           SECRET_NAME_ENDPOINT=${{ secrets.SECRET_NAME_ENDPOINT }}
