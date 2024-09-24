@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CommunityRepository } from './repositories/community.repository';
 import { plainToClass } from 'class-transformer';
 import { Community } from './dto/community.dto';
+import { CreateCommunityDto } from './dto/create-community.dto';
 
 @Injectable()
 export class CommunityService {
@@ -61,4 +62,17 @@ export class CommunityService {
       console.log(error);
     }
   }
+
+  /*  /!**
+   * Transforma el resultado de la consulta para que los items no tengan información de la DB
+   * *!/
+  async CreateUserCommunity(newUserCommunity: CreateCommunityDto) {
+    try {
+      // Convierte la consulta en un DTO
+      // Ocultar información de la base de datos
+      return this.communityRepository.CreateUserCommunity(newUserCommunity);
+    } catch (error) {
+      console.log('Error en el servicio ' + error);
+    }
+  }*/
 }

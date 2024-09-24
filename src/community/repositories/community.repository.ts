@@ -1,6 +1,7 @@
 import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 import { KeyVaultService } from '../../Context/DbContext.service';
 import { Community } from '../dto/community.dto';
+import { CreateCommunityDto } from '../dto/create-community.dto';
 
 const databaseID = 'ToDoList';
 const containerID = 'Community';
@@ -84,4 +85,17 @@ export class CommunityRepository {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
     }
   }
+
+  /*  async CreateUserCommunity(newUserCommunity: CreateCommunityDto) {
+    try {
+      const { item }  = await this.client
+        .getDbConnection()
+        .database(databaseID)
+        .container(containerID)
+        .items.upsert(newUserCommunity);
+      return item;
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
+    }
+  }*/
 }
