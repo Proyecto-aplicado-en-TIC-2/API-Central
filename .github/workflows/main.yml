@@ -35,4 +35,7 @@ jobs:
                           SECRET_NAME_ENDPOINT=${{ secrets.SECRET_NAME_ENDPOINT }} \
                           AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }} \
                           AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }} \
-                          AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }} 
+                          AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }} \
+          --min-replicas 0 \
+          --max-replicas 10 \
+          --scale-rules-http concurrent-requests=5
