@@ -33,6 +33,6 @@ jobs:
           --set-env-vars KEY_VAULT_NAME=${{ secrets.KEY_VAULT_NAME }} \
                           SECRET_NAME_API_KEY=${{ secrets.SECRET_NAME_API_KEY }} \
                           SECRET_NAME_ENDPOINT=${{ secrets.SECRET_NAME_ENDPOINT }} \
-                          AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_IDY }} \
+                          AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }} \
                           AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }} \
                           AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }} 
