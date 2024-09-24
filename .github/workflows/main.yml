@@ -21,7 +21,7 @@ jobs:
       run: |
         az acr login --name GDRDockerImage
         docker build -t gdr-api:latest .
-        docker tag gdr-api:latest GDRDockerImage.azurecr.io/gdr-api:latest
+        docker tag gdr-api:latest gdrdockerimage.azurecr.io/gdr-api:latest
         docker push GDRDockerImage.azurecr.io/gdr-api:latest
 
     - name: Deploy to Azure Container Apps
