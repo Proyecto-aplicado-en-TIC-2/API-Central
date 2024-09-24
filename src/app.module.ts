@@ -9,6 +9,6 @@ import { CommunityModule } from './community/community.module';
 @Module({
   imports: [UsersModule, CommunityModule],
   controllers: [AppController],
-  providers: [AppService, TestDB, KeyVaultService], 
+  providers: [AppService, TestDB, KeyVaultService],
 })
 export class AppModule {}

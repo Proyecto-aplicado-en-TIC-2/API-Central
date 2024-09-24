@@ -6,69 +6,69 @@ export class UserRepository {
    * @return Promise<void>
    * */
   async GetAllUsers() {
-    return
+    return;
   }
 
   /**
    * @return Promise<void>
    * */
   async GetUserId() {
-    return
+    return;
   }
 
   /**
    * @return Promise<void>
    * */
   async GetUserEmail() {
-    return
+    return;
   }
 
   /**
    * @return Promise<void>
    * */
   async GetUserIdUpbCommunity() {
-    return
+    return;
   }
 
-    /**
+  /**
    * @return Promise<void>
    * */
   async RecoverPassword() {
-    return
+    return;
   }
 
-    /**
+  /**
    * @return Promise<void>
    * */
   async CreateUser() {
-    return
+    return;
   }
 
-    /**
+  /**
    * @return Promise<void>
    * */
   async UpdateUserServiceStatusId() {
-    return
+    return;
   }
 
-    /**
+  /**
    * @return Promise<void>
    * */
   async UpdateUserInformationId() {
-    return
+    return;
   }
 
-    /**
+  /**
    * @return Promise<void>
    * */
   async UpdatePasswordId() {
-    return
+    return;
   }
 
-    /**
+  /**
    * @return Promise<void>
    * */
   async DeleteUserId() {
-    return
+    return;
   }
 }

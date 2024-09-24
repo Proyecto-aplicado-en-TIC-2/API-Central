@@ -22,7 +22,10 @@ export class KeyVaultService implements OnModuleInit {
     this.dbConnection = await this.initializeDbConnection(endpoint, key);
   }
 
-  private async initializeDbConnection(endpoint: string, key: string): Promise<any> {
+  private async initializeDbConnection(
+    endpoint: string,
+    key: string,
+  ): Promise<any> {
     const options = {
       endpoint: await this.getSecret(endpoint),
       key: await this.getSecret(key),
