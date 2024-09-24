@@ -17,4 +17,6 @@ describe('CommunityController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
+
+  //todo falta realizar el test de la respuesta, usando response en el controlador
 });
