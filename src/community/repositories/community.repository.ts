@@ -1,5 +1,6 @@
 import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 import { KeyVaultService } from '../../Context/DbContext.service';
+import { Community } from '../dto/community.dto';
 
 const databaseID = 'ToDoList';
 const containerID = 'Community';
@@ -30,6 +31,26 @@ export class CommunityRepository {
       return results;
     } catch (e) {
       throw new BadGatewayException('Error en GetAllCommunity ' + e);
+    }
+  }
+
+  /**
+   * Obtiene un item por ID del contendor **Community**
+   * */
+  async GetCommunityById(Id: string, CommunityKey: string): Promise<Community> {
+    try {
+      // Parámetros de consulta
+      const { resource: item } = await this.client
+        .getDbConnection()
+        .database(databaseID)
+        .container(containerID)
+        .item(Id, CommunityKey)
+        .read();
+
+      // Devolvemos resultado
+      return item;
+    } catch (e) {
+      throw new BadGatewayException('Error en GetCommunityById ' + e);
     }
   }
 }
