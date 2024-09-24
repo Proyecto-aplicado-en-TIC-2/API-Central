@@ -38,4 +38,6 @@ jobs:
                           AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }} \
           --min-replicas 0 \
           --max-replicas 10 \
-          --scale-rules-http concurrent-requests=5
+          --scale-rule-name azure-http-rule-scale \
+          --scale-rule-type http \
+          --scale-rule-http-concurrency 5
