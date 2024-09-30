@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommunityService } from './community.service';
 import { CommunityRepository } from './repositories/community.repository';
-import { KeyVaultService } from '../Context/DbContext.service';
+import { KeyVaultService } from '../context_db/DbContext.service';
 
 describe('CommunityService', () => {
   let service: CommunityService;

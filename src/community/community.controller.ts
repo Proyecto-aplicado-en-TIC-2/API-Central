@@ -30,14 +30,18 @@ export class CommunityController {
   }
 
   @Post()
-  async CreateUserCommunity(@Body() newUserCommunity: CreateCommunityDto, @Res() res: Response) {
+  async CreateUserCommunity(
+    @Body() newUserCommunity: CreateCommunityDto,
+    @Res() res: Response,
+  ) {
     try {
-      const result = await this.communityService.CreateUserCommunity(newUserCommunity);
+      const result =
+        await this.communityService.CreateUserCommunity(newUserCommunity);
       if (result) {
         // Respuesta para un elemento creado
         return res.status(201).send(result);
       } else {
-        return res.status(200).json({})
+        return res.status(200).json({});
       }
     } catch (error) {
       console.log('Error en el controlador ' + error);

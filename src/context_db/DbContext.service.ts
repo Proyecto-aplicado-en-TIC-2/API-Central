@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { SecretClient } from '@azure/keyvault-secrets';
 import { DefaultAzureCredential } from '@azure/identity';
+import { CosmosClient } from '@azure/cosmos';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -32,7 +33,6 @@ export class KeyVaultService implements OnModuleInit {
       userAgentSuffix: 'DbContext',
     };
 
-    const { CosmosClient } = require('@azure/cosmos');
     return new CosmosClient(options);
   }
 

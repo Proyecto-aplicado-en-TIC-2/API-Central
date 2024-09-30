@@ -1,5 +1,5 @@
 import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
-import { KeyVaultService } from '../../Context/DbContext.service';
+import { KeyVaultService } from '../../context_db/DbContext.service';
 import { Community } from '../dto/community.dto';
 import { CreateCommunityDto } from '../dto/create-community.dto';
 
@@ -86,20 +86,19 @@ export class CommunityRepository {
     }
   }
 
-  async CreateUserCommunity(newUserCommunity: CreateCommunityDto): Promise<Boolean | String >  {
+  async CreateUserCommunity(
+    newUserCommunity: CreateCommunityDto,
+  ): Promise<boolean | string> {
     try {
-      const {
-        resource: resource,
-        statusCode: statusCode,
-      } = await this.client
+      const { resource: resource, statusCode: statusCode } = await this.client
         .getDbConnection()
         .database(databaseID)
         .container(containerID)
         .items.upsert(newUserCommunity);
       if (statusCode == 200) {
-        return false
+        return false;
       } else {
-        return resource.id
+        return resource.id;
       }
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);

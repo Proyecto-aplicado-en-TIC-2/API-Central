@@ -70,27 +70,37 @@ export class CommunityService {
   async CreateUserCommunity(newUserCommunity: CreateCommunityDto) {
     try {
       // Validamos si existe el correo
-      const result = await this.communityRepository.GetCommunityByEmail(newUserCommunity.email)
-      if (result) {return false}
+      const result = await this.communityRepository.GetCommunityByEmail(
+        newUserCommunity.email,
+      );
+      if (result) {
+        return false;
+      }
 
       // Generamos Id
-      const IdTemp = uuidv4()
-      const CommunityIdTemp = "Colombia"
+      const IdTemp = uuidv4();
+      const CommunityIdTemp = 'Colombia';
 
       // Validamos si existe el ID
-      const result2 = await this.communityRepository.GetCommunityById(IdTemp, CommunityIdTemp)
-      if (result2) {return false}
+      const result2 = await this.communityRepository.GetCommunityById(
+        IdTemp,
+        CommunityIdTemp,
+      );
+      if (result2) {
+        return false;
+      }
 
       // Creamos el nuevo usuario
       const newUserCommunityTemp = {
-        id : IdTemp,
+        id: IdTemp,
         CommunityID: CommunityIdTemp,
         names: newUserCommunity.names,
         lastNames: newUserCommunity.lastNames,
         email: newUserCommunity.email,
         phoneNumber: newUserCommunity.phoneNumber,
-        relationshipWithTheUniversity: newUserCommunity.relationshipWithTheUniversity
-      }
+        relationshipWithTheUniversity:
+          newUserCommunity.relationshipWithTheUniversity,
+      };
 
       return this.communityRepository.CreateUserCommunity(newUserCommunityTemp);
     } catch (error) {
