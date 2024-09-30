@@ -80,22 +80,29 @@ export class CommunityRepository {
         .fetchAll();
 
       // Devolvemos resultado
-      return results;
+      return results[0];
     } catch (e) {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
     }
   }
 
-  /*  async CreateUserCommunity(newUserCommunity: CreateCommunityDto) {
+  async CreateUserCommunity(newUserCommunity: CreateCommunityDto): Promise<Boolean | String >  {
     try {
-      const { item }  = await this.client
+      const {
+        resource: resource,
+        statusCode: statusCode,
+      } = await this.client
         .getDbConnection()
         .database(databaseID)
         .container(containerID)
         .items.upsert(newUserCommunity);
-      return item;
+      if (statusCode == 200) {
+        return false
+      } else {
+        return resource.id
+      }
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
-  }*/
+  }
 }

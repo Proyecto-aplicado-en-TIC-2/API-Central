@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { CommunityService } from './community.service';
-import { Community } from './dto/community.dto';
 import { CreateCommunityDto } from './dto/create-community.dto';
 
 // todo falta el Guards
@@ -29,13 +29,18 @@ export class CommunityController {
     return this.communityService.GetCommunityByEmail(Email);
   }
 
-  /*  @Post()
-  async CreateUserCommunity(@Body() newUserCommunity: CreateCommunityDto) {
+  @Post()
+  async CreateUserCommunity(@Body() newUserCommunity: CreateCommunityDto, @Res() res: Response) {
     try {
-      console.log('body' + JSON.stringify(newUserCommunity));
-      return this.communityService.CreateUserCommunity(newUserCommunity);
+      const result = await this.communityService.CreateUserCommunity(newUserCommunity);
+      if (result) {
+        // Respuesta para un elemento creado
+        return res.status(201).send(result);
+      } else {
+        return res.status(200).json({})
+      }
     } catch (error) {
       console.log('Error en el controlador ' + error);
     }
-  }*/
+  }
 }
