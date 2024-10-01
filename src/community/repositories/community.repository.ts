@@ -120,4 +120,19 @@ export class CommunityRepository {
       throw new BadGatewayException('Error en UpdateCommunityUserById ' + e);
     }
   }
+
+  async DeleteCommunityUserById(userCommunity: Community) {
+    try {
+      await this.client
+        .getDbConnection()
+        .database(databaseID)
+        .container(containerID)
+        .item(userCommunity.id, userCommunity.CommunityID)
+        .delete(userCommunity);
+
+      return userCommunity.id;
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
+    }
+  }
 }

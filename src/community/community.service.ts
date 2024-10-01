@@ -155,4 +155,19 @@ export class CommunityService {
       console.log('Error en el servicio ' + e);
     }
   }
+
+  async DeleteCommunityUserById(id: string, userCommunityKey: string) {
+    try {
+      // Validamos si existe el ID
+      const result = await this.communityRepository.GetCommunityById(
+        id,
+        userCommunityKey,
+      );
+      if (!result) return false;
+
+      return await this.communityRepository.DeleteCommunityUserById(result);
+    } catch (e) {
+      console.log('Error en el servicio ' + e);
+    }
+  }
 }

@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { CommunityService } from './community.service';
 import { CreateCommunityDto } from './dto/create-community.dto';
@@ -70,6 +79,21 @@ export class CommunityController {
       }
     } catch (error) {
       console.log('Error en el controlador ' + error);
+    }
+  }
+
+  @Delete('/:Id/:UserCommunityKey')
+  async DeleteCommunityUserById(
+    @Param('Id') id: string,
+    @Param('UserCommunityKey') userCommunityKey: string,
+  ) {
+    try {
+      return await this.communityService.DeleteCommunityUserById(
+        id,
+        userCommunityKey,
+      );
+    } catch (e) {
+      console.log('Error en el controlador ' + e);
     }
   }
 }
