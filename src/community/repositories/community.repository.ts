@@ -104,4 +104,20 @@ export class CommunityRepository {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
   }
+
+  async UpdateCommunityUserById(
+    updateCommunityDto: Community,
+  ): Promise<Community> {
+    try {
+      const { resource: resource } = await this.client
+        .getDbConnection()
+        .database(databaseID)
+        .container(containerID)
+        .item(updateCommunityDto.id, updateCommunityDto.CommunityID)
+        .replace(updateCommunityDto);
+      return resource;
+    } catch (e) {
+      throw new BadGatewayException('Error en UpdateCommunityUserById ' + e);
+    }
+  }
 }
