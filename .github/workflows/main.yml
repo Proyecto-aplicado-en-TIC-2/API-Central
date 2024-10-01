@@ -1,38 +1,43 @@
 name: Deploy to Azure Container Apps
+
 on:
   push:
     branches:
-      - main
+      - testing
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v3
-      - name: Log in to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Build and Push Docker image to ACR
-        run: |
-          az acr login --name gdrdockerimage
-          docker build -t gdr-api:latest .
-          docker tag gdr-api:latest gdrdockerimage.azurecr.io/gdr-api:latest
-          docker push gdrdockerimage.azurecr.io/gdr-api:latest
-      - name: Deploy to Azure Container Apps
-        run: |
-          az containerapp update \
-            --name gdr-container \
-            --resource-group GestionDeRiesgosUPB \
-            --image gdrdockerimage.azurecr.io/gdr-api:latest \
-            --set-env-vars KEY_VAULT_NAME=${{ secrets.KEY_VAULT_NAME }} \
-                            SECRET_NAME_API_KEY=${{ secrets.SECRET_NAME_API_KEY }} \
-                            SECRET_NAME_ENDPOINT=${{ secrets.SECRET_NAME_ENDPOINT }} \
-                            AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }} \
-                            AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }} \
-                            AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }} \
-            --min-replicas 0 \
-            --max-replicas 10 \
-            --scale-rule-name azure-http-rule-scale \
-            --scale-rule-type http \
-            --scale-rule-http-concurrency 5
+    - name: Check out the repository
+      uses: actions/checkout@v3
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Build and Push Docker image to ACR
+      run: |
+        az acr login --name gdrdockerimage
+        docker build -t gdr-api:testing .
+        docker tag gdr-api:testing gdrdockerimage.azurecr.io/gdr-api:testing
+        docker push gdrdockerimage.azurecr.io/gdr-api:testing
+
+    - name: Deploy to Azure Container Apps
+      run: |
+        az containerapp update \
+          --name gdr-container-testing \
+          --resource-group GestionDeRiesgosUPB \
+          --image gdrdockerimage.azurecr.io/gdr-api:testing \
+          --set-env-vars KEY_VAULT_NAME=${{ secrets.KEY_VAULT_NAME }} \
+                          SECRET_NAME_API_KEY=${{ secrets.SECRET_NAME_API_KEY }} \
+                          SECRET_NAME_ENDPOINT=${{ secrets.SECRET_NAME_ENDPOINT }} \
+                          AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }} \
+                          AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }} \
+                          AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }} \
+          --min-replicas 0 \
+          --max-replicas 1 \
+          --scale-rule-name azure-http-rule-scale \
+          --scale-rule-type http \
+          --scale-rule-http-concurrency 1
