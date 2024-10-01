@@ -1,5 +1,5 @@
 import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
-import { KeyVaultService } from '../../Context/DbContext.service';
+import { KeyVaultService } from '../../context_db/DbContext.service';
 import { Community } from '../dto/community.dto';
 import { CreateCommunityDto } from '../dto/create-community.dto';
 
@@ -80,22 +80,59 @@ export class CommunityRepository {
         .fetchAll();
 
       // Devolvemos resultado
-      return results;
+      return results[0];
     } catch (e) {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
     }
   }
 
-  /*  async CreateUserCommunity(newUserCommunity: CreateCommunityDto) {
+  async CreateUserCommunity(
+    newUserCommunity: CreateCommunityDto,
+  ): Promise<boolean | string> {
     try {
-      const { item }  = await this.client
+      const { resource: resource, statusCode: statusCode } = await this.client
         .getDbConnection()
         .database(databaseID)
         .container(containerID)
         .items.upsert(newUserCommunity);
-      return item;
+      if (statusCode == 200) {
+        return false;
+      } else {
+        return resource.id;
+      }
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
-  }*/
+  }
+
+  async UpdateCommunityUserById(
+    updateCommunityDto: Community,
+  ): Promise<Community> {
+    try {
+      const { resource: resource } = await this.client
+        .getDbConnection()
+        .database(databaseID)
+        .container(containerID)
+        .item(updateCommunityDto.id, updateCommunityDto.CommunityID)
+        .replace(updateCommunityDto);
+      return resource;
+    } catch (e) {
+      throw new BadGatewayException('Error en UpdateCommunityUserById ' + e);
+    }
+  }
+
+  async DeleteCommunityUserById(userCommunity: Community) {
+    try {
+      await this.client
+        .getDbConnection()
+        .database(databaseID)
+        .container(containerID)
+        .item(userCommunity.id, userCommunity.CommunityID)
+        .delete(userCommunity);
+
+      return userCommunity.id;
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
+    }
+  }
 }
