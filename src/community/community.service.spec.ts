@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommunityService } from './community.service';
 import { CommunityRepository } from './repositories/community.repository';
 import { KeyVaultService } from '../context_db/DbContext.service';
+import { plainToClass } from 'class-transformer';
+import { Community } from './models/community.model';
 
 describe('CommunityService', () => {
   let service: CommunityService;
@@ -26,12 +28,12 @@ describe('CommunityService', () => {
       const mockCommunityList = [
         {
           id: '1',
-          CommunityID: 'Colombia',
+          partition_key: 'Colombia',
           names: 'Jaider Joham',
-          lastNames: 'Morales Franco',
-          email: 'johamfranco318@gmail.com',
-          phoneNumber: '3008059938',
-          relationshipWithTheUniversity: 'Student',
+          last_names: 'Morales Franco',
+          mail: 'johamfranco318@gmail.com',
+          phone_number: '3008059938',
+          relationship_with_the_university: 'Student',
           _rid: 'wNMEAMcnPKYCAAAAAAAAAA==',
           _self:
             'dbs/wNMEAA==/colls/wNMEAMcnPKY=/docs/wNMEAMcnPKYCAAAAAAAAAA==/',
@@ -41,12 +43,12 @@ describe('CommunityService', () => {
         },
         {
           id: '2',
-          CommunityID: 'Colombia',
+          partition_key: 'Colombia',
           names: 'Jaider Joham',
-          lastNames: 'Morales Franco',
-          email: 'johamfranco318@gmail.com',
-          phoneNumber: '3008059938',
-          relationshipWithTheUniversity: 'Student',
+          last_names: 'Morales Franco',
+          mail: 'johamfranco318@gmail.com',
+          phone_number: '3008059938',
+          relationship_with_the_university: 'Student',
           _rid: 'wNMEAMcnPKYDAAAAAAAAAA==',
           _self:
             'dbs/wNMEAA==/colls/wNMEAMcnPKY=/docs/wNMEAMcnPKYDAAAAAAAAAA==/',
@@ -58,11 +60,13 @@ describe('CommunityService', () => {
 
       // Configura el mock del repositorio para que retorne los datos simulados
       jest
-        .spyOn(repository, 'GetAllCommunity')
-        .mockResolvedValue(mockCommunityList);
+        .spyOn(repository, 'GetAllCommunityUsers')
+        .mockResolvedValue(
+          mockCommunityList.map((value) => plainToClass(Community, value)),
+        );
 
       // Llama al mét-odo del controlador
-      const result = await service.GetAllCommunity();
+      const result = await service.GetAllCommunityUsers();
 
       // Verifica que el resultado no sea nulo
       expect(result).not.toBeNull();

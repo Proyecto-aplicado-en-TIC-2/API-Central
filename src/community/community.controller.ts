@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -6,12 +7,10 @@ import {
   Param,
   Post,
   Put,
-  Res,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { CommunityService } from './community.service';
-import { CreateCommunityDto } from './dto/create-community.dto';
-import { UpdateCommunityDto } from './dto/update-community.dto';
+import { CreateCommunityUserDto } from './dto/create-community.dto';
+import { UpdateCommunityUserDto } from './dto/update-community.dto';
 
 // todo falta el Guards
 @Controller('community')
@@ -23,77 +22,58 @@ export class CommunityController {
   // todo falta documentar en swagger
   @Get()
   async GetAllCommunity() {
-    return this.communityService.GetAllCommunity();
+    try {
+      return this.communityService.GetAllCommunityUsers();
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
-  @Get('/:Id/:CommunityKey')
-  async GetCommunityById(
-    @Param('Id') Id: string,
-    @Param('CommunityKey') CommunityKey: string,
-  ) {
-    return this.communityService.GetCommunityById(Id, CommunityKey);
+  @Get(':id')
+  async GetCommunityById(@Param('id') Id: string) {
+    try {
+      return this.communityService.GetCommunityUserById(Id);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
-  @Get('/:Email')
-  async GetCommunityByEmail(@Param('Email') Email: string) {
-    return this.communityService.GetCommunityByEmail(Email);
+  @Get('/mail/:mail')
+  async GetCommunityByEmail(@Param('mail') mail: string) {
+    try {
+      return this.communityService.GetCommunityUserByEmail(mail);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
   @Post()
-  async CreateUserCommunity(
-    @Body() newUserCommunity: CreateCommunityDto,
-    @Res() res: Response,
-  ) {
+  async CreateUserCommunity(@Body() UserCommunity: CreateCommunityUserDto) {
     try {
-      const result =
-        await this.communityService.CreateUserCommunity(newUserCommunity);
-      if (result) {
-        // Respuesta para un elemento creado
-        return res.status(201).send(result);
-      } else {
-        return res.status(200).json({});
-      }
-    } catch (error) {
-      console.log('Error en el controlador ' + error);
-    }
-  }
-
-  @Put('/:Id/:UserCommunityKey')
-  async UpdateCommunityUserById(
-    @Param('Id') id: string,
-    @Param('UserCommunityKey') userCommunityKey: string,
-    @Body() updateUserCommunity: UpdateCommunityDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const result = await this.communityService.UpdateCommunityUserById(
-        id,
-        userCommunityKey,
-        updateUserCommunity,
-      );
-      if (result) {
-        // Respuesta para un elemento creado
-        return res.status(201).send(result);
-      } else {
-        return res.status(200).json({});
-      }
-    } catch (error) {
-      console.log('Error en el controlador ' + error);
-    }
-  }
-
-  @Delete('/:Id/:UserCommunityKey')
-  async DeleteCommunityUserById(
-    @Param('Id') id: string,
-    @Param('UserCommunityKey') userCommunityKey: string,
-  ) {
-    try {
-      return await this.communityService.DeleteCommunityUserById(
-        id,
-        userCommunityKey,
-      );
+      return this.communityService.CreateCommunityUser(UserCommunity);
     } catch (e) {
-      console.log('Error en el controlador ' + e);
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Put('/:id')
+  async UpdateCommunityUserById(
+    @Param('id') Id: string,
+    @Body() UserCommunity: UpdateCommunityUserDto,
+  ) {
+    try {
+      return this.communityService.UpdateCommunityUserById(Id, UserCommunity);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Delete('/:id')
+  async DeleteCommunityUserById(@Param('id') Id: string) {
+    try {
+      return await this.communityService.DeleteCommunityUserById(Id);
+    } catch (e) {
+      throw new BadRequestException(e);
     }
   }
 }

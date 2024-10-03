@@ -1,35 +1,35 @@
 import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 import { KeyVaultService } from '../../context_db/DbContext.service';
-import { Community } from '../dto/community.dto';
-import { CreateCommunityDto } from '../dto/create-community.dto';
-
-const databaseID = 'ToDoList';
-const containerID = 'Community';
+import { Community } from '../models/community.model';
+import { ICommunityRepositories } from '../interfaces/community.repository.interface';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
-export class CommunityRepository {
+export class CommunityRepository implements ICommunityRepositories {
+  private databaseId = 'risk_management';
+  private containerId = 'community_upb';
+
   constructor(@Inject(KeyVaultService) private client: KeyVaultService) {}
 
   /**
    * Obtiene todos los items de del contenedor **Community**
    * */
-  async GetAllCommunity() {
+  async GetAllCommunityUsers(): Promise<Community[]> {
     try {
-      // Query para cosmos DB
+      // Query
       const querySpec = {
         query: 'SELECT * FROM c',
       };
 
-      // Parámetros de consulta
-      const { resources: results } = await this.client
+      // Consulta
+      const { resources: items } = await this.client
         .getDbConnection()
-        .database(databaseID)
-        .container(containerID)
+        .database(this.databaseId)
+        .container(this.containerId)
         .items.query(querySpec)
         .fetchAll();
 
-      // Devolvemos resultado
-      return results;
+      return items.map((item: Community) => plainToClass(Community, item));
     } catch (e) {
       throw new BadGatewayException('Error en GetAllCommunity ' + e);
     }
@@ -38,18 +38,17 @@ export class CommunityRepository {
   /**
    * Obtiene un item por ID del contendor **Community**
    * */
-  async GetCommunityById(Id: string, CommunityKey: string): Promise<Community> {
+  async GetCommunityUserById(id: string): Promise<Community> {
     try {
-      // Parámetros de consulta
+      // Consulta
       const { resource: item } = await this.client
         .getDbConnection()
-        .database(databaseID)
-        .container(containerID)
-        .item(Id, CommunityKey)
+        .database(this.databaseId)
+        .container(this.containerId)
+        .item(id, Community.partition_key)
         .read();
 
-      // Devolvemos resultado
-      return item;
+      return plainToClass(Community, item);
     } catch (e) {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
     }
@@ -58,79 +57,71 @@ export class CommunityRepository {
   /**
    * Obtiene un item por email del contendor **Community**
    * */
-  async GetCommunityByEmail(Email: string): Promise<Community> {
+  async GetCommunityUserByEmail(mail: string): Promise<Community> {
     try {
-      // Query para cosmos DB
+      // Query
       const querySpec = {
-        query: 'SELECT * FROM c WHERE c.email = @Email',
+        query: 'SELECT * FROM c WHERE c.mail = @mail',
         parameters: [
           {
-            name: '@Email',
-            value: Email,
+            name: '@mail',
+            value: mail,
           },
         ],
       };
 
-      // Parámetros de consulta
-      const { resources: results } = await this.client
+      // Consulta
+      const { resources: item } = await this.client
         .getDbConnection()
-        .database(databaseID)
-        .container(containerID)
+        .database(this.databaseId)
+        .container(this.containerId)
         .items.query(querySpec)
         .fetchAll();
 
-      // Devolvemos resultado
-      return results[0];
+      return plainToClass(Community, item[0]);
     } catch (e) {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
     }
   }
 
-  async CreateUserCommunity(
-    newUserCommunity: CreateCommunityDto,
-  ): Promise<boolean | string> {
+  async CreateCommunityUser(community: Community): Promise<Community> {
     try {
-      const { resource: resource, statusCode: statusCode } = await this.client
+      const { resource: item } = await this.client
         .getDbConnection()
-        .database(databaseID)
-        .container(containerID)
-        .items.upsert(newUserCommunity);
-      if (statusCode == 200) {
-        return false;
-      } else {
-        return resource.id;
-      }
+        .database(this.databaseId)
+        .container(this.containerId)
+        .items.upsert(community);
+
+      return plainToClass(Community, item);
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
   }
 
-  async UpdateCommunityUserById(
-    updateCommunityDto: Community,
-  ): Promise<Community> {
+  async UpdateCommunityUserById(community: Community): Promise<string> {
     try {
       const { resource: resource } = await this.client
         .getDbConnection()
-        .database(databaseID)
-        .container(containerID)
-        .item(updateCommunityDto.id, updateCommunityDto.CommunityID)
-        .replace(updateCommunityDto);
-      return resource;
+        .database(this.databaseId)
+        .container(this.containerId)
+        .item(community.id, community.partition_key)
+        .replace(community);
+
+      return resource.id;
     } catch (e) {
       throw new BadGatewayException('Error en UpdateCommunityUserById ' + e);
     }
   }
 
-  async DeleteCommunityUserById(userCommunity: Community) {
+  async DeleteCommunityUserById(community: Community) {
     try {
+      // Consulta
       await this.client
         .getDbConnection()
-        .database(databaseID)
-        .container(containerID)
-        .item(userCommunity.id, userCommunity.CommunityID)
-        .delete(userCommunity);
-
-      return userCommunity.id;
+        .database(this.databaseId)
+        .container(this.containerId)
+        .item(community.id, community.partition_key)
+        .delete(community);
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }

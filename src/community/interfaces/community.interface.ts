@@ -1,6 +1,6 @@
 export interface ICommunity {
   readonly names: string;
-  readonly lastNames: string;
-  readonly phoneNumber: string;
-  readonly relationshipWithTheUniversity: string;
+  readonly last_names: string;
+  readonly phone_number: string;
+  readonly relationship_with_the_university: string;
 }
