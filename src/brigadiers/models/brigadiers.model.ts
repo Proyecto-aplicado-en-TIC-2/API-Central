@@ -1,9 +1,11 @@
 import { IBrigadeMember } from '../interfaces/brigadiers.interface';
 import { Exclude } from 'class-transformer';
 
+const partitionKey = 'brigade_accounts';
+
 export class BrigadeMember implements IBrigadeMember {
   id: string;
-  partition_key: string = 'brigade_accounts';
+  partition_key: string = partitionKey;
   names: string;
   last_names: string;
   mail: string;
@@ -26,4 +28,8 @@ export class BrigadeMember implements IBrigadeMember {
 
   @Exclude() // Esconder propiedad
   _ts: string;
+
+  static GetPartitionKey() {
+    return partitionKey;
+  }
 }

@@ -15,4 +15,12 @@ export class BrigadiersService {
       throw new BadRequestException(e);
     }
   }
+
+  async GetBrigadiersById(id: string) {
+    try {
+      return await this.brigadiersRepository.GetBrigadiersById(id);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
 }
