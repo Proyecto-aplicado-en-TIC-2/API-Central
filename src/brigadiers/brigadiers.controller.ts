@@ -22,4 +22,13 @@ export class BrigadiersController {
       throw new BadRequestException(e);
     }
   }
+
+  @Get('/mail/:mail')
+  async GetBrigadiersByEmail(@Param('mail') mail: string) {
+    try {
+      return this.brigadiersService.GetBrigadiersByEmail(mail);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
 }

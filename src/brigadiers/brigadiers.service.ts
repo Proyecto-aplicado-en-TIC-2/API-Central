@@ -23,4 +23,12 @@ export class BrigadiersService {
       throw new BadRequestException(e);
     }
   }
+
+  GetBrigadiersByEmail(mail: string) {
+    try {
+      return this.brigadiersRepository.GetBrigadiersByEmail(mail);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
 }
