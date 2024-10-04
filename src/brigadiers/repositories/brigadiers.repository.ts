@@ -1,6 +1,6 @@
 import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 import { IBrigadiersRepository } from '../interfaces/brigadiers.repository.interface';
-import { BrigadeMember } from '../models/brigadiers.model';
+import { Brigadier } from '../models/brigadiers.model';
 import { plainToClass } from 'class-transformer';
 import { KeyVaultService } from '../../context_db/DbContext.service';
 
@@ -13,7 +13,7 @@ export class BrigadiersRepository implements IBrigadiersRepository {
     @Inject(KeyVaultService) private readonly client: KeyVaultService,
   ) {}
 
-  async GetAllBrigadiers(): Promise<BrigadeMember[]> {
+  async GetAllBrigadiers(): Promise<Brigadier[]> {
     try {
       // Query
       const querySpec = {
@@ -28,31 +28,29 @@ export class BrigadiersRepository implements IBrigadiersRepository {
         .items.query(querySpec)
         .fetchAll();
 
-      return items.map((item: BrigadeMember) =>
-        plainToClass(BrigadeMember, item),
-      );
+      return items.map((item: Brigadier) => plainToClass(Brigadier, item));
     } catch (e) {
       throw new BadGatewayException('Error en GetAllCommunity ' + e);
     }
   }
 
-  async GetBrigadiersById(id: string) {
+  async GetBrigadierById(id: string) {
     try {
       // Consulta
       const { resource: item } = await this.client
         .getDbConnection()
         .database(this.databaseId)
         .container(this.containerId)
-        .item(id, BrigadeMember.GetPartitionKey())
+        .item(id, Brigadier.GetPartitionKey())
         .read();
 
-      return plainToClass(BrigadeMember, item);
+      return plainToClass(Brigadier, item);
     } catch (e) {
       throw new BadGatewayException('Error en GetBrigadiersById ' + e);
     }
   }
 
-  async GetBrigadiersByEmail(mail: string) {
+  async GetBrigadierByEmail(mail: string) {
     try {
       // Query
       const querySpec = {
@@ -73,9 +71,23 @@ export class BrigadiersRepository implements IBrigadiersRepository {
         .items.query(querySpec)
         .fetchAll();
 
-      return plainToClass(BrigadeMember, item[0]);
+      return plainToClass(Brigadier, item[0]);
     } catch (e) {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
+    }
+  }
+
+  async CreateBrigade(brigadier: Brigadier) {
+    try {
+      const { resource: item } = await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .items.upsert(brigadier);
+
+      return plainToClass(Brigadier, item);
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
   }
 }

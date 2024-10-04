@@ -1,5 +1,13 @@
-import { BadRequestException, Controller, Get, Param } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { BrigadiersService } from './brigadiers.service';
+import { CreateBrigadierDto } from './dto/create-brigadiers.dto';
 
 @Controller('brigadiers')
 export class BrigadiersController {
@@ -15,18 +23,27 @@ export class BrigadiersController {
   }
 
   @Get(':id')
-  async GetBrigadiersById(@Param('id') id: string) {
+  async GetBrigadierById(@Param('id') id: string) {
     try {
-      return this.brigadiersService.GetBrigadiersById(id);
+      return this.brigadiersService.GetBrigadierById(id);
     } catch (e) {
       throw new BadRequestException(e);
     }
   }
 
   @Get('/mail/:mail')
-  async GetBrigadiersByEmail(@Param('mail') mail: string) {
+  async GetBrigadierByEmail(@Param('mail') mail: string) {
     try {
-      return this.brigadiersService.GetBrigadiersByEmail(mail);
+      return this.brigadiersService.GetBrigadierByEmail(mail);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Post()
+  async CreateBrigade(@Body() brigadier: CreateBrigadierDto) {
+    try {
+      return this.brigadiersService.CreateBrigade(brigadier);
     } catch (e) {
       throw new BadRequestException(e);
     }

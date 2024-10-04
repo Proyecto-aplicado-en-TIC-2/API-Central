@@ -1,4 +1,4 @@
-export interface IBrigadeMember {
+export interface IBrigadier {
   readonly names: string;
   readonly last_names: string;
   readonly phone_number: string;
