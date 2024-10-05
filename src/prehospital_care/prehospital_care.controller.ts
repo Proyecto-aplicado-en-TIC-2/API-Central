@@ -24,4 +24,13 @@ export class PrehospitalCareController {
       throw new BadRequestException(e);
     }
   }
+
+  @Get('/mail/:mail')
+  async GetAPHByMail(@Param('mail') mail: string) {
+    try {
+      return this.prehospitalCareService.GetAPHByMail(mail);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
 }

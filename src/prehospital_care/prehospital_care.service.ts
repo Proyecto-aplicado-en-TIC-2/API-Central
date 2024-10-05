@@ -23,4 +23,12 @@ export class PrehospitalCareService {
       throw new BadRequestException(e);
     }
   }
+
+  GetAPHByMail(mail: string) {
+    try {
+      return this.prehospitalCareRepository.GetAPHByMail(mail);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
 }

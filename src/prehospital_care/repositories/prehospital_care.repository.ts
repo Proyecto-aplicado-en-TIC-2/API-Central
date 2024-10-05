@@ -47,4 +47,31 @@ export class PrehospitalCareRepository implements IPrehospitalCareRepository {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
     }
   }
+
+  async GetAPHByMail(mail: string) {
+    try {
+      // Query
+      const querySpec = {
+        query: 'SELECT * FROM c WHERE c.mail = @mail',
+        parameters: [
+          {
+            name: '@mail',
+            value: mail,
+          },
+        ],
+      };
+
+      // Consulta
+      const { resources: item } = await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .items.query(querySpec)
+        .fetchAll();
+
+      return plainToClass(APH, item[0]);
+    } catch (e) {
+      throw new BadGatewayException('Error en GetCommunityById ' + e);
+    }
+  }
 }
