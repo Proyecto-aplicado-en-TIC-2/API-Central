@@ -3,6 +3,7 @@ import { BrigadiersRepository } from './repositories/brigadiers.repository';
 import { CreateBrigadierDto } from './dto/create-brigadiers.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { Brigadier } from './models/brigadiers.model';
+import { UpdateBrigadiersDto } from './dto/update-brigadiers.dto';
 
 @Injectable()
 export class BrigadiersService {
@@ -56,6 +57,41 @@ export class BrigadiersService {
       const brigadier = new Brigadier().DtoCreate(GeneratedId, createBrigadier);
 
       return this.brigadiersRepository.CreateBrigade(brigadier);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  async UpdateBrigadiersById(id: string, brigadier: UpdateBrigadiersDto) {
+    try {
+      // Validamos si existe él, Id
+      const ExistingBrigadier =
+        await this.brigadiersRepository.GetBrigadierById(id);
+      if (!ExistingBrigadier) return false;
+
+      // Item temporal con cambios
+      const TempBrigadier = new Brigadier().DtoUpdate(
+        ExistingBrigadier.id,
+        ExistingBrigadier.mail,
+        brigadier,
+      );
+
+      // Verificar si existen cambios en el item dto.
+      if (ExistingBrigadier.equals(TempBrigadier)) return false;
+
+      // Enviamos cambios
+      const IdResult =
+        await this.brigadiersRepository.UpdateBrigadiersById(TempBrigadier);
+
+      // Consultamos el item actualizado
+      const CommunityUserUpdated =
+        await this.brigadiersRepository.GetBrigadierById(IdResult);
+
+      // Validamos si el item de la base de datos tiene cambios
+      if (ExistingBrigadier.equals(CommunityUserUpdated)) return false;
+
+      console.log(CommunityUserUpdated);
+      return CommunityUserUpdated;
     } catch (e) {
       throw new BadRequestException(e);
     }

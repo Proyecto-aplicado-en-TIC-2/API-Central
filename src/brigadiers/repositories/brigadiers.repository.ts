@@ -90,4 +90,19 @@ export class BrigadiersRepository implements IBrigadiersRepository {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
   }
+
+  async UpdateBrigadiersById(brigadier: Brigadier) {
+    try {
+      const { resource: resource } = await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .item(brigadier.id, brigadier.partition_key)
+        .replace(brigadier);
+
+      return resource.id;
+    } catch (e) {
+      throw new BadGatewayException('Error en UpdateCommunityUserById ' + e);
+    }
+  }
 }

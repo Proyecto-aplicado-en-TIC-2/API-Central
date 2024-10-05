@@ -5,9 +5,11 @@ import {
   Get,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import { BrigadiersService } from './brigadiers.service';
 import { CreateBrigadierDto } from './dto/create-brigadiers.dto';
+import { UpdateBrigadiersDto } from './dto/update-brigadiers.dto';
 
 @Controller('brigadiers')
 export class BrigadiersController {
@@ -44,6 +46,18 @@ export class BrigadiersController {
   async CreateBrigade(@Body() brigadier: CreateBrigadierDto) {
     try {
       return this.brigadiersService.CreateBrigade(brigadier);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Put('/:id')
+  async UpdateBrigadiersById(
+    @Param('id') id: string,
+    @Body() brigadier: UpdateBrigadiersDto,
+  ) {
+    try {
+      return this.brigadiersService.UpdateBrigadiersById(id, brigadier);
     } catch (e) {
       throw new BadRequestException(e);
     }
