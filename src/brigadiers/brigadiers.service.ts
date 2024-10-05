@@ -96,4 +96,24 @@ export class BrigadiersService {
       throw new BadRequestException(e);
     }
   }
+
+  async DeleteBrigadiersById(id: string) {
+    try {
+      let result: Brigadier | undefined;
+
+      // Validamos si existe él, Id
+      result = await this.brigadiersRepository.GetBrigadierById(id);
+      if (result) {
+        await this.brigadiersRepository.DeleteBrigadiersById(result);
+
+        // Validamos la eliminación en la base de datos
+        result = await this.brigadiersRepository.GetBrigadierById(id);
+        if (result == undefined) return { id: true };
+      } else {
+        return { id: false };
+      }
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
 }

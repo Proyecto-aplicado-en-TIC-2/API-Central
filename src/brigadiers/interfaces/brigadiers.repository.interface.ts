@@ -6,4 +6,5 @@ export interface IBrigadiersRepository {
   GetBrigadierByEmail(mail: string): Promise<Brigadier>;
   CreateBrigade(brigadier: Brigadier): Promise<Brigadier>;
   UpdateBrigadiersById(brigadier: Brigadier): Promise<string>;
+  DeleteBrigadiersById(brigadier: Brigadier): void;
 }

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -58,6 +59,15 @@ export class BrigadiersController {
   ) {
     try {
       return this.brigadiersService.UpdateBrigadiersById(id, brigadier);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Delete('/:id')
+  async DeleteBrigadiersById(@Param('id') id: string) {
+    try {
+      return await this.brigadiersService.DeleteBrigadiersById(id);
     } catch (e) {
       throw new BadRequestException(e);
     }
