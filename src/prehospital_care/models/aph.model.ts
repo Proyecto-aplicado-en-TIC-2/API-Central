@@ -1,7 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { IAPH } from '../interfaces/aph.interface';
 
-const partitionKey = 'brigade_accounts';
+const partitionKey = 'prehospital_care_accounts';
 
 export class APH implements IAPH {
   id: string;
@@ -28,4 +28,8 @@ export class APH implements IAPH {
 
   @Exclude() // Esconder propiedad
   _ts: string;
+
+  static GetPartitionKey() {
+    return partitionKey;
+  }
 }

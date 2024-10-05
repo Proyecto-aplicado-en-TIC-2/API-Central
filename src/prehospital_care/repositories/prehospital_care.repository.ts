@@ -1,7 +1,6 @@
 import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 import { IPrehospitalCareRepository } from '../interfaces/prehospital_care.repository.interface';
 import { APH } from '../models/aph.model';
-import { Community } from '../../community/models/community.model';
 import { plainToClass } from 'class-transformer';
 import { KeyVaultService } from '../../context_db/DbContext.service';
 
@@ -27,9 +26,25 @@ export class PrehospitalCareRepository implements IPrehospitalCareRepository {
         .items.query(querySpec)
         .fetchAll();
 
-      return items.map((item: Community) => plainToClass(Community, item));
+      return items.map((item: APH) => plainToClass(APH, item));
     } catch (e) {
       throw new BadGatewayException('Error en GetAllCommunity ' + e);
+    }
+  }
+
+  async GetAPHById(id: string) {
+    try {
+      // Consulta
+      const { resource: item } = await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .item(id, APH.GetPartitionKey())
+        .read();
+
+      return plainToClass(APH, item);
+    } catch (e) {
+      throw new BadGatewayException('Error en GetCommunityById ' + e);
     }
   }
 }

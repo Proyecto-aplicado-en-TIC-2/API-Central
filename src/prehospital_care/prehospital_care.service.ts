@@ -15,4 +15,12 @@ export class PrehospitalCareService {
       throw new BadRequestException(e);
     }
   }
+
+  async GetAPHById(id: string) {
+    try {
+      return await this.prehospitalCareRepository.GetAPHById(id);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
 }
