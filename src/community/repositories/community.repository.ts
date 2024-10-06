@@ -3,11 +3,13 @@ import { KeyVaultService } from '../../context_db/DbContext.service';
 import { Community } from '../dto/community.dto';
 import { CreateCommunityDto } from '../dto/create-community.dto';
 
+
 const databaseID = 'ToDoList';
 const containerID = 'Community';
 
 @Injectable()
 export class CommunityRepository {
+  
   constructor(@Inject(KeyVaultService) private client: KeyVaultService) {}
 
   /**
