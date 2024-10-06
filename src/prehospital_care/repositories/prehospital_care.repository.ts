@@ -104,4 +104,18 @@ export class PrehospitalCareRepository implements IPrehospitalCareRepository {
       throw new BadGatewayException('Error en UpdateCommunityUserById' + e);
     }
   }
+
+  async DeleteAPHById(aph: APH) {
+    try {
+      // Consulta
+      await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .item(aph.id, aph.partition_key)
+        .delete(aph);
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
+    }
+  }
 }

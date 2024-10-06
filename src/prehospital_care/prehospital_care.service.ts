@@ -92,4 +92,24 @@ export class PrehospitalCareService {
       throw new BadRequestException(e);
     }
   }
+
+  async DeleteAPHById(id: string) {
+    try {
+      let result: APH | undefined;
+
+      // Validamos si existe él, Id
+      result = await this.prehospitalCareRepository.GetAPHById(id);
+      if (result) {
+        await this.prehospitalCareRepository.DeleteAPHById(result);
+
+        // Validamos la eliminación en la base de datos
+        result = await this.prehospitalCareRepository.GetAPHById(id);
+        if (result == undefined) return { id: true };
+      } else {
+        return { id: false };
+      }
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
 }

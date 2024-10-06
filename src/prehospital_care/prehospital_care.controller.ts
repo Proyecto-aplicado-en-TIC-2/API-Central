@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -57,6 +58,15 @@ export class PrehospitalCareController {
   async UpdateAPHById(@Param('id') id: string, @Body() aph: UpdateAphDto) {
     try {
       return this.prehospitalCareService.UpdateAPHById(id, aph);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Delete('/:id')
+  async DeleteAPHById(@Param('id') id: string) {
+    try {
+      return await this.prehospitalCareService.DeleteAPHById(id);
     } catch (e) {
       throw new BadRequestException(e);
     }
