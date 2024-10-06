@@ -3,6 +3,7 @@ import { PrehospitalCareRepository } from './repositories/prehospital_care.repos
 import { APH } from './models/aph.model';
 import { CreateAphDto } from './dto/create-aph.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { UpdateAphDto } from './dto/update-aph.dto';
 
 @Injectable()
 export class PrehospitalCareService {
@@ -54,6 +55,39 @@ export class PrehospitalCareService {
       const UserCommunity = new APH().DtoCreate(GeneratedId, aph);
 
       return this.prehospitalCareRepository.CreateAPH(UserCommunity);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  async UpdateAPHById(id: string, aph: UpdateAphDto) {
+    try {
+      // Validamos si existe él, Id
+      const ExistingAPH = await this.prehospitalCareRepository.GetAPHById(id);
+      if (!ExistingAPH) return false;
+
+      // Item temporal con cambios
+      const TempAPH = new APH().DtoUpdate(
+        ExistingAPH.id,
+        ExistingAPH.mail,
+        aph,
+      );
+
+      // Verificar si existen cambios en el item dto.
+      if (ExistingAPH.equals(TempAPH)) return false;
+
+      // Enviamos cambios
+      const IdResult =
+        await this.prehospitalCareRepository.UpdateAPHById(TempAPH);
+
+      // Consultamos el item actualizado
+      const APHUpdated =
+        await this.prehospitalCareRepository.GetAPHById(IdResult);
+
+      // Validamos si el item de la base de datos tiene cambios
+      if (ExistingAPH.equals(APHUpdated)) return false;
+
+      return APHUpdated;
     } catch (e) {
       throw new BadRequestException(e);
     }
