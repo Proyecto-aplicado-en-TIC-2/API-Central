@@ -3,6 +3,7 @@ import { IPrehospitalCareRepository } from '../interfaces/prehospital_care.repos
 import { APH } from '../models/aph.model';
 import { plainToClass } from 'class-transformer';
 import { KeyVaultService } from '../../context_db/DbContext.service';
+import { Brigadier } from '../../brigadiers/models/brigadiers.model';
 
 @Injectable()
 export class PrehospitalCareRepository implements IPrehospitalCareRepository {
@@ -72,6 +73,20 @@ export class PrehospitalCareRepository implements IPrehospitalCareRepository {
       return plainToClass(APH, item[0]);
     } catch (e) {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
+    }
+  }
+
+  async CreateAPH(aph: APH) {
+    try {
+      const { resource: item } = await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .items.upsert(aph);
+
+      return plainToClass(Brigadier, item);
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
   }
 }
