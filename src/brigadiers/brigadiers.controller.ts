@@ -11,11 +11,14 @@ import {
 import { BrigadiersService } from './brigadiers.service';
 import { CreateBrigadierDto } from './dto/create-brigadiers.dto';
 import { UpdateBrigadiersDto } from './dto/update-brigadiers.dto';
+import { Role } from '../authorization/role.enum';
+import { Roles } from '../authorization/decorators/roles.decorator';
 
 @Controller('brigadiers')
 export class BrigadiersController {
   constructor(private readonly brigadiersService: BrigadiersService) {}
 
+  @Roles(Role.Administration, Role.Brigadiers)
   @Get()
   async GetAllBrigadiers() {
     try {
