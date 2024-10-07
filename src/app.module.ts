@@ -6,6 +6,9 @@ import { CommunityModule } from './community/community.module';
 import { BrigadiersModule } from './brigadiers/brigadiers.module';
 import { PrehospitalCareModule } from './prehospital_care/prehospital_care.module';
 import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/auth.guard';
+import { AuthorizationGuard } from './authorization/authorization.guard';
 
 @Module({
   imports: [
@@ -15,6 +18,17 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, KeyVaultService],
+  providers: [
+    AppService,
+    KeyVaultService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AuthorizationGuard,
+    },
+  ],
 })
 export class AppModule {}

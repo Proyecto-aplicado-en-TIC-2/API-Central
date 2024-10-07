@@ -21,7 +21,7 @@ export class AuthService {
       const payload = {
         id: auth.id,
         mail: auth.mail,
-        type_partition_key: auth.type_partition_key,
+        roles: auth.type_partition_key,
       };
 
       const token = this.jwtService.sign(payload);
