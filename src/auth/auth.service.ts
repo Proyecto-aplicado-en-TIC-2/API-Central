@@ -16,17 +16,18 @@ export class AuthService {
       if (!auth) return { operation: null, status: 'Este correo no existe' };
 
       if (auth.password !== pass)
-        return { operation: false, status: 'password incorrect' };
+        return { operation: false, status: 'Contraseña incorrect' };
 
-      const payload = { sub: auth.id, username: auth.mail };
+      const payload = {
+        id: auth.id,
+        mail: auth.mail,
+        type_partition_key: auth.type_partition_key,
+      };
 
       const token = this.jwtService.sign(payload);
 
-      //return { operation: true, status: auth };
       return {
         operation: true,
-        id: auth.id,
-        type_partition_key: auth.type_partition_key,
         access_token: token,
       };
     } catch (e) {
