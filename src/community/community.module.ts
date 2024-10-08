@@ -17,5 +17,6 @@ import { AuthGuard } from '../auth/auth.guard';
       useClass: AuthGuard,
     },
   ],
+  exports: [CommunityService],
 })
 export class CommunityModule {}

@@ -2,6 +2,7 @@ import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 import { KeyVaultService } from '../../context_db/DbContext.service';
 import { plainToClass } from 'class-transformer';
 import { Auth } from '../models/auth.models';
+import { Brigadier } from '../../brigadiers/models/brigadiers.model';
 
 @Injectable()
 export class AuthRepository {
@@ -36,6 +37,20 @@ export class AuthRepository {
       return plainToClass(Auth, item[0]);
     } catch (e) {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
+    }
+  }
+
+  async CreateAccount(auth: Auth) {
+    try {
+      const { resource: item } = await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .items.upsert(auth);
+
+      return plainToClass(Brigadier, item);
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
   }
 }

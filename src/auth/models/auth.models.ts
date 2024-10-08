@@ -23,4 +23,18 @@ export class Auth {
 
   @Exclude() // Esconder propiedad
   _ts: string;
+
+  DtoCreate(
+    id: string,
+    mail: string,
+    password: string,
+    type_partition_key: string,
+  ) {
+    const auth = new Auth();
+    auth.id = id;
+    auth.mail = mail;
+    auth.password = password;
+    auth.type_partition_key = type_partition_key;
+    return auth;
+  }
 }
