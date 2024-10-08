@@ -18,7 +18,7 @@ import { Roles } from '../authorization/decorators/roles.decorator';
 export class BrigadiersController {
   constructor(private readonly brigadiersService: BrigadiersService) {}
 
-  @Roles(Role.Administration, Role.Brigadiers)
+  @Roles(Role.Administration)
   @Get()
   async GetAllBrigadiers() {
     try {
@@ -28,6 +28,7 @@ export class BrigadiersController {
     }
   }
 
+  @Roles(Role.Administration, Role.Brigadiers)
   @Get(':id')
   async GetBrigadierById(@Param('id') id: string) {
     try {
@@ -37,6 +38,7 @@ export class BrigadiersController {
     }
   }
 
+  @Roles(Role.Administration)
   @Get('/mail/:mail')
   async GetBrigadierByEmail(@Param('mail') mail: string) {
     try {
@@ -46,6 +48,7 @@ export class BrigadiersController {
     }
   }
 
+  @Roles(Role.Administration)
   @Post()
   async CreateBrigade(@Body() brigadier: CreateBrigadierDto) {
     try {
@@ -55,6 +58,7 @@ export class BrigadiersController {
     }
   }
 
+  @Roles(Role.Administration, Role.Brigadiers)
   @Put('/:id')
   async UpdateBrigadiersById(
     @Param('id') id: string,
@@ -67,6 +71,7 @@ export class BrigadiersController {
     }
   }
 
+  @Roles(Role.Administration)
   @Delete('/:id')
   async DeleteBrigadiersById(@Param('id') id: string) {
     try {
