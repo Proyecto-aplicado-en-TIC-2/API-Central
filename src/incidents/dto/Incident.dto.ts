@@ -19,7 +19,7 @@ export enum Block
 }
 
 export class Incident  {
-
+  //Id Auto generate for CosmosDB
   public readonly partition_key: string = "community_upb_reports";
   public reporter?: Reporter;
   public location?: Location;
@@ -27,15 +27,11 @@ export class Incident  {
   public hourRequest?: string;
 
   constructor(
- 
     reporter: Reporter,
     location: Location,
     date: string,
     hourRequest: string,
-    partition_key: string
   ) {
-   
-    this.partition_key = partition_key;
     this.reporter = reporter;
     this.location = location;
     this.date = date;
