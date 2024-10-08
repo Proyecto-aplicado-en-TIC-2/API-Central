@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Incident, Reporter, Location } from './dto/incident.dto';
 import { IIncidensRepostiory } from './incidets.interface';
+import { AppValidationException } from 'src/helpers/AppValidationException';
+
+
 
 
 @Injectable()
@@ -9,32 +12,36 @@ export class IncidentsService {
   constructor(@Inject('IIncidensRepostiory') 
               private readonly incidensRepostiory: IIncidensRepostiory){}
 
-  async CreateIncident(CreateIncident: Incident): Promise<Boolean> {
-    try{
-      const Operation: Boolean = await this.incidensRepostiory
-      .CreateIncident(CreateIncident)
-      if(Operation == true){
-        return true;
-      }
-    }catch(error){
-      console.error('Error creating incident: ', error);
-      throw new Error('Error creating incident');
+
+  async GetAllIncidents(): Promise<Incident[]> 
+  {
+    const operation: Incident[] = await this.incidensRepostiory
+      .GetAllIncidents()
+    return operation;
+  }
+
+  async CreateIncident(incidente: Incident): Promise<Incident> 
+  {
+    
+      const operation: Incident | null = await this.incidensRepostiory
+        .CreateIncident(incidente)
+
+      if(operation == null){
+        throw new AppValidationException("Operation executed but wasn't changes")
+      }return operation;
+  }
+
+  async GetIncidentById(Id: string): Promise<any>
+  {
+    const operation: Incident | null = await this.incidensRepostiory
+      .GetIncidentById(Id)
+
+    if(operation == null){
+      throw new AppValidationException(`Incident with ID ${Id} not found.`);
     }
-  }
 
-  findAll() {
-    return `This action returns all incidents`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} incident`;
-  }
-
-  update(id: number, updateIncidentDto: Incident) {
-    return `This action updates a #${id} incident`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} incident`;
+    if(operation == null){
+      throw new AppValidationException("There is not nay any item with the id: " + Id)
+    }return operation;
   }
 }

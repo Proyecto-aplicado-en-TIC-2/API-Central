@@ -2,7 +2,9 @@ import { KeyVaultService } from 'src/context_db/DbContext.service';
 import { Incident, Location, Reporter } from './dto/incident.dto';
 import { IIncidensRepostiory } from './incidets.interface'; 
 import { CosmosClient } from '@azure/cosmos';
-import { Injectable } from '@nestjs/common';
+import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
+import { DbOperationException } from 'src/helpers/DbOperationException';
+import { plainToInstance } from 'class-transformer';
 
 
 const databaseId: string = "risk_management"
@@ -14,35 +16,77 @@ const partitionKey = { kind: 'Hash', paths: ['/partition_Key'] }
 export class IncidentesRepository implements IIncidensRepostiory{
 
   //DB conenection -------------------------------------------------------
-  _keyVaultService: KeyVaultService = new KeyVaultService();
-  DbConnection:CosmosClient = this._keyVaultService.getDbConnection();
+  constructor(@Inject(KeyVaultService) private DbConnection: KeyVaultService) {}
 
- 
+
+
   //DB Methods -------------------------------------------------------
-  async GetAllIncidents(): Promise<Incident[]> {
+  async GetAllIncidents(): Promise<Incident[]> 
+  {
+    try {
+      const query = 
+      {
+        query: 'SELECT * FROM c',
+      }
+      const { resources: results } = await this.DbConnection
+        .getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(query)
+        .fetchAll();
 
-    throw new Error('Method not implemented.');
+      return results;
+      
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
   }
-  async CreateIncident(_Incident: Incident): Promise<boolean> {
-    
+
+  async GetIncidentById(Id: string): Promise<Incident | null> 
+  {
+    try {
+      const { resource: item } = await this.DbConnection
+      .getDbConnection()
+      .database(databaseId)
+      .container(containerId)
+      .item(Id, containerId)
+      .read();
+
+      if(item){
+        const incident_obj: Incident = plainToInstance(Incident, item);
+        return incident_obj;
+      }return null;
+        
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
+
+  async CreateIncident(incident: Incident): Promise<Incident | null> {
     try{
+
       const{ resource: CreateIncident } = await this.DbConnection
+      .getDbConnection()
       .database(databaseId)
       .container(containerId)
       .items
-      .upsert(_Incident)
-      return true;
+      .upsert(incident)
+
+      if(CreateIncident) {
+        return CreateIncident as unknown as Incident;
+      }return null;
 
     }catch(error){
-      console.error('Error creating incident: ', error);
-      throw new Error('Error creating incident');
+      throw new DbOperationException(error.message);
     }
    
   }
-  UpdateIncident(incident: Incident): Promise<Incident> {
+
+  UpdateIncident(Id: string): Promise<Incident> {
     throw new Error('Method not implemented.');
   }
-  DeleteIncident(incident: Incident): Promise<Incident> {
+
+  DeleteIncident(Id: string): Promise<Incident> {
     throw new Error('Method not implemented.');
   }
 

@@ -5,12 +5,13 @@ export interface IIncidensRepostiory {
 
   //-------------------- GET ------------------------
   GetAllIncidents(): Promise<Incident[]>;
+  GetIncidentById(Id: string): Promise<Incident | null>;
   //-------------------- SET ------------------------
-  CreateIncident(incident: Incident): Promise<boolean>;
+  CreateIncident(incident: Incident): Promise<Incident | null>;
   //-------------------- UPDATE ---------------------
-  UpdateIncident(incident: Incident): Promise<Incident>;
+  UpdateIncident(Id: string): Promise<Incident>;
   //-------------------- DELETE ---------------------
-  DeleteIncident(incident: Incident): Promise<Incident>;
+  DeleteIncident(Id: string): Promise<Incident>;
   //-------------------- MORE -----------------------
 
 }
