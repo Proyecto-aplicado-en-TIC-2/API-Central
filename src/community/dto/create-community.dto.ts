@@ -1,9 +1,9 @@
 import { ICommunity } from '../interfaces/community.interface';
 
-export class CreateCommunityDto implements ICommunity {
+export class CreateCommunityUserDto implements ICommunity {
   names: string;
-  lastNames: string;
-  email: string;
-  phoneNumber: string;
-  relationshipWithTheUniversity: string;
+  last_names: string;
+  mail: string;
+  phone_number: string;
+  relationship_with_the_university: string;
 }

@@ -1,20 +1,19 @@
 import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
-import { KeyVaultService } from '../../context_db/DbContext.service';
-import { Community } from '../models/community.model';
-import { ICommunityRepositories } from '../interfaces/community.repository.interface';
+import { IBrigadiersRepository } from '../interfaces/brigadiers.repository.interface';
+import { Brigadier } from '../models/brigadiers.model';
 import { plainToClass } from 'class-transformer';
+import { KeyVaultService } from '../../context_db/DbContext.service';
 
 @Injectable()
-export class CommunityRepository implements ICommunityRepositories {
+export class BrigadiersRepository implements IBrigadiersRepository {
   private databaseId = 'risk_management';
-  private containerId = 'community_upb';
+  private containerId = 'brigadiers';
 
-  constructor(@Inject(KeyVaultService) private client: KeyVaultService) {}
+  constructor(
+    @Inject(KeyVaultService) private readonly client: KeyVaultService,
+  ) {}
 
-  /**
-   * Obtiene todos los items de del contenedor **Community**
-   * */
-  async GetAllCommunityUsers(): Promise<Community[]> {
+  async GetAllBrigadiers(): Promise<Brigadier[]> {
     try {
       // Query
       const querySpec = {
@@ -29,35 +28,29 @@ export class CommunityRepository implements ICommunityRepositories {
         .items.query(querySpec)
         .fetchAll();
 
-      return items.map((item: Community) => plainToClass(Community, item));
+      return items.map((item: Brigadier) => plainToClass(Brigadier, item));
     } catch (e) {
       throw new BadGatewayException('Error en GetAllCommunity ' + e);
     }
   }
 
-  /**
-   * Obtiene un item por ID del contendor **Community**
-   * */
-  async GetCommunityUserById(id: string): Promise<Community> {
+  async GetBrigadierById(id: string) {
     try {
       // Consulta
       const { resource: item } = await this.client
         .getDbConnection()
         .database(this.databaseId)
         .container(this.containerId)
-        .item(id, Community.partition_key)
+        .item(id, Brigadier.GetPartitionKey())
         .read();
 
-      return plainToClass(Community, item);
+      return plainToClass(Brigadier, item);
     } catch (e) {
-      throw new BadGatewayException('Error en GetCommunityById ' + e);
+      throw new BadGatewayException('Error en GetBrigadiersById ' + e);
     }
   }
 
-  /**
-   * Obtiene un item por email del contendor **Community**
-   * */
-  async GetCommunityUserByEmail(mail: string): Promise<Community> {
+  async GetBrigadierByEmail(mail: string) {
     try {
       // Query
       const querySpec = {
@@ -78,34 +71,34 @@ export class CommunityRepository implements ICommunityRepositories {
         .items.query(querySpec)
         .fetchAll();
 
-      return plainToClass(Community, item[0]);
+      return plainToClass(Brigadier, item[0]);
     } catch (e) {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
     }
   }
 
-  async CreateCommunityUser(community: Community): Promise<Community> {
+  async CreateBrigade(brigadier: Brigadier) {
     try {
       const { resource: item } = await this.client
         .getDbConnection()
         .database(this.databaseId)
         .container(this.containerId)
-        .items.upsert(community);
+        .items.upsert(brigadier);
 
-      return plainToClass(Community, item);
+      return plainToClass(Brigadier, item);
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
   }
 
-  async UpdateCommunityUserById(community: Community): Promise<string> {
+  async UpdateBrigadiersById(brigadier: Brigadier) {
     try {
       const { resource: resource } = await this.client
         .getDbConnection()
         .database(this.databaseId)
         .container(this.containerId)
-        .item(community.id, community.partition_key)
-        .replace(community);
+        .item(brigadier.id, brigadier.partition_key)
+        .replace(brigadier);
 
       return resource.id;
     } catch (e) {
@@ -113,15 +106,15 @@ export class CommunityRepository implements ICommunityRepositories {
     }
   }
 
-  async DeleteCommunityUserById(community: Community) {
+  async DeleteBrigadiersById(brigadier: Brigadier) {
     try {
       // Consulta
       await this.client
         .getDbConnection()
         .database(this.databaseId)
         .container(this.containerId)
-        .item(community.id, community.partition_key)
-        .delete(community);
+        .item(brigadier.id, brigadier.partition_key)
+        .delete(brigadier);
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
