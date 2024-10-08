@@ -31,6 +31,7 @@ jobs:
           --resource-group GestionDeRiesgosUPB \
           --image gdrdockerimage.azurecr.io/gdr-api:testing \
           --set-env-vars KEY_VAULT_NAME=${{ secrets.KEY_VAULT_NAME }} \
+                          SECRET_JWT=${{ secrets.SECRET_JWT }} \
                           SECRET_NAME_API_KEY=${{ secrets.SECRET_NAME_API_KEY }} \
                           SECRET_NAME_ENDPOINT=${{ secrets.SECRET_NAME_ENDPOINT }} \
                           AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }} \
