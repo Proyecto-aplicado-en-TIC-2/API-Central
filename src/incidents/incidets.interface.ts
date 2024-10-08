@@ -1,12 +1,12 @@
-import { Incident } from './dto/Incident.dto'; 
-import { RelationshipWithTheUniversity, Block } from './dto/Incident.dto'; 
+import { Incident } from './dto/incident.dto'; 
+
 
 export interface IIncidensRepostiory {
 
   //-------------------- GET ------------------------
   GetAllIncidents(): Promise<Incident[]>;
   //-------------------- SET ------------------------
-  CreateIncident(incident: Incident): Promise<Incident>;
+  CreateIncident(incident: Incident): Promise<boolean>;
   //-------------------- UPDATE ---------------------
   UpdateIncident(incident: Incident): Promise<Incident>;
   //-------------------- DELETE ---------------------

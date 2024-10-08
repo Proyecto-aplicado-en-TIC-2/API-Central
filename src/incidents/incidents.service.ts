@@ -1,11 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { CreateIncidentDto } from './dto/Incident.dto';
-import { UpdateIncidentDto } from './dto/update-incident.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { Incident, Reporter, Location } from './dto/incident.dto';
+import { IIncidensRepostiory } from './incidets.interface';
+
 
 @Injectable()
 export class IncidentsService {
-  create(createIncidentDto: CreateIncidentDto) {
-    return 'This action adds a new incident';
+
+  constructor(@Inject('IIncidensRepostiory') 
+              private readonly incidensRepostiory: IIncidensRepostiory){}
+
+  async CreateIncident(CreateIncident: Incident): Promise<Boolean> {
+    try{
+      const Operation: Boolean = await this.incidensRepostiory
+      .CreateIncident(CreateIncident)
+      if(Operation == true){
+        return true;
+      }
+    }catch(error){
+      console.error('Error creating incident: ', error);
+      throw new Error('Error creating incident');
+    }
   }
 
   findAll() {
@@ -16,7 +30,7 @@ export class IncidentsService {
     return `This action returns a #${id} incident`;
   }
 
-  update(id: number, updateIncidentDto: UpdateIncidentDto) {
+  update(id: number, updateIncidentDto: Incident) {
     return `This action updates a #${id} incident`;
   }
 

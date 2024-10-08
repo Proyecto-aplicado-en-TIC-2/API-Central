@@ -2,6 +2,7 @@ import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 import { KeyVaultService } from '../../context_db/DbContext.service';
 import { Community } from '../dto/community.dto';
 import { CreateCommunityDto } from '../dto/create-community.dto';
+import { error } from 'console';
 
 
 const databaseID = 'ToDoList';
@@ -124,7 +125,7 @@ export class CommunityRepository {
   }
 
   async DeleteCommunityUserById(userCommunity: Community) {
-    try {
+    /*try {
       await this.client
         .getDbConnection()
         .database(databaseID)
@@ -136,5 +137,8 @@ export class CommunityRepository {
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
-  }
+  
+    */
+    throw error("Metodo no implementado")
+  } 
 }

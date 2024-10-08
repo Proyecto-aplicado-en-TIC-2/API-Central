@@ -18,33 +18,43 @@ export enum Block
 
 export class Incident  {
 
-  constructor
-  (
-    public id: string,
-    public readonly partitionKey: string = "community_upb_reports",
-    public reporter: Reporter,
-    public location: Location,
-    public date: string,
-    public hourRequest: string
-  ) {}
+  public id: string;
+  public partition_key: string;
+  public reporter: Reporter;
+  public location: Location;
+  public date: string;
+  public hourRequest: string;
+
+  constructor(
+    id: string,
+    reporter: Reporter,
+    location: Location,
+    date: string,
+    hourRequest: string,
+    partition_key: string
+  ) {
+    this.partition_key = partition_key;
+    this.id = id; 
+    this.reporter = reporter;
+    this.location = location;
+    this.date = date;
+    this.hourRequest = hourRequest;
+  }
+
+  
 }
 
-class Reporter{
-  constructor
-  (
-    public id: string,
-    public names: string,
-    public lastNames: string,
-    public relationshipWithTheUniversity: RelationshipWithTheUniversity
-  ) {}
+export class Reporter{
+  public id: string;
+  public names: string;
+  public lastNames: string;
+  public relationshipWithTheUniversity: RelationshipWithTheUniversity
+  
 }
 
-class Location{
-  constructor
-  (
-    public block: Block,
-    public classroom: number,
-    public pointOfReference: string
-  ) {}
+export class Location{
+  public block: Block;
+  public classroom: number;
+  public pointOfReference: string;
 }
 
