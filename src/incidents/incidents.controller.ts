@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException } from '@nestjs/common';
 import { IncidentsService } from './incidents.service';
-import { Incident} from './dto/incident.dto';
+import { Incident} from './dto/create-incident.dto';
 import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
+import { UpdateIncident } from './dto/update-incident.dto';
+
 
 
 @Controller('incidents')
@@ -51,6 +53,19 @@ export class IncidentsController {
     return `The Incident was deleted succefully: ${incidents}`;
     }catch(error){
       throw new GenericError("DeleteIncident", error);
+    }
+  }
+  @Patch()
+  async UpdateIncident(@Body() updateIncident: Record<string,any>): Promise<any>
+  {
+    try{
+    const incident_obj: UpdateIncident = plainToInstance(UpdateIncident, updateIncident);
+    const operation: UpdateIncident = await this.incidentsService
+      .UpdateIncident(incident_obj);
+
+    return "Incidente actualizado correctamente: " + JSON.stringify(operation);
+    }catch(error){
+      throw new GenericError("UpdateIncident", error);
     }
   }
 }

@@ -1,10 +1,11 @@
 import { KeyVaultService } from 'src/context_db/DbContext.service';
-import { Incident, Location, Reporter } from './dto/incident.dto';
+import { Incident, Location, Reporter } from './dto/create-incident.dto';
 import { IIncidensRepostiory } from './incidets.interface'; 
 import { CosmosClient } from '@azure/cosmos';
 import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 import { DbOperationException } from 'src/helpers/DbOperationException';
 import { plainToInstance } from 'class-transformer';
+import { UpdateIncident } from './dto/update-incident.dto';
 
 
 const databaseId: string = "risk_management"
@@ -35,7 +36,8 @@ export class IncidentesRepository implements IIncidensRepostiory{
         .items.query(query)
         .fetchAll();
 
-      return results;
+       const incidentInstances: Incident[] = plainToInstance(Incident, results);
+       return incidentInstances;
       
     } catch (error) {
       throw new DbOperationException(error.message);
@@ -53,8 +55,8 @@ export class IncidentesRepository implements IIncidensRepostiory{
       .read();
 
       if(item){
-        const incident_obj: Incident = plainToInstance(Incident, item);
-        return incident_obj;
+        return plainToInstance(Incident, item);
+       
       }return null;
         
     } catch (error) {
@@ -73,7 +75,7 @@ export class IncidentesRepository implements IIncidensRepostiory{
       .upsert(incident)
 
       if(CreateIncident) {
-        return CreateIncident as unknown as Incident;
+        return plainToInstance(Incident, CreateIncident);
       }return null;
 
     }catch(error){
@@ -82,8 +84,24 @@ export class IncidentesRepository implements IIncidensRepostiory{
    
   }
 
-  UpdateIncident(Id: string): Promise<Incident> {
-    throw new Error('Method not implemented.');
+  async UpdateIncident(updateIncident: UpdateIncident): Promise<UpdateIncident> {
+    
+    try{
+      const{ resource: item } =await this.DbConnection
+      .getDbConnection()
+      .database(databaseId)
+      .container(containerId)
+      .item(updateIncident.id, containerId)
+      .replace(updateIncident)
+
+      if(updateIncident == null) {
+        throw new DbOperationException
+          (`Couldn't delete, Incident with the Id: ${updateIncident.id} doesn't exist`);}
+      return plainToInstance(UpdateIncident, item);
+
+    }catch(error){
+      throw new DbOperationException(error.message);
+    }
   }
 
   async DeleteIncidentByID(Id: string): Promise<Incident> 

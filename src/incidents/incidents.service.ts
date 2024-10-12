@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Incident, Reporter, Location } from './dto/incident.dto';
+import { Incident, Reporter, Location } from './dto/create-incident.dto';
 import { IIncidensRepostiory } from './incidets.interface';
 import { AppValidationException } from 'src/helpers/AppValidationException';
+import { UpdateIncident } from './dto/update-incident.dto';
 
 
 
@@ -22,7 +23,6 @@ export class IncidentsService {
 
   async CreateIncident(incidente: Incident): Promise<Incident> 
   {
-    
       const operation: Incident | null = await this.incidensRepostiory
         .CreateIncident(incidente)
 
@@ -38,18 +38,24 @@ export class IncidentsService {
 
     if(operation == null){
       throw new AppValidationException(`Incident with ID ${Id} not found.`);
-    }
+    } return operation;
 
-    if(operation == null){
-      throw new AppValidationException("There is not nay any item with the id: " + Id)
-    }return operation;
   }
+  
+  async UpdateIncident(updateIncident: UpdateIncident): Promise<UpdateIncident>
+  {
+    const operation: UpdateIncident = await this.incidensRepostiory
+    .UpdateIncident(updateIncident);
 
-  async DeleteIncidentByID(Id: string): Promise<Incident>{
-
+    return operation;
+  }
+  async DeleteIncidentByID(Id: string): Promise<Incident>
+  {
     const operation: Incident = await this.incidensRepostiory
       .DeleteIncidentByID(Id);
     
       return operation;
   }
+
+
 }

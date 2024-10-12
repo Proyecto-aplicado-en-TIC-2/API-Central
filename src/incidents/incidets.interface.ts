@@ -1,4 +1,5 @@
-import { Incident } from './dto/incident.dto'; 
+import { Incident } from './dto/create-incident.dto'; 
+import { UpdateIncident } from './dto/update-incident.dto'; 
 
 
 export interface IIncidensRepostiory {
@@ -9,7 +10,7 @@ export interface IIncidensRepostiory {
   //-------------------- SET ------------------------
   CreateIncident(incident: Incident): Promise<Incident | null>;
   //-------------------- UPDATE ---------------------
-  UpdateIncident(Id: string): Promise<Incident>;
+  UpdateIncident(incident: Incident): Promise<UpdateIncident>;
   //-------------------- DELETE ---------------------
   DeleteIncidentByID(Id: string): Promise<Incident>;
   //-------------------- MORE -----------------------
