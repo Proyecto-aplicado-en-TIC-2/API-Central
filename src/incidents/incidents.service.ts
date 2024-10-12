@@ -44,4 +44,12 @@ export class IncidentsService {
       throw new AppValidationException("There is not nay any item with the id: " + Id)
     }return operation;
   }
+
+  async DeleteIncidentByID(Id: string): Promise<Incident>{
+
+    const operation: Incident = await this.incidensRepostiory
+      .DeleteIncidentByID(Id);
+    
+      return operation;
+  }
 }

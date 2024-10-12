@@ -11,14 +11,14 @@ export class IncidentsController {
   public constructor(private readonly incidentsService: IncidentsService) {}
 
   @Post()
-  async createIncident(@Body() incident: Record<string,any>): Promise<any>
+  async CreateIncident(@Body() incident: Record<string,any>): Promise<any>
   {
     try{
       const incident_obj: Incident = plainToInstance(Incident, incident);
       return await this.incidentsService.CreateIncident(incident_obj);
       
     }catch (error) {
-      throw new GenericError(error);
+      throw new GenericError("CreateIncident", error);
     }
   }
   @Get()
@@ -27,6 +27,7 @@ export class IncidentsController {
       .GetAllIncidents();
     return incidents;
   }
+
   @Get('/:Id')
   async GetIncidentById(@Param('Id') Id: string): Promise<any> {
     try
@@ -36,7 +37,20 @@ export class IncidentsController {
     return incidents;
 
     }catch(error){
-      throw new GenericError(error);
+      throw new GenericError("GetIncidentById", error);
+    }
+  }
+
+  @Delete('/:Id')
+  async DeleteIncidentByID(@Param('Id') Id: string): Promise<any> {
+    try
+    {
+    const incidents: Incident = await this.incidentsService
+      .DeleteIncidentByID(Id)
+    
+    return `The Incident was deleted succefully: ${incidents}`;
+    }catch(error){
+      throw new GenericError("DeleteIncident", error);
     }
   }
 }

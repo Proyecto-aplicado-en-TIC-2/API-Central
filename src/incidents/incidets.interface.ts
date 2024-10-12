@@ -11,7 +11,7 @@ export interface IIncidensRepostiory {
   //-------------------- UPDATE ---------------------
   UpdateIncident(Id: string): Promise<Incident>;
   //-------------------- DELETE ---------------------
-  DeleteIncident(Id: string): Promise<Incident>;
+  DeleteIncidentByID(Id: string): Promise<Incident>;
   //-------------------- MORE -----------------------
 
 }

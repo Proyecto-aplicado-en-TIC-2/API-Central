@@ -86,9 +86,21 @@ export class IncidentesRepository implements IIncidensRepostiory{
     throw new Error('Method not implemented.');
   }
 
-  DeleteIncident(Id: string): Promise<Incident> {
-    throw new Error('Method not implemented.');
-  }
+  async DeleteIncidentByID(Id: string): Promise<Incident> 
+  {
+    try{
+      const{ resource: item } =await this.DbConnection
+      .getDbConnection()
+      .database(databaseId)
+      .container(containerId)
+      .item(Id, containerId)
+      .delete()
 
+      return plainToInstance(Incident, item); //retiorna el item eliminado
+
+    }catch(error){
+      throw new DbOperationException(`Couldn't delete, Incident with the Id: ${Id} doesn't exist`);
+    }
+  }
 
 }
