@@ -13,8 +13,8 @@ export enum Block
   Block_12,Block_13,Block_14,Block_15,Block_16,Block_17,Block_18,Block_19,Block_20,
   Block_21,Block_22,Block_23,Block_24,
 
-  Block_11_complejo_de_ingenierias_forum,
-  
+  Block_11_complejo_de_ingenierias, 
+  forum,
   bloques_externos_al_campus_sobre_la_circular_primera
 }
 
@@ -25,18 +25,6 @@ export class Incident  {
   public location?: Location;
   public date?: string;
   public hourRequest?: string;
-
-  constructor(
-    reporter: Reporter,
-    location: Location,
-    date: string,
-    hourRequest: string,
-  ) {
-    this.reporter = reporter;
-    this.location = location;
-    this.date = date;
-    this.hourRequest = hourRequest;
-  }
 
 }
 

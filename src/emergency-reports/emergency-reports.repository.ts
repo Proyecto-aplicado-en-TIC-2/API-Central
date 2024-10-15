@@ -1,27 +1,26 @@
 import { KeyVaultService } from 'src/context_db/DbContext.service';
-import { Incident} from './dto/create-incident.dto';
-import { IIncidensRepostiory } from './incidets.interface'; 
 import { DbOperationException } from 'src/helpers/DbOperationException';
 import { plainToInstance } from 'class-transformer';
-import { UpdateIncident } from './dto/update-incident.dto';
+import { IEmergencyReportsRepostiory } from './emergency-reports.interface';
+import { EmergencyReports } from './dto/create-emergency-reports.dto'
+import { UpdateEmergencyReports } from './dto/update-emergency-reports.dto';
 import { Inject, Injectable } from '@nestjs/common';
 
 
+
 const databaseId: string = "risk_management"
-const containerId: string = "community_upb_reports"
+const containerId: string = "complete_reports"
 const partitionKey = { kind: 'Hash', paths: ['/partition_Key'] }
 
  
 @Injectable()
-export class IncidentesRepository implements IIncidensRepostiory{
+export class EmergencyReportsRepository implements IEmergencyReportsRepostiory{
 
   //DB conenection -------------------------------------------------------
   constructor(@Inject(KeyVaultService) private DbConnection: KeyVaultService) {}
 
-
-
   //DB Methods -------------------------------------------------------
-  async GetAllIncidents(): Promise<Incident[]> 
+  async GetAllEmergencyReports(): Promise<EmergencyReports[]> 
   {
     try {
       const query = 
@@ -35,15 +34,15 @@ export class IncidentesRepository implements IIncidensRepostiory{
         .items.query(query)
         .fetchAll();
 
-       const incidentInstances: Incident[] = plainToInstance(Incident, results);
-       return incidentInstances;
+       const EmergencyReportsInstances: EmergencyReports[] = plainToInstance(EmergencyReports, results);
+       return EmergencyReportsInstances;
       
     } catch (error) {
       throw new DbOperationException(error.message);
     }
   }
 
-  async GetIncidentById(Id: string): Promise<Incident | null> 
+  async GetEmergencyReportsById(Id: string): Promise<EmergencyReports | null> 
   {
     try {
       const { resource: item } = await this.DbConnection
@@ -54,7 +53,7 @@ export class IncidentesRepository implements IIncidensRepostiory{
       .read();
 
       if(item){
-        return plainToInstance(Incident, item);
+        return plainToInstance(EmergencyReports, item);
        
       }return null;
         
@@ -63,18 +62,18 @@ export class IncidentesRepository implements IIncidensRepostiory{
     }
   }
 
-  async CreateIncident(incident: Incident): Promise<Incident | null> {
+  async CreateEmergencyReport(emergencyReports: EmergencyReports): Promise<EmergencyReports | null> {
     try{
 
-      const{ resource: CreateIncident } = await this.DbConnection
+      const{ resource: CreateEmergencyReports } = await this.DbConnection
       .getDbConnection()
       .database(databaseId)
       .container(containerId)
       .items
-      .upsert(incident)
+      .upsert(emergencyReports)
 
-      if(CreateIncident) {
-        return plainToInstance(Incident, CreateIncident);
+      if(CreateEmergencyReports) {
+        return plainToInstance(EmergencyReports, CreateEmergencyReports);
       }return null;
 
     }catch(error){
@@ -83,24 +82,24 @@ export class IncidentesRepository implements IIncidensRepostiory{
    
   }
 
-  async UpdateIncident(updateIncident: UpdateIncident): Promise<UpdateIncident> {
+  async UpdateEmergencyReport(updateEmergencyReports: UpdateEmergencyReports): Promise<UpdateEmergencyReports> {
     
     try{
       const{ resource: item } =await this.DbConnection
       .getDbConnection()
       .database(databaseId)
       .container(containerId)
-      .item(updateIncident.id, containerId)
-      .replace(updateIncident)
+      .item(updateEmergencyReports.id, containerId)
+      .replace(updateEmergencyReports)
 
-      return plainToInstance(UpdateIncident, item);
+      return plainToInstance(UpdateEmergencyReports, item);
 
     }catch(error){
       throw new DbOperationException(error.message);
     }
   }
 
-  async DeleteIncidentByID(Id: string): Promise<Incident> 
+  async DeleteEmergencyReportByID(Id: string): Promise<EmergencyReports> 
   {
     try{
       const{ resource: item } =await this.DbConnection
@@ -110,10 +109,10 @@ export class IncidentesRepository implements IIncidensRepostiory{
       .item(Id, containerId)
       .delete()
 
-      return plainToInstance(Incident, item); //retiorna el item eliminado
+      return plainToInstance(EmergencyReports, item); //retiorna el item eliminado
 
     }catch(error){
-      throw new DbOperationException(`Couldn't delete, Incident with the Id: ${Id} doesn't exist`);
+      throw new DbOperationException(`Couldn't delete, the EmergencyAlert with the Id: ${Id} doesn't exist`);
     }
   }
 

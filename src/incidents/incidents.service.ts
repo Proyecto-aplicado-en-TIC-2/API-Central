@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Incident, Reporter, Location } from './dto/create-incident.dto';
+import { Incident } from './dto/create-incident.dto';
 import { IIncidensRepostiory } from './incidets.interface';
 import { AppValidationException } from 'src/helpers/AppValidationException';
 import { UpdateIncident } from './dto/update-incident.dto';
