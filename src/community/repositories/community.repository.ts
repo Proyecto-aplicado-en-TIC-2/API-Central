@@ -125,5 +125,5 @@ export class CommunityRepository implements ICommunityRepositories {
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
-  }
+  } 
 }

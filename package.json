@@ -25,6 +25,7 @@
     "@azure/keyvault-secrets": "^4.8.0",
     "@nestjs/common": "^10.4.4",
     "@nestjs/config": "^3.2.3",
+    "@nestjs/mapped-types": "*",
     "@nestjs/core": "^10.4.4",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "*",
