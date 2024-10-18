@@ -19,7 +19,7 @@ import { AuthorizationGuard } from './authorization/authorization.guard';
     PrehospitalCareModule,
     AuthModule,
     IncidentsModule,
-    EmergencyReportsModule
+    EmergencyReportsModule,
   ],
   controllers: [AppController],
   providers: [

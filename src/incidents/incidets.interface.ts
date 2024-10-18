@@ -1,9 +1,7 @@
-import { Incident } from './dto/create-incident.dto'; 
-import { UpdateIncident } from './dto/update-incident.dto'; 
-
+import { Incident } from './dto/create-incident.dto';
+import { UpdateIncident } from './dto/update-incident.dto';
 
 export interface IIncidensRepostiory {
-
   //-------------------- GET ------------------------
   GetAllIncidents(): Promise<Incident[]>;
   GetIncidentById(Id: string): Promise<Incident | null>;
@@ -14,6 +12,4 @@ export interface IIncidensRepostiory {
   //-------------------- DELETE ---------------------
   DeleteIncidentByID(Id: string): Promise<Incident>;
   //-------------------- MORE -----------------------
-
 }
-

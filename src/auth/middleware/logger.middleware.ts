@@ -4,7 +4,15 @@ import { Request, Response, NextFunction } from 'express';
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    console.log('Request...');
+    const logData = {
+      module: 'Auth',
+      method: req.method,
+      path: req.url,
+      headers: req.headers,
+      body: req.body,
+    };
+
+    console.log(logData);
     next();
   }
 }

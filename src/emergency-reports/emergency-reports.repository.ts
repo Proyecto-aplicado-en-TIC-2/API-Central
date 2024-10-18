@@ -2,118 +2,102 @@ import { KeyVaultService } from 'src/context_db/DbContext.service';
 import { DbOperationException } from 'src/helpers/DbOperationException';
 import { plainToInstance } from 'class-transformer';
 import { IEmergencyReportsRepostiory } from './emergency-reports.interface';
-import { EmergencyReports } from './dto/create-emergency-reports.dto'
+import { EmergencyReports } from './dto/create-emergency-reports.dto';
 import { UpdateEmergencyReports } from './dto/update-emergency-reports.dto';
 import { Inject, Injectable } from '@nestjs/common';
 
+const databaseId: string = 'risk_management';
+const containerId: string = 'complete_reports';
 
-
-const databaseId: string = "risk_management"
-const containerId: string = "complete_reports"
-const partitionKey = { kind: 'Hash', paths: ['/partition_Key'] }
-
- 
 @Injectable()
-export class EmergencyReportsRepository implements IEmergencyReportsRepostiory{
-
+export class EmergencyReportsRepository implements IEmergencyReportsRepostiory {
   //DB conenection -------------------------------------------------------
   constructor(@Inject(KeyVaultService) private DbConnection: KeyVaultService) {}
 
   //DB Methods -------------------------------------------------------
-  async GetAllEmergencyReports(): Promise<EmergencyReports[]> 
-  {
+  async GetAllEmergencyReports(): Promise<EmergencyReports[]> {
     try {
-      const query = 
-      {
+      const query = {
         query: 'SELECT * FROM c',
-      }
-      const { resources: results } = await this.DbConnection
-        .getDbConnection()
+      };
+      const { resources: results } = await this.DbConnection.getDbConnection()
         .database(databaseId)
         .container(containerId)
         .items.query(query)
         .fetchAll();
 
-       const EmergencyReportsInstances: EmergencyReports[] = plainToInstance(EmergencyReports, results);
-       return EmergencyReportsInstances;
-      
+      return plainToInstance(EmergencyReports, results);
     } catch (error) {
       throw new DbOperationException(error.message);
     }
   }
 
-  async GetEmergencyReportsById(Id: string): Promise<EmergencyReports | null> 
-  {
+  async GetEmergencyReportsById(Id: string): Promise<EmergencyReports | null> {
     try {
-      const { resource: item } = await this.DbConnection
-      .getDbConnection()
-      .database(databaseId)
-      .container(containerId)
-      .item(Id, containerId)
-      .read();
+      const { resource: item } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .item(Id, containerId)
+        .read();
 
-      if(item){
+      if (item) {
         return plainToInstance(EmergencyReports, item);
-       
-      }return null;
-        
+      }
+      return null;
     } catch (error) {
       throw new DbOperationException(error.message);
     }
   }
 
-  async CreateEmergencyReport(emergencyReports: EmergencyReports): Promise<EmergencyReports | null> {
-    try{
+  async CreateEmergencyReport(
+    emergencyReports: EmergencyReports,
+  ): Promise<EmergencyReports | null> {
+    try {
+      const { resource: CreateEmergencyReports } =
+        await this.DbConnection.getDbConnection()
+          .database(databaseId)
+          .container(containerId)
+          .items.upsert(emergencyReports);
 
-      const{ resource: CreateEmergencyReports } = await this.DbConnection
-      .getDbConnection()
-      .database(databaseId)
-      .container(containerId)
-      .items
-      .upsert(emergencyReports)
-
-      if(CreateEmergencyReports) {
+      if (CreateEmergencyReports) {
         return plainToInstance(EmergencyReports, CreateEmergencyReports);
-      }return null;
-
-    }catch(error){
+      }
+      return null;
+    } catch (error) {
       throw new DbOperationException(error.message);
     }
-   
   }
 
-  async UpdateEmergencyReport(updateEmergencyReports: UpdateEmergencyReports): Promise<UpdateEmergencyReports> {
-    
-    try{
-      const{ resource: item } =await this.DbConnection
-      .getDbConnection()
-      .database(databaseId)
-      .container(containerId)
-      .item(updateEmergencyReports.id, containerId)
-      .replace(updateEmergencyReports)
+  async UpdateEmergencyReport(
+    updateEmergencyReports: UpdateEmergencyReports,
+  ): Promise<UpdateEmergencyReports> {
+    try {
+      const { resource: item } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .item(updateEmergencyReports.id, containerId)
+        .replace(updateEmergencyReports);
 
       return plainToInstance(UpdateEmergencyReports, item);
-
-    }catch(error){
+    } catch (error) {
       throw new DbOperationException(error.message);
     }
   }
 
-  async DeleteEmergencyReportByID(Id: string): Promise<EmergencyReports> 
-  {
-    try{
-      const{ resource: item } =await this.DbConnection
-      .getDbConnection()
-      .database(databaseId)
-      .container(containerId)
-      .item(Id, containerId)
-      .delete()
+  async DeleteEmergencyReportByID(Id: string): Promise<EmergencyReports> {
+    try {
+      const { resource: item } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .item(Id, containerId)
+        .delete();
 
       return plainToInstance(EmergencyReports, item); //retiorna el item eliminado
-
-    }catch(error){
-      throw new DbOperationException(`Couldn't delete, the EmergencyAlert with the Id: ${Id} doesn't exist`);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new DbOperationException(
+        `Couldn't delete, the EmergencyAlert with the Id: ${Id} doesn't exist`,
+      );
     }
   }
-
 }

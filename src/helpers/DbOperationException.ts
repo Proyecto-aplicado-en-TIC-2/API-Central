@@ -1,6 +1,6 @@
 export class DbOperationException extends Error {
   constructor(message: string) {
-      super(message);
-      this.name = "DbOperationException";
+    super(message);
+    this.name = 'DbOperationException';
   }
 }

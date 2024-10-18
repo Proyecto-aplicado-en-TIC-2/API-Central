@@ -121,9 +121,9 @@ export class CommunityRepository implements ICommunityRepositories {
         .database(this.databaseId)
         .container(this.containerId)
         .item(community.id, community.partition_key)
-        .delete(community);
+        .delete();
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
-  } 
+  }
 }

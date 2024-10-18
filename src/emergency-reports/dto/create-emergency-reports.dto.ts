@@ -5,7 +5,7 @@ export enum Quadrant {
   'Division-4',
   'Division-5',
   'Division-6',
-  'Division-7'
+  'Division-7',
 }
 
 export enum Block {
@@ -34,30 +34,30 @@ export enum Block {
   'Block-24',
   'ComplejoDeIngenierias',
   'Forum',
-  'BloquesExternosAlCampus'
+  'BloquesExternosAlCampus',
 }
 
 export enum RelationshipWithUniversity {
   'EstudianteUniversitario',
   'EstudianteEscuela',
   'Docente',
-  'Visitante'
+  'Visitante',
 }
 
 export enum Gender {
   'Male',
   'Female',
-  'Otro'
+  'Otro',
 }
 
 export enum AttentionForSecureLine {
   True = 1,
-  False = 0
+  False = 0,
 }
 
 export enum FollowUp {
   True = 1,
-  False = 0
+  False = 0,
 }
 
 export enum EquipmentType {
@@ -77,17 +77,16 @@ export enum EquipmentType {
   'VENDA_DE_GASA_4_5YD',
   'VENDA_DE_GASA_5_5YD',
   'VENDA_ELASTICA_4_5YD',
-  'VENDA_ELASTICA_5_5YD'
+  'VENDA_ELASTICA_5_5YD',
 }
 
 export enum EquipmentSource {
   'Botiquin',
   'Gabinete',
-  'TraumaPolideportivo'
+  'TraumaPolideportivo',
 }
-export class EmergencyReports{
-
-  public readonly partition_key: string = "complete_reports";
+export class EmergencyReports {
+  public readonly partition_key: string = 'complete_reports';
   public date: {
     date: string; // DD/MM/YY
     hourRequest: string; // HH/MM/SS
@@ -153,6 +152,3 @@ export class EmergencyReports{
 
   public noteForFollowUp: FollowUp;
 }
-
-
-

@@ -112,7 +112,7 @@ export class PrehospitalCareRepository implements IPrehospitalCareRepository {
         .database(this.databaseId)
         .container(this.containerId)
         .item(aph.id, aph.partition_key)
-        .delete(aph);
+        .delete();
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }

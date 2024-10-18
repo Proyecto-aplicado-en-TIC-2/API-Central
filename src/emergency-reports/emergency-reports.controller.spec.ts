@@ -11,7 +11,9 @@ describe('EmergencyAlertsController', () => {
       providers: [EmergencyReportsService],
     }).compile();
 
-    controller = module.get<EmergencyReportsController>(EmergencyReportsController);
+    controller = module.get<EmergencyReportsController>(
+      EmergencyReportsController,
+    );
   });
 
   it('should be defined', () => {

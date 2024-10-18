@@ -114,7 +114,7 @@ export class BrigadiersRepository implements IBrigadiersRepository {
         .database(this.databaseId)
         .container(this.containerId)
         .item(brigadier.id, brigadier.partition_key)
-        .delete(brigadier);
+        .delete();
     } catch (e) {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
