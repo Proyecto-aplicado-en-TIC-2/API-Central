@@ -1,8 +1,8 @@
 import { ICommunity } from '../interfaces/community.interface';
 
-export class UpdateCommunityDto implements ICommunity {
+export class UpdateCommunityUserDto implements ICommunity {
   names: string;
-  lastNames: string;
-  phoneNumber: string;
-  relationshipWithTheUniversity: string;
+  last_names: string;
+  phone_number: string;
+  relationship_with_the_university: string;
 }
