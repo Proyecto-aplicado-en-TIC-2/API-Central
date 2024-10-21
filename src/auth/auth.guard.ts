@@ -40,7 +40,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     return true;
-  }
+  }4
 
   private extractTokenFromHeader(request: Request): string | undefined {
     try {

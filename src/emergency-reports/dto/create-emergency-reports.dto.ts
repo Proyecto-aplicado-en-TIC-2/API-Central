@@ -138,7 +138,8 @@ export class EmergencyReports {
     treatment: string;
     followUp: FollowUp;
   };
-
+   
+  
   public attendnt: {
     callHour: string; // HH/MM/SS
     callAttendntName: string;
