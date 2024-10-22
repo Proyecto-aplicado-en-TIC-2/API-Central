@@ -17,7 +17,6 @@ export class WebsocketRepository implements IWebsocketRepository {
   async GetAdminActiveByPartitionKey(): Promise<AdminActiveDto> {
     try {
       // Query
-      console.log('GetAdminActiveByPartitionKey')
       const querySpec = {
         query: 'SELECT * FROM c WHERE c.partition_key = @partition_key',
         parameters: [
@@ -36,7 +35,9 @@ export class WebsocketRepository implements IWebsocketRepository {
         .items.query(querySpec)
         .fetchAll();
 
-      return plainToClass(AdminActiveDto, item[0]);
+        const adminActiveDtow_obj: AdminActiveDto = plainToInstance(AdminActiveDto, item[0]);
+        return adminActiveDtow_obj;
+
     } catch (error) {
       throw new DbOperationException(error.message);
     }
