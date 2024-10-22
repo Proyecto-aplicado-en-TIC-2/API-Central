@@ -24,6 +24,9 @@ import { Incident } from 'src/incidents/dto/create-incident.dto';
 import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
 import { UpdateIncident } from 'src/incidents/dto/update-incident.dto';
+import { isUndefined } from 'util';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { Console, error } from 'console';
 
 @WebSocketGateway({ namespace: '/WebSocketGateway' })
 @UseGuards(AuthGuard, AuthorizationGuard) // Aplicar los guards aquí
@@ -112,15 +115,9 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       };
       await this.websocketService.CreateReport(report)
 
-      const admin_lisening: AdminActiveDto = await this.websocketService
-        .GetAdminActiveByPartitionKey()
 
-      const adminListeningEmit = (this.server?.sockets as any)
-        .get(admin_lisening.WebSocket_id_admin_active)
-
-
-      adminListeningEmit.emit('Reporte_Resivido', inicdent)
-      client.emit('Mensaje_Enviado', 'Su reporte a sido enviado con extio' );
+       this.AdminEmit('Reporte_Resivido', inicdent)
+       client.emit('Mensaje_Enviado', 'Su reporte a sido enviado con extio' );
 
 
     } catch (error) {
@@ -128,6 +125,20 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     }
   }
 
+  /**
+  * event emit hacia el admin conectado, si no esta coenctado error
+  */
+  async AdminEmit(eventName: string, data: any){
+
+    const admin_lisening: AdminActiveDto = await this.websocketService
+      .GetAdminActiveByPartitionKey();
+
+    const adminListeningEmit = (this.server?.sockets as any)
+      .get(admin_lisening.WebSocket_id_admin_active);
+    console.log('si')
+  
+       adminListeningEmit.emit(eventName,data);
+  }
 
 
   @SubscribeMessage('Brigadiers')
