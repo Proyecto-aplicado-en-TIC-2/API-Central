@@ -19,3 +19,13 @@ export class ReportDto {
     hourCloseAttentionn: string;
   };  
 }
+
+export class AdminActiveDto{
+  public readonly partition_key: string = "admin_active";
+  public WebSocket_id_admin_active: string;
+  public id: string;
+  constructor(webSocket_id_admin_active:string, id:string){
+    this.WebSocket_id_admin_active = webSocket_id_admin_active;
+    this.id = id
+  }
+}

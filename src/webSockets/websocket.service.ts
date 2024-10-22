@@ -1,7 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IWebsocketRepository } from "./websocket.interface";
-import { ReportDto } from "./websocket.dto";
+import { AdminActiveDto, ReportDto } from "./websocket.dto";
 import { AppValidationException } from "src/helpers/AppValidationException";
+import { empty, EmptyError } from "rxjs";
 
 @Injectable()
 export class WebsocketService {
@@ -21,4 +22,29 @@ export class WebsocketService {
     return operation;
   }
 
-}
+  async CreateAdminActive(admin: AdminActiveDto): Promise<AdminActiveDto | null>{
+    const operation: AdminActiveDto | null =
+      await this.websocketRepository.CreateAdminActive(admin);
+
+    if (operation == null) {
+      throw new AppValidationException("Operation executed but wasn't changes");
+    }
+    return operation;
+  }
+  async GetAdminActive(adminActiveDto: AdminActiveDto): Promise<boolean>{
+    const operation: AdminActiveDto | null =
+      await this.websocketRepository.GetAdminActive(adminActiveDto);
+
+    if (operation == null) return false;
+      return true;
+  }
+
+  async PatchAdminActive(adminActiveDto: AdminActiveDto): Promise<AdminActiveDto> {
+    const operation: AdminActiveDto =
+    await this.websocketRepository.PatchAdminActive(adminActiveDto);
+    if(operation == null){
+      throw new AppValidationException("Operation executed but wasn't changes");
+    }
+    return operation;
+  }
+  }

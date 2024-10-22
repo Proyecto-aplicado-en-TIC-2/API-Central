@@ -30,10 +30,11 @@ export class AuthGuard implements CanActivate {
     }
     try {
       console.log("verificando token")
-      request['user'] = await this.jwtService.verifyAsync(token, {
+      const user = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
         
       });
+      request['user'] = user;
 
        // Guarda el usuario en el request o client
       console.log('Usuario autenticado:', request['user']); // Añade este log para verificar

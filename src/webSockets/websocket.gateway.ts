@@ -19,7 +19,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { IncidentsService } from 'src/incidents/incidents.service';
 import { WebsocketService } from './websocket.service';
-import { ReportDto } from './websocket.dto';
+import { AdminActiveDto, ReportDto } from './websocket.dto';
 import { Incident } from 'src/incidents/dto/create-incident.dto';
 import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
@@ -40,7 +40,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
 
   async handleConnection(client: Socket) {
-
+    console.log('Client connect:', client.id);
     try {
       // Extraer el token desde los headers de la conexión
       const token = this.extractTokenFromHeader(client);
@@ -61,7 +61,15 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
       // Verificar si el usuario es admin
       if (user.roles.includes(Role.Administration)) {
-        console.log('Admin connected:', client.id);
+        const adminActiveDto = new AdminActiveDto ( 
+          client.id,
+          user.id
+         )
+         if(!await this.websocketService.GetAdminActive(adminActiveDto)){
+            await this.websocketService.CreateAdminActive(adminActiveDto);
+         }await this.websocketService.PatchAdminActive(adminActiveDto);
+
+        console.log('Admin connected:', adminActiveDto);
       }
 
     } catch (e) {
@@ -131,7 +139,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   @Roles(Role.Brigadiers, Role.Administration) // Usar roles para permisos específicos
   async handleBrigadiers(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
 
-    client.emit('individualResponse', '1');
+    client.emit('individualResponse_Brigadiers', '1');
     console.log('Report data:', data);
 
   }
@@ -140,7 +148,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   @Roles(Role.APH, Role.Administration) // Usar roles para permisos específicos
   async handleAPH(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
     console.log('Report data:', data);
-    client.emit('individualResponse', { message: 'This is a private message to APH', data });
+    client.emit('individualResponse_', { message: 'This is a private message to APH', data });
   }
 
 
