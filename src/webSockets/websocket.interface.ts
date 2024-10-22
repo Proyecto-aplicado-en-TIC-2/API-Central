@@ -1,7 +1,7 @@
 import { ReportDto } from "./websocket.dto";
 
 
-export interface IwebsocketRepository{
+export interface IWebsocketRepository{
 
 
 
@@ -9,6 +9,9 @@ export interface IwebsocketRepository{
   GetState(): Promise<String>;
   //-------------------- PATCH ---------------------
   PatchReport(reportDto: ReportDto): Promise<ReportDto>;
+  //-------------------- SET ------------------------
+  CreateReport(incident: ReportDto): Promise<ReportDto | null>;
+
   //-------------------- DELETE ---------------------
 
 

@@ -34,9 +34,15 @@ export enum Block {
   bloques_externos_al_campus_sobre_la_circular_primera,
 }
 
+export enum Cases {
+  Incendio,
+  Medico, 
+  Estrctural
+}
+
 export class Incident {
   //Id Auto generate for CosmosDB
-  public readonly partition_key: string = 'community_upb_reports';
+  public partition_key: Cases;
   public reporter?: Reporter;
   public location?: Location;
   public date?: string;

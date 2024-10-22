@@ -17,8 +17,8 @@ export class IncidentsService {
     return operation;
   }
 
-  async CreateIncident(incidente: Incident): Promise<Incident> {
-    const operation: Incident | null =
+  async CreateIncident(incidente: Incident): Promise<UpdateIncident> {
+    const operation: UpdateIncident | null =
       await this.incidensRepostiory.CreateIncident(incidente);
 
     if (operation == null) {

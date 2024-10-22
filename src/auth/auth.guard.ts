@@ -29,10 +29,14 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     try {
-      
+      console.log("verificando token")
       request['user'] = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
+        
       });
+
+       // Guarda el usuario en el request o client
+      console.log('Usuario autenticado:', request['user']); // Añade este log para verificar
     } catch {
       console.log("token malo")
       throw new UnauthorizedException();

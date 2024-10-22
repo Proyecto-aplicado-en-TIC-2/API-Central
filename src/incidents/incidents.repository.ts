@@ -50,7 +50,7 @@ export class IncidentesRepository implements IIncidensRepostiory {
     }
   }
 
-  async CreateIncident(incident: Incident): Promise<Incident | null> {
+  async CreateIncident(incident: Incident): Promise<UpdateIncident | null> {
     try {
       const { resource: CreateIncident } =
         await this.DbConnection.getDbConnection()
@@ -59,7 +59,7 @@ export class IncidentesRepository implements IIncidensRepostiory {
           .items.upsert(incident);
 
       if (CreateIncident) {
-        return plainToInstance(Incident, CreateIncident);
+        return plainToInstance(UpdateIncident, CreateIncident);
       }
       return null;
     } catch (error) {

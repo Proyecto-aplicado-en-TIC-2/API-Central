@@ -1,20 +1,29 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { WebsocketGateway } from "./websocket.gateway";
-import { AuthModule } from "../auth/auth.module";
 import { APP_GUARD, Reflector } from '@nestjs/core'; // Importar Reflector
-import { LoggerMiddleware } from "src/auth/middleware/logger.middleware";
 import { AuthGuard } from "src/auth/auth.guard";
+import { IncidentsModule } from 'src/incidents/incidents.module'; // Importa el módulo adecuado
+import { WebsocketService } from "./websocket.service";
+import { KeyVaultService } from "src/context_db/DbContext.service";
+import { WebsocketRepository } from "./websocket.repository";
 
 @Module({
-
+  imports: [IncidentsModule],  // Importa el módulo que contiene el controlador
   providers: [
+    WebsocketService,
     WebsocketGateway, 
     Reflector,   
     {
-    provide: APP_GUARD,
-    useClass: AuthGuard,
+      provide: APP_GUARD,
+      useClass: AuthGuard,
     },
-] // Añadir Reflector a los providers
+    KeyVaultService,
+    {
+      provide: 'IWebsocketRepository', // Usamos un token para la interfaz
+      useClass: WebsocketRepository, // Usamos la clase concreta
+    },
+  ],
 })
-
 export class GatewayModule {}
+
+

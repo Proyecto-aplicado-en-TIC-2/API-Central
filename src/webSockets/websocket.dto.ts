@@ -1,21 +1,21 @@
 export enum Cases {
-  Incendio = 'incendio',
-  Medico = 'medico',
+  Incendio,
+  Medico, 
+  Estrctural
 }
 
 export class ReportDto {
+  public id: string;
   public WebSocket_id_attendant: string;
-  public State: string;
+  public brigadista_Id: string;
   public reporter_Id: string;
   public aphThatTakeCare_Id: string;
-  public type_case: Cases;
-  public brigadista_Id: string;
+  public partition_key: Cases;
+  public State: string;
   public date: {
     date: string;
     hourRequest: string;
-    hourGetRequest: string;
     hourArrive: string;
     hourCloseAttentionn: string;
-  };
-  public readonly partition_key = "case";
+  };  
 }

@@ -6,7 +6,7 @@ export interface IIncidensRepostiory {
   GetAllIncidents(): Promise<Incident[]>;
   GetIncidentById(Id: string): Promise<Incident | null>;
   //-------------------- SET ------------------------
-  CreateIncident(incident: Incident): Promise<Incident | null>;
+  CreateIncident(incident: Incident): Promise<UpdateIncident | null>;
   //-------------------- UPDATE ---------------------
   UpdateIncident(incident: Incident): Promise<UpdateIncident>;
   //-------------------- DELETE ---------------------

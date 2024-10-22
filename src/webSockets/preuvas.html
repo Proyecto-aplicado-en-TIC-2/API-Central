@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba WebSocket</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        #responseArea {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            min-height: 50px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input {
+            padding: 10px;
+            margin: 5px 0;
+            width: calc(100% - 22px);
+        }
+    </style>
+</head>
+<body>
+    <h1>Prueba de Conexión WebSocket</h1>
+    
+    <input type="text" id="inputData" placeholder="Escribe algunos datos..." />
+    <button id="sendButton">Enviar Datos</button>
+    <button id="clearButton">Limpiar Respuesta</button>
+
+    <h2>Respuesta del Servidor:</h2>
+    <div id="responseArea"></div>
+
+    <script>
+        const socket = io('http://localhost:3000/WebSocketGateway', {
+            Headers: {
+                Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRhOWIyNGVhLTcwMzgtNGIyZS1iZTY5LWM5YjIzODFkOTg1NSIsIm1haWwiOiJqb2hhbW1hYUBnbWFpbC5jb20iLCJyb2xlcyI6ImJyaWdhZGVfYWNjb3VudHMiLCJpYXQiOjE3Mjk1NTQwNDksImV4cCI6MTcyOTY0MDQ0OX0.2fCc-7tk0_f4za-q9thTVDnOPxnEKPTjuNdkufnN9SY'
+            }
+        });
+
+        socket.on('connect', () => {
+            console.log('Conectado al servidor WebSocket');
+        });
+
+        socket.on('individualResponse', (response) => {
+            console.log('Mensaje recibido del servidor:', response);
+            document.getElementById('responseArea').innerText = `Respuesta: ${JSON.stringify(response)}`;
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Desconectado del servidor WebSocket');
+        });
+
+        socket.on('error', (error) => {
+            console.error('Error en la conexión WebSocket:', error);
+        });
+
+        document.getElementById('sendButton').addEventListener('click', () => {
+            const inputData = document.getElementById('inputData').value;
+            if (inputData) {
+                socket.emit('Brigadiers', { someData: inputData });
+                console.log('Datos enviados al servidor:', inputData);
+                document.getElementById('inputData').value = ''; // Limpiar el campo de entrada
+            } else {
+                alert('Por favor, introduce algunos datos antes de enviar.');
+            }
+        });
+
+        document.getElementById('clearButton').addEventListener('click', () => {
+            document.getElementById('responseArea').innerText = '';
+        });
+    </script>
+</body>
+</html>
