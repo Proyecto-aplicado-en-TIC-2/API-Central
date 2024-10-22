@@ -1,76 +1,55 @@
-import { UnauthorizedException } from '@nestjs/common';
 import {
-  MessageBody,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  SubscribeMessage,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
   ConnectedSocket,
+  MessageBody,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { JwtService } from '@nestjs/jwt';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthorizationGuard } from 'src/authorization/authorization.guard';
 import { Roles } from 'src/authorization/decorators/roles.decorator';
-import { Role } from '../authorization/role.enum';
+import { Role } from 'src/authorization/role.enum';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @WebSocketGateway({ namespace: '/WebSocketGateway' })
+@UseGuards(AuthGuard, AuthorizationGuard) // Aplicar los guards aquí
 export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly jwtService: JwtService) {}
-
   async handleConnection(client: Socket) {
-    const token = client.handshake.headers['authorization'];
-    if (!token) {
-      client.disconnect(true);
-      return;
-    }
-
-    try {
-      const payload = await this.jwtService.verifyAsync(token.split(' ')[1]);
-      client.data.user = payload; // Guardar la información del usuario en el cliente
-      console.log(payload)
-    } catch (e) {
-      client.disconnect(true);
-      console.log(new UnauthorizedException('Invalid token'))
-    }
+    console.log('Client connected:', client.id);
+    
   }
+  
 
   async handleDisconnect(client: Socket) {
-    console.log(`Client Disconnect: ${client.id}`);
+    console.log('Client disconnected:', client.id);
   }
 
   @SubscribeMessage('report')
+  @Public() // Usar roles para permisos específicos
   async handleReport(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    console.log(data);
-    console.log(`Message received from client: ${client.id}`);
-    client.emit('individualResponse', { message: 'This is a private message', data });
+    console.log('Report data:', data);
+    client.emit('individualResponse', { message: 'This is a private message to report', data });
+  }
+  
+  @SubscribeMessage('Brigadiers')
+  @Roles(Role.Brigadiers) // Usar roles para permisos específicos
+  async handleBrigadiers(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+    console.log('Report data:', data);
+    client.emit('individualResponse', { message: 'This is a private message to Brigadiers', data });
+  }
+  @SubscribeMessage('APH')
+  @Roles(Role.APH) // Usar roles para permisos específicos
+  async handleAPH(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+    console.log('Report data:', data);
+    client.emit('individualResponse', { message: 'This is a private message to APH', data });
   }
 
-  @Roles(Role.Brigadiers)
-  @SubscribeMessage('brigadista')
-  async handleBrigadista(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    if (!this.hasRole(client, Role.Brigadiers)) {
-      throw new UnauthorizedException('User does not have Brigadiers role');
-    }
-
-    console.log(data);
-    client.emit('individualResponse', { message: 'This is a private message for Brigadiers', data });
-  }
-
-  @Roles(Role.APH)
-  @SubscribeMessage('aph')
-  async handleAph(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    if (!this.hasRole(client, Role.APH)) {
-      throw new UnauthorizedException('User does not have APH role');
-    }
-
-    console.log(data);
-    client.emit('individualResponse', { message: 'This is a private message for APH', data });
-  }
-
-  private hasRole(client: Socket, role: Role): boolean {
-    return client.data.user?.roles?.includes(role);
-  }
+  
 }

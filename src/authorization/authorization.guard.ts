@@ -13,6 +13,7 @@ export class AuthorizationGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
   canActivate(context: ExecutionContext): boolean {
     try {
+      console.log("ejecuntado authorization");
       const requiredRoles = this.reflector
         .getAllAndOverride<Role[]>(
           ROLES_KEY,[
