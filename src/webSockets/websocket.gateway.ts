@@ -38,7 +38,6 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   @WebSocketServer()
   server: Server;
 
-
   async handleConnection(client: Socket) {
     console.log('Client connect:', client.id);
     try {
@@ -126,11 +125,24 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
         },
       };
       await this.websocketService.CreateReport(report)
-      //Respondemos que su reporte a sido resivido correctamente
+      //Respondemos que su reporte a sido resivido correctamentx  e
+      const admin_lisening: AdminActiveDto = await this.websocketService
+        .GetAdminActiveByPartitionKey()
+        const admin_lisening_emit = this.server.sockets.sockets
+          .get(admin_lisening.WebSocket_id_admin_active);
+    
+        
+      admin_lisening_emit.emit('Get_Report_Send_To_Admin', inicdent);  // 'message' es el evento que escuchará el cliente
       client.emit('individualResponse_report', { message: 'Su reporte a sido enviado con extio' });
+     
+      
+
+
+      
     } catch (error) {
       throw new GenericError('handleReport', error);
     }
+
    
   }
 

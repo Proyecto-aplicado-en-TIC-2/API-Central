@@ -12,6 +12,10 @@ export class WebsocketService {
   ) {}
 
 
+  async GetAdminActiveByPartitionKey(): Promise<AdminActiveDto>
+  {
+      return this.websocketRepository.GetAdminActiveByPartitionKey();
+  }
   async CreateReport(report: ReportDto): Promise<ReportDto> {
     const operation: ReportDto | null =
       await this.websocketRepository.CreateReport(report);
@@ -35,8 +39,8 @@ export class WebsocketService {
     const operation: AdminActiveDto | null =
       await this.websocketRepository.GetAdminActive(adminActiveDto);
 
-    if (operation == null) return false;
-      return true;
+    if (operation == null) return true;
+      return false;
   }
 
   async PatchAdminActive(adminActiveDto: AdminActiveDto): Promise<AdminActiveDto> {

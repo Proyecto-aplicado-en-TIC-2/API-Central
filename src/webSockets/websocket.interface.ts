@@ -8,6 +8,7 @@ export interface IWebsocketRepository{
   //-------------------- GET ------------------------
   GetState(): Promise<String>
   GetAdminActive(adminActiveDto: AdminActiveDto): Promise<AdminActiveDto | null>;
+  GetAdminActiveByPartitionKey(): Promise<AdminActiveDto>
   //-------------------- PATCH ---------------------
   PatchReport(reportDto: ReportDto): Promise<ReportDto>;
   PatchAdminActive(adminActiveDto: AdminActiveDto): Promise<AdminActiveDto | null>;

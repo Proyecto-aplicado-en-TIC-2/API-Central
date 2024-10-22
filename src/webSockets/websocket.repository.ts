@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { KeyVaultService } from "src/context_db/DbContext.service";
 import { IWebsocketRepository } from "./websocket.interface";
 import { AdminActiveDto, ReportDto } from "./websocket.dto";
-import { plainToInstance } from "class-transformer";
+import { plainToClass, plainToInstance } from "class-transformer";
 import { DbOperationException } from "src/helpers/DbOperationException";
 import { IS_HEXADECIMAL } from "class-validator";
 
@@ -11,8 +11,36 @@ const containerId: string = 'cases';
 
 @Injectable()
 export class WebsocketRepository implements IWebsocketRepository {
+  client: any;
   //DB conenection -------------------------------------------------------
   constructor(@Inject(KeyVaultService) private DbConnection: KeyVaultService) {}
+  async GetAdminActiveByPartitionKey(): Promise<AdminActiveDto> {
+    try {
+      // Query
+      console.log('GetAdminActiveByPartitionKey')
+      const querySpec = {
+        query: 'SELECT * FROM c WHERE c.partition_key = @partition_key',
+        parameters: [
+          {
+            name: '@partition_key',
+            value: 'admin_active',
+          },
+        ],
+      };
+
+      // Consulta
+      const { resources: item } = await this.DbConnection
+        .getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(querySpec)
+        .fetchAll();
+
+      return plainToClass(AdminActiveDto, item[0]);
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
   async PatchAdminActive(adminActiveDto: AdminActiveDto): Promise<AdminActiveDto> {
     try {
       const { resource: item } = await this.DbConnection.getDbConnection()
