@@ -1,5 +1,5 @@
 import { KeyVaultService } from 'src/context_db/DbContext.service';
-import { Incident } from './dto/create-incident.dto';
+import { Cases, Incident } from './dto/create-incident.dto';
 import { IIncidensRepostiory } from './incidets.interface';
 import { DbOperationException } from 'src/helpers/DbOperationException';
 import { plainToInstance } from 'class-transformer';
@@ -33,12 +33,13 @@ export class IncidentesRepository implements IIncidensRepostiory {
     }
   }
 
-  async GetIncidentById(Id: string): Promise<Incident | null> {
+  async GetIncidentById(Id: string, partition_key: Cases): Promise<Incident | null> {
     try {
-      const { resource: item } = await this.DbConnection.getDbConnection()
+      const { resource: item } = await this.DbConnection
+        .getDbConnection()
         .database(databaseId)
         .container(containerId)
-        .item(Id, containerId)
+        .item(Id, partition_key)
         .read();
 
       if (item) {
@@ -74,7 +75,7 @@ export class IncidentesRepository implements IIncidensRepostiory {
       const { resource: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)
         .container(containerId)
-        .item(updateIncident.id, containerId)
+        .item(updateIncident.id, updateIncident.partition_key)
         .replace(updateIncident);
 
       return plainToInstance(UpdateIncident, item);
@@ -83,7 +84,7 @@ export class IncidentesRepository implements IIncidensRepostiory {
     }
   }
 
-  async DeleteIncidentByID(Id: string): Promise<Incident> {
+  async DeleteIncidentByID(Id: string, partition_key: Cases): Promise<Incident> {
     try {
       const { resource: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)

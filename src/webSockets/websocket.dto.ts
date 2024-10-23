@@ -33,4 +33,5 @@ export class AdminActiveDto{
 export class BodyAPHCaseDto{
   public aph_id: string;
   public case_id: string;
+  public partition_key: Cases;
 }

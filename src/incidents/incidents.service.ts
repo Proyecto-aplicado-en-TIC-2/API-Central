@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Incident } from './dto/create-incident.dto';
+import { Cases, Incident } from './dto/create-incident.dto';
 import { IIncidensRepostiory } from './incidets.interface';
 import { AppValidationException } from 'src/helpers/AppValidationException';
 import { UpdateIncident } from './dto/update-incident.dto';
@@ -27,9 +27,9 @@ export class IncidentsService {
     return operation;
   }
 
-  async GetIncidentById(Id: string): Promise<any> {
+  async GetIncidentById(Id: string, partition_key: Cases): Promise<any> {
     const operation: Incident | null =
-      await this.incidensRepostiory.GetIncidentById(Id);
+      await this.incidensRepostiory.GetIncidentById(Id, partition_key);
 
     if (operation == null) {
       throw new AppValidationException(`Incident with ID ${Id} not found.`);
@@ -45,9 +45,9 @@ export class IncidentsService {
 
     return operation;
   }
-  async DeleteIncidentByID(Id: string): Promise<Incident> {
+  async DeleteIncidentByID(Id: string, partition_key: Cases): Promise<Incident> {
     const operation: Incident =
-      await this.incidensRepostiory.DeleteIncidentByID(Id);
+      await this.incidensRepostiory.DeleteIncidentByID(Id, partition_key);
 
     return operation;
   }

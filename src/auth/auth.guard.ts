@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      console.log("no existe")
+
       throw new UnauthorizedException();
     }
     try {
@@ -36,10 +36,8 @@ export class AuthGuard implements CanActivate {
       });
       request['user'] = user;
 
-       // Guarda el usuario en el request o client
-      console.log('Usuario autenticado:', request['user']); // Añade este log para verificar
     } catch {
-      console.log("token malo")
+    
       throw new UnauthorizedException();
     }
     return true;
@@ -53,7 +51,6 @@ export class AuthGuard implements CanActivate {
     } else if ('handshake' in request) {
       // Es una conexión WebSocket
       const [type, token] = request.handshake.headers.authorization?.split(' ') ?? [];
-      console.log(type === 'Bearer' ? token : undefined)
       return type === 'Bearer' ? token : undefined;
     }
     return undefined;

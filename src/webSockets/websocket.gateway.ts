@@ -30,8 +30,9 @@ import { Console, error } from 'console';
 import { promises } from 'dns';
 import { PrehospitalCareService } from 'src/prehospital_care/prehospital_care.service';
 import { APH } from 'src/prehospital_care/models/aph.model';
-import { Auth } from 'src/auth/models/auth.models';
+import { AuthDto } from 'src/auth/models/auth.models';
 import { audit, isEmpty } from 'rxjs';
+import { AuthService } from 'src/auth/auth.service';
 
 @WebSocketGateway({ namespace: '/WebSocketGateway' })
 @UseGuards(AuthGuard, AuthorizationGuard) // Aplicar los guards aquí
@@ -42,7 +43,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     private readonly reflector: Reflector,
     private readonly incidentsService: IncidentsService,
     private readonly websocketService: WebsocketService,
-    private readonly prehospitalCareService: PrehospitalCareService
+    private readonly prehospitalCareService: PrehospitalCareService,
   ) { }
   @WebSocketServer()
   server: Server;
@@ -50,8 +51,8 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   *  Key: any = user.id 
   * Value: socket = cliente.id 
   */
-  hashMap_users_conected: Map<Auth, string> = new Map();
-  admiSaved: Auth = null;
+  hashMap_users_conected: Map<string, string> = new Map();
+  admiSaved: AuthDto = null;
 
   async handleConnection(client: Socket) {
     try {
@@ -66,14 +67,15 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       });
 
       client['user'] = user;
-      const user_auth: Auth = plainToInstance(Auth, user)
-      this.hashMap_users_conected.set(user_auth, client.id)
-      if(this.isAdmin(client)) this.admiSaved = user_auth
-      console.log(this.admiSaved)
-      // Recorrer los elementos
-      this.hashMap_users_conected.forEach((value, key) => {
-        console.log(key, value); // Imprime clave y valor
-      });
+      const user_auth: AuthDto = plainToInstance(AuthDto, user)
+      this.hashMap_users_conected.set(user.id, client.id)
+      if (this.isAdmin(client)) {
+        this.admiSaved = user_auth
+        console.log(`es admin: ${JSON.stringify(user_auth)}`)
+      } else {
+        console.log(`no es admin: ${JSON.stringify(user_auth)}`)
+      }
+
       client.emit('Connexion_Exitosa', 'Coneccion exitosa');
 
     } catch (e) {
@@ -82,16 +84,10 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     }
   }
 
-  extractTokenFromHeader(client: Socket): string | undefined {
-    const [type, token] = client.handshake.headers.authorization?.split(' ') ?? [];
-    console.log("WebSocket Token:", token);
-    return type === 'Bearer' ? token : undefined;
-  }
-
   async handleDisconnect(client: Socket) {
     console.log('Client disconnected:', client.id);
   }
-
+  //-----------------------------------------------------------------------------
   @SubscribeMessage('report')
   @Roles(Role.APH, Role.Administration, Role.Brigadiers, Role.UPBCommunity)
   async handleReport(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
@@ -123,7 +119,6 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       };
       await this.websocketService.CreateReport(report)
 
-
       this.AdminEmit('Reporte_Resivido', inicdent)
       client.emit('Mensaje_Enviado', 'Su reporte a sido enviado con extio');
 
@@ -131,31 +126,6 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     } catch (error) {
       throw new GenericError('handleReport', error);
     }
-  }
-
-  /**
-  * event emit hacia el admin conectado, si no esta coenctado error
-  */
-  async AdminEmit(eventName: string, data: any) {
-
-   const WebSocket_id: string = 
-      this.hashMap_users_conected.get(this.admiSaved)
-
-    const adminListeningEmit = (this.server?.sockets as any)
-      .get(WebSocket_id);
-
-    adminListeningEmit.emit(eventName, data);
-  }
-  /**
-  * devuelve true si es Administration
-  * falso si no es Administration
-  */
-  async isAdmin(client: Socket): Promise<boolean> {
-    const user = client['user'];
-    const user_obj: Auth = plainToInstance(Auth, user);
-    if(user_obj.type_partition_key == Role.Administration){
-      return true
-    }return false;
   }
 
   @SubscribeMessage('Brigadiers')
@@ -181,12 +151,16 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
         const report: ReportDto = {
           aphThatTakeCare_Id: case_data.aph_id,
-          id: case_data.case_id
+          id: case_data.case_id,
+          partition_key: case_data.partition_key
         };
+
         await this.websocketService.PatchReport(report)
+        console.log("PatchReport good")
         const incident: UpdateIncident = await this.incidentsService
-          .GetIncidentById(case_data.case_id);
-        client.emit('APH_case', {
+          .GetIncidentById(case_data.case_id, report.partition_key);
+        console.log("UpdateIncident good")
+        this.AphEmit(case_data.aph_id, 'APH_case', {
           message: 'Se le a asignado un caso, por favor dirijirse inmediatmentea : ',
           Lugar: incident.location,
           Id_reporte: case_data.case_id,
@@ -197,12 +171,49 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     } catch (error) {
       throw new GenericError('handleReport', error);
     }
-
-
-
-    console.log('Report data:', data);
-    client.emit('individualResponse_', { message: 'This is a private message to APH', data });
   }
+ //-----------------------------------------------------------------------------
 
+  async AphEmit(APH_id: string, eventName: string, data: any) {
+    const _APH: APH = await this.prehospitalCareService.GetAPHById(APH_id);
 
+    // Obtiene el WebSocket_id del mapa
+    const WebSocket_id: string = this.hashMap_users_conected.get(_APH.id);
+
+    if (WebSocket_id === undefined) {
+      new Error("EL APH no existe o no está conectado"); // Corrige aquí
+    }
+    const adminListeningEmit = (this.server?.sockets as any).get(WebSocket_id);
+    adminListeningEmit.emit(eventName, data);
+  }
+  /**
+* event emit hacia el admin conectado, si no esta coenctado error
+*/
+  AdminEmit(eventName: string, data: any) {
+
+    const WebSocket_id: string =
+      this.hashMap_users_conected.get(this.admiSaved.id)
+    console.log(WebSocket_id);
+
+    const adminListeningEmit = (this.server?.sockets as any)
+      .get(WebSocket_id);
+
+    adminListeningEmit.emit(eventName, data);
+  }
+  /**
+  * devuelve true si es Administration
+  * falso si no es Administration
+  */
+  isAdmin(client: Socket): boolean {
+    const user = client['user'];
+    console.log('User object:', user.roles);
+    if (user.roles == Role.Administration) {
+      return true;
+    }
+    return false;
+  }
+  extractTokenFromHeader(client: Socket): string | undefined {
+    const [type, token] = client.handshake.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
 }
