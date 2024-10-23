@@ -45,8 +45,6 @@ export class Incident {
   public partition_key: Cases;
   public reporter?: Reporter;
   public location?: Location;
-  public date?: string;
-  public hourRequest?: string;
 }
 
 export class Reporter {

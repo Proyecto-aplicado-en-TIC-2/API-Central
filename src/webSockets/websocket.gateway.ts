@@ -19,7 +19,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { IncidentsService } from 'src/incidents/incidents.service';
 import { WebsocketService } from './websocket.service';
-import { AdminActiveDto, AphCases, PayLoadDto, ReportDto } from './websocket.dto';
+import { AdminActiveDto, AphCases, Cases, PayLoadDto, ReportDto } from './websocket.dto';
 import { Incident } from 'src/incidents/dto/create-incident.dto';
 import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
@@ -158,6 +158,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
           message: 'Se le a asignado como colavorador de un caso a un aph, dirijirse inmediatamente a : ',
           Lugar: incident.location,
           Id_reporte: case_data.case_id,
+          partition_key: case_data.partition_key
         });
         console.log('se pidio alludam a un brigadista')
       }
@@ -197,6 +198,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
           message: 'Se le a asignado un caso, por favor dirijirse inmediatmentea : ',
           Lugar: incident.location,
           Id_reporte: case_data.case_id,
+          partition_key: case_data.partition_key
         });
 
       }else{
@@ -216,22 +218,41 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
           search_report.date.hourCloseAttentionn = time;
           search_report.State = 'close;'
   
-          //enviar data 
-          const incident: UpdateIncident = await this.incidentsService
-          .GetIncidentById(search_report.id, search_report.partition_key);
-  
-          this.AdminEmit('Close_incident', {message: 'incidente cerrado',
-            incident_id: incident.id})
+          //obtener el reporte cerrado
+          const report_close: ReportDto = await this.websocketService
+          .PatchReport(search_report)
+
+          //enviar mensaje de que se cerro el incidente
+          await this.AdminEmit('Close_incident_broadcast', {message: 'incidente cerrado',
+            incident_id: report_close.id})
+          console.log('se envio al admin');
+          await this.EmitById(report_close.aphThatTakeCare_Id,'Close_incident_broadcast', 
+            {Message: 'incidente cerrado',
+              id_incidente: report_close.id
+            })
+            console.log('se envio al aph');
+          if(report_close.brigadista_Id){
+            await this.EmitById(report_close.brigadista_Id,'Close_incident_broadcast', 
+            {Message: 'incidente cerrado',
+              id_incidente: report_close.id
+            })
+            console.log('se envio al brigadista');
+          }
+          
+          await this.EmitById(report_close.reporter_Id,'Close_incident_broadcast', 
+            {Message: 'incidente cerrado',
+              id_incidente: report_close.id
+            })
+            console.log('se envio al reporter');
+          
           console.log('caso cerrado correctmante')
   
-        }
-        this.AdminEmit('Aph_help', {message: 'Un ahp necesita alluda con un caso',
-                                    case_info: aph_actions.help})
-        console.log('aph pide alluda')
-                                    
+        }else{
+          this.AdminEmit('Aph_help', {message: 'Un ahp necesita alluda con un caso',
+            case_info: aph_actions.help})
+          console.log('aph pide alluda')    
+        }                  
       }
-
-
 
     } catch (error) {
       throw new GenericError('handleReport', error);
@@ -241,7 +262,11 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   @SubscribeMessage('GlovalWarning')
   @Roles(Role.Administration) // Usar roles para permisos específicos
   async handleGlovalWarning(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    
+    this.server.emit("GlovalWarning", 
+      {message: 'Atencion!, esto no es un simulacro, porfavor seguir ' +
+        'los protocolos de seguridad y evacuacion de manera inmedaiata',
+        data
+      })
   }
  //-----------------------------------------------------------------------------
   /**
@@ -250,13 +275,13 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   async EmitById(id: string, eventName: string, data: any) {
 
     // Obtiene el WebSocket_id del mapa
-    const WebSocket_id: string = this.hashMap_users_conected.get(id);
+    const WebSocket_id: string = await this.hashMap_users_conected.get(id);
 
     if (WebSocket_id === undefined) {
       new Error("La persona no existe o no esta conectada"); // Corrige aquí
     }
-    const adminListeningEmit = (this.server?.sockets as any).get(WebSocket_id);
-    adminListeningEmit.emit(eventName, data);
+    const adminListeningEmit = await (this.server?.sockets as any).get(WebSocket_id);
+    await adminListeningEmit.emit(eventName, data);
   }
   /**
   * event emit hacia el admin conectado, si no esta coenctado error
