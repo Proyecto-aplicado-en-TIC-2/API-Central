@@ -30,8 +30,19 @@ export class AdminActiveDto{
   }
 }
 
-export class BodyAPHCaseDto{
-  public aph_id: string;
+export class PayLoadDto{
+  public user_id: string;
   public case_id: string;
   public partition_key: Cases;
+}
+
+export class AphCases{
+
+  public help?: {
+     user_id: string;
+     case_id: string;
+     partition_key: Cases;
+  }
+  public hourArrive?: string;
+  public close_case?: string;
 }
