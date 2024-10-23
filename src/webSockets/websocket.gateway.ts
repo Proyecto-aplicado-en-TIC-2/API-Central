@@ -145,6 +145,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   @Roles(Role.Brigadiers, Role.Administration) // Usar roles para permisos específicos
   async handleBrigadiers(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
 
+    
     client.emit('individualResponse_Brigadiers', '1');
     console.log('Report data:', data);
 
@@ -153,6 +154,8 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   @SubscribeMessage('APH')
   @Roles(Role.APH, Role.Administration) // Usar roles para permisos específicos
   async handleAPH(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+
+    
     console.log('Report data:', data);
     client.emit('individualResponse_', { message: 'This is a private message to APH', data });
   }

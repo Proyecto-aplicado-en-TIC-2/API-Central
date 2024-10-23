@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IWebsocketRepository } from "./websocket.interface";
-import { AdminActiveDto, ReportDto } from "./websocket.dto";
+import { AdminActiveDto, Cases, ReportDto } from "./websocket.dto";
 import { AppValidationException } from "src/helpers/AppValidationException";
 import { empty, EmptyError } from "rxjs";
 
@@ -50,5 +50,20 @@ export class WebsocketService {
       throw new AppValidationException("Operation executed but wasn't changes");
     }
     return operation;
+  }
+
+  async PatchReport(reportDto: ReportDto): Promise<ReportDto> {
+    const operation: ReportDto =
+    await this.websocketRepository.PatchReport(reportDto);
+    if(operation == null){
+      throw new AppValidationException("Operation executed but wasn't changes");
+    }
+    return operation;
+  }
+
+  async GetState(id: string, partition_key_Cases: Cases ): Promise<Cases>{
+    if(!Object.values(Cases).includes(partition_key_Cases))
+      throw new AppValidationException("partition_key_Cases is not in the enum Cases")
+    return await this.websocketRepository.GetState(id,partition_key_Cases)
   }
   }

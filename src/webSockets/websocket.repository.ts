@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { KeyVaultService } from "src/context_db/DbContext.service";
 import { IWebsocketRepository } from "./websocket.interface";
-import { AdminActiveDto, ReportDto } from "./websocket.dto";
+import { AdminActiveDto, Cases, ReportDto } from "./websocket.dto";
 import { plainToClass, plainToInstance } from "class-transformer";
 import { DbOperationException } from "src/helpers/DbOperationException";
 import { IS_HEXADECIMAL } from "class-validator";
@@ -107,10 +107,34 @@ export class WebsocketRepository implements IWebsocketRepository {
       throw new DbOperationException(error.message);
     }
   }
-  async GetState(): Promise<String> {
-    throw new Error("Method not implemented.");
+  async GetState(id: string, partition_key_Cases: Cases ): Promise<Cases> {
+    try {
+      const { resource: item } = await this.DbConnection
+        .getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .item(id, partition_key_Cases)
+        .read();
+
+        if (item) {
+          const report: ReportDto =  plainToInstance(ReportDto, item);
+          return report.partition_key;
+        }
+        return null;
+      } catch (error) {
+        throw new DbOperationException(error.message);
+      }
   }
   async PatchReport(reportDto: ReportDto): Promise<ReportDto> {
-    throw new Error("Method not implemented.");
+    try {
+      const { resource: item } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .item(reportDto.id, reportDto.partition_key)
+        .replace(reportDto);
+      return plainToInstance(ReportDto, item);
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
   }
 }
