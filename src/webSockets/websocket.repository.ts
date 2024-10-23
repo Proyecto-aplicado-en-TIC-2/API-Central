@@ -14,6 +14,7 @@ export class WebsocketRepository implements IWebsocketRepository {
   client: any;
   //DB conenection -------------------------------------------------------
   constructor(@Inject(KeyVaultService) private DbConnection: KeyVaultService) {}
+ 
   async GetAdminActiveByPartitionKey(): Promise<AdminActiveDto> {
     try {
       // Query
@@ -107,7 +108,7 @@ export class WebsocketRepository implements IWebsocketRepository {
       throw new DbOperationException(error.message);
     }
   }
-  async GetState(id: string, partition_key_Cases: Cases ): Promise<Cases> {
+  async GetReportById(id: string, partition_key_Cases: Cases ): Promise<ReportDto> {
     try {
       const { resource: item } = await this.DbConnection
         .getDbConnection()
@@ -118,7 +119,7 @@ export class WebsocketRepository implements IWebsocketRepository {
 
         if (item) {
           const report: ReportDto =  plainToInstance(ReportDto, item);
-          return report.partition_key;
+          return report;
         }
         return null;
       } catch (error) {

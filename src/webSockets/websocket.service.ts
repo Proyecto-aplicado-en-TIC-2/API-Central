@@ -61,9 +61,9 @@ export class WebsocketService {
     return operation;
   }
 
-  async GetState(id: string, partition_key_Cases: Cases ): Promise<Cases>{
+  async GetReportById(id: string, partition_key_Cases: Cases ): Promise<ReportDto>{
     if(!Object.values(Cases).includes(partition_key_Cases))
       throw new AppValidationException("partition_key_Cases is not in the enum Cases")
-    return await this.websocketRepository.GetState(id,partition_key_Cases)
+    return await this.websocketRepository.GetReportById(id , partition_key_Cases)
   }
   }

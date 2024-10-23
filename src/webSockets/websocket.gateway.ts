@@ -147,18 +147,19 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
         const case_data: BodyAPHCaseDto =
           plainToInstance(BodyAPHCaseDto, data)
-        //obtener el aph que esta a cargo
-
-        const report: ReportDto = {
-          aphThatTakeCare_Id: case_data.aph_id,
-          id: case_data.case_id,
-          partition_key: case_data.partition_key
-        };
-
-        await this.websocketService.PatchReport(report)
+        //obtener el reporte
+        const search_report: ReportDto = await this.websocketService
+          .GetReportById(case_data.case_id,
+                         case_data.partition_key)
+        //asignar el aph a cargo
+        search_report.aphThatTakeCare_Id =  case_data.aph_id
+        
+        await this.websocketService.PatchReport(search_report)
         console.log("PatchReport good")
+
         const incident: UpdateIncident = await this.incidentsService
-          .GetIncidentById(case_data.case_id, report.partition_key);
+          .GetIncidentById(search_report.id, search_report.partition_key);
+
         console.log("UpdateIncident good")
         this.AphEmit(case_data.aph_id, 'APH_case', {
           message: 'Se le a asignado un caso, por favor dirijirse inmediatmentea : ',
@@ -171,6 +172,12 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     } catch (error) {
       throw new GenericError('handleReport', error);
     }
+  }
+
+  @SubscribeMessage('GlovalWarning')
+  @Roles(Role.Administration) // Usar roles para permisos específicos
+  async handleGlovalWarning(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+    
   }
  //-----------------------------------------------------------------------------
 

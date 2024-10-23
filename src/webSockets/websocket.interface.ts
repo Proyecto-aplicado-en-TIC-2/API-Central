@@ -6,9 +6,9 @@ export interface IWebsocketRepository{
 
 
   //-------------------- GET ------------------------
-  GetState(id: string, partition_key_Cases: Cases): Promise<Cases>
   GetAdminActive(adminActiveDto: AdminActiveDto): Promise<AdminActiveDto | null>;
   GetAdminActiveByPartitionKey(): Promise<AdminActiveDto>
+  GetReportById(id: string, partition_key: Cases): Promise<ReportDto>;
   //-------------------- PATCH ---------------------
   PatchReport(reportDto: ReportDto): Promise<ReportDto>;
   PatchAdminActive(adminActiveDto: AdminActiveDto): Promise<AdminActiveDto | null>;
