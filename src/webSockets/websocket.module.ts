@@ -6,9 +6,10 @@ import { IncidentsModule } from 'src/incidents/incidents.module'; // Importa el 
 import { WebsocketService } from "./websocket.service";
 import { KeyVaultService } from "src/context_db/DbContext.service";
 import { WebsocketRepository } from "./websocket.repository";
+import { PrehospitalCareModule } from "src/prehospital_care/prehospital_care.module";
 
 @Module({
-  imports: [IncidentsModule],  // Importa el módulo que contiene el controlador
+  imports: [IncidentsModule, PrehospitalCareModule],  // Importa el módulo que contiene el controlador
   providers: [
     WebsocketService,
     WebsocketGateway, 

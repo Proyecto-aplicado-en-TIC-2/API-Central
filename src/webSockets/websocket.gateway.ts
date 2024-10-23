@@ -31,7 +31,7 @@ import { promises } from 'dns';
 import { PrehospitalCareService } from 'src/prehospital_care/prehospital_care.service';
 import { APH } from 'src/prehospital_care/models/aph.model';
 import { Auth } from 'src/auth/models/auth.models';
-import { audit } from 'rxjs';
+import { audit, isEmpty } from 'rxjs';
 
 @WebSocketGateway({ namespace: '/WebSocketGateway' })
 @UseGuards(AuthGuard, AuthorizationGuard) // Aplicar los guards aquí
@@ -51,6 +51,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   * Value: socket = cliente.id 
   */
   hashMap_users_conected: Map<Auth, string> = new Map();
+  admiSaved: Auth = null;
 
   async handleConnection(client: Socket) {
     try {
@@ -63,22 +64,16 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       const user = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
+
       client['user'] = user;
-      console.log('Client connected:', client.id, 'User:', user);
       const user_auth: Auth = plainToInstance(Auth, user)
       this.hashMap_users_conected.set(user_auth, client.id)
-      // Verificar si el usuario es admin
-      if (this.isAdmin(client)) {
-        const adminActiveDto = new AdminActiveDto(
-          client.id,
-          user.id
-        )
-        if (!await this.websocketService.GetAdminActive(adminActiveDto)) {
-          await this.websocketService.CreateAdminActive(adminActiveDto);
-        } await this.websocketService.PatchAdminActive(adminActiveDto);
-
-        console.log('Admin connected:', adminActiveDto);
-      }
+      if(this.isAdmin(client)) this.admiSaved = user_auth
+      console.log(this.admiSaved)
+      // Recorrer los elementos
+      this.hashMap_users_conected.forEach((value, key) => {
+        console.log(key, value); // Imprime clave y valor
+      });
       client.emit('Connexion_Exitosa', 'Coneccion exitosa');
 
     } catch (e) {
@@ -143,24 +138,24 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   */
   async AdminEmit(eventName: string, data: any) {
 
-    const admin_lisening: AdminActiveDto = await this.websocketService
-      .GetAdminActiveByPartitionKey();
+   const WebSocket_id: string = 
+      this.hashMap_users_conected.get(this.admiSaved)
 
     const adminListeningEmit = (this.server?.sockets as any)
-      .get(admin_lisening.WebSocket_id_admin_active);
-    console.log('si')
+      .get(WebSocket_id);
 
     adminListeningEmit.emit(eventName, data);
   }
   /**
-  * Resive un "cliente: socket" y devuelve true si es aldmin
-  * falso si no es admin
+  * devuelve true si es Administration
+  * falso si no es Administration
   */
   async isAdmin(client: Socket): Promise<boolean> {
     const user = client['user'];
-    if (!user.roles.includes(Role.Administration)) {
-      return false;
-    } return true;
+    const user_obj: Auth = plainToInstance(Auth, user);
+    if(user_obj.type_partition_key == Role.Administration){
+      return true
+    }return false;
   }
 
   @SubscribeMessage('Brigadiers')
