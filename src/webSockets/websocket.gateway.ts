@@ -287,12 +287,13 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   */
   async EmitById(id: string, eventName: string, data: any) {
 
+
+    if (!this.hashMap_users_conected.has(id)) {
+      new Error("La persona no existe o no esta conectada"); // Corrige aquí
+    }
     // Obtiene el WebSocket_id del mapa
     const WebSocket_id: string = await this.hashMap_users_conected.get(id);
 
-    if (WebSocket_id === undefined) {
-      new Error("La persona no existe o no esta conectada"); // Corrige aquí
-    }
     const adminListeningEmit = await (this.server?.sockets as any).get(WebSocket_id);
     await adminListeningEmit.emit(eventName, data);
   }
