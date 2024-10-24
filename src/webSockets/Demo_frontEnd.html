@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Client with Multiple Views</title>
+  <style>
+    body {
+      display: flex;
+      flex-wrap: wrap;
+      font-family: Arial, sans-serif;
+    }
+    .view {
+      width: 48%;
+      padding: 10px;
+      margin: 1%;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+    h3 {
+      margin-top: 0;
+    }
+    button {
+      margin: 5px;
+      padding: 10px;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Vista del Usuario -->
+  <div class="view">
+    <h3>Usuario</h3>
+    <p id="statusUser">Estado de la conexión: Desconectado</p>
+    <button onclick="enviarReporte()">Enviar Reporte</button>
+    <div id="responseUser">
+      <h4>Respuestas del servidor:</h4>
+      <pre id="serverMessagesUser"></pre>
+    </div>
+  </div>
+
+  <!-- Vista del Administrador -->
+  <div class="view">
+    <h3>Administrador</h3>
+    <p id="statusAdmin">Estado de la conexión: Desconectado</p>
+    <button onclick="asignarAPH()">Asignar APH a un caso</button>
+    <button onclick="asignarBrigadista()">Asignar Brigadista a un caso</button>
+    <button onclick="enviarAlertaGlobal()">Enviar Alerta Global</button>
+    <div id="responseAdmin">
+      <h4>Respuestas del servidor:</h4>
+      <pre id="serverMessagesAdmin"></pre>
+    </div>
+  </div>
+
+  <!-- Vista del APH -->
+  <div class="view">
+    <h3>APH</h3>
+    <p id="statusAPH">Estado de la conexión: Desconectado</p>
+    <button onclick="pedirAyuda()">Pedir Ayuda</button>
+    <button onclick="cerrarCaso()">Cerrar Caso</button>
+    <div id="responseAPH">
+      <h4>Respuestas del servidor:</h4>
+      <pre id="serverMessagesAPH"></pre>
+    </div>
+  </div>
+
+  <!-- Vista del Brigadista -->
+  <div class="view">
+    <h3>Brigadista</h3>
+    <p id="statusBrigadista">Estado de la conexión: Desconectado</p>
+    <div id="responseBrigadista">
+      <h4>Respuestas del servidor:</h4>
+      <pre id="serverMessagesBrigadista"></pre>
+    </div>
+  </div>
+
+  <!-- Incluyendo socket.io-client desde CDN -->
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
+  <script>
+    // Tokens JWT para cada rol
+    const tokenUser = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA5NWViNjNiLTEyNWItNDM0Yy1iMmI0LTJiNWE2OWI5N2FkYiIsIm1haWwiOiJqb2hhbWZyc2FkbmNvMzE4QGdtYWlsLmNvbSIsInJvbGVzIjoidXBiX2NvbW11bml0eV9hY2NvdW50cyJ9.kJo_eztUvWhVzvBfk6QTbkrIhURiu-vbKcdS2lmPSTE';
+    const tokenAdmin = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIxNWU0MTVkLWFjNzktNGZhZS1iNDZkLWYyYjkxZWI2ZmIwZSIsIm1haWwiOiJjY2Nzc3Nzc3Nzc3NAZ21haWwuY29tIiwicm9sZXMiOiJ1c2VyIn0.2uibk7628kvPenhU7yJjgahCB8WM95xxOSSNHWP6cjc';
+    const tokenAPH = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNhY2QwOTljLTMzOGYtNDFlYy1iYWFhLTI1YjEyZDEzYTMxZiIsIm1haWwiOiJjY2Nzc3Nzc3NAZ21haWwuY29tIiwicm9sZXMiOiJwcmVob3NwaXRhbF9jYXJlX2FjY291bnRzIn0.xx33JW1yvilCAz66WseuObL6dcVMYiPnKXfqPpeyDyU';
+    const tokenBrigadista = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRhOWIyNGVhLTcwMzgtNGIyZS1iZTY5LWM5YjIzODFkOTg1NSIsIm1haWwiOiJqb2hhbW1hYUBnbWFpbC5jb20iLCJyb2xlcyI6ImJyaWdhZGVfYWNjb3VudHMifQ.PiG6Bxhd45TDoNJfx-g7URXJMEwmJgE9Or3UwuyywXk';
+
+    // Conexiones WebSocket para cada rol
+    const socketUser = connectSocket(tokenUser, 'statusUser', 'serverMessagesUser');
+    const socketAdmin = connectSocket(tokenAdmin, 'statusAdmin', 'serverMessagesAdmin');
+    const socketAPH = connectSocket(tokenAPH, 'statusAPH', 'serverMessagesAPH');
+    const socketBrigadista = connectSocket(tokenBrigadista, 'statusBrigadista', 'serverMessagesBrigadista');
+
+    // Función para establecer la conexión WebSocket
+    function connectSocket(token, statusElementId, messagesElementId) {
+      const socket = io('http://localhost:3000/WebSocketGateway', {
+        transports: ['polling'],
+        extraHeaders: {
+          Authorization: token
+        },
+      });
+
+      const statusElement = document.getElementById(statusElementId);
+      const serverMessages = document.getElementById(messagesElementId);
+
+      socket.on('connect', () => {
+        statusElement.textContent = 'Estado de la conexión: Conectado';
+        statusElement.style.color = 'green';
+      });
+
+      socket.on('disconnect', () => {
+        statusElement.textContent = 'Estado de la conexión: Desconectado';
+        statusElement.style.color = 'red';
+      });
+
+      socket.on('Connexion_Exitosa', (message) => {
+        mostrarMensaje(messagesElementId, 'Conexion Exitosa: ' + message);
+      });
+
+      socket.on('Mensaje_Enviado', (message) => {
+        mostrarMensaje(messagesElementId, 'Mensaje Enviado: ' + message);
+      });
+
+      socket.on('Reporte_Resivido', (data) => {
+        mostrarMensaje(messagesElementId, 'Reporte Recibido: ' + JSON.stringify(data));
+      });
+
+      socket.on('APH_case', (data) => {
+        mostrarMensaje(messagesElementId, 'APH asignado a caso: ' + JSON.stringify(data));
+      });
+
+      socket.on('Brigadista_case', (data) => {
+        mostrarMensaje(messagesElementId, 'Brigadista asignado a caso: ' + JSON.stringify(data));
+      });
+
+      socket.on('Close_incident_broadcast', (data) => {
+        mostrarMensaje(messagesElementId, 'Incidente cerrado: ' + JSON.stringify(data));
+      });
+
+      socket.on('GlovalWarning', (data) => {
+        mostrarMensaje(messagesElementId, 'Alerta Global: ' + JSON.stringify(data));
+      });
+
+      return socket;
+    }
+
+    // Función para mostrar los mensajes del servidor
+    function mostrarMensaje(elementId, mensaje) {
+      const serverMessages = document.getElementById(elementId);
+      serverMessages.textContent += mensaje + '\n';
+    }
+
+    // Acciones del Usuario
+    function enviarReporte() {
+      const reportData = {
+        partition_key: 'Incendio',
+        reporter: {
+          id: 'reporter123',
+          names: 'Juan',
+          lastNames: 'Pérez',
+          relationshipWithTheUniversity: 'student'
+        },
+        location: {
+          block: 'Block_1',
+          classroom: 101,
+          pointOfReference: 'Cerca de la biblioteca'
+        }
+      };
+      socketUser.emit('report', reportData);
+      mostrarMensaje('serverMessagesUser', 'Reporte enviado');
+    }
+
+    // Acciones del Administrador
+    function asignarAPH() {
+      const data = {
+        user_id: "cacd099c-338f-41ec-baaa-25b12d13a31f",
+        partition_key: "Incendio",
+        case_id: "f3764b7d-57a7-4beb-a152-0c429d9994eb"
+      };
+      socketAdmin.emit('APH', data);
+      mostrarMensaje('serverMessagesAdmin', 'APH asignado a un caso');
+    }
+
+    function asignarBrigadista() {
+      const data = {
+        user_id: "c880d66b-0418-45dc-9cd9-1949b8574576",
+        partition_key: "Incendio",
+        case_id: "f3764b7d-57a7-4beb-a152-0c429d9994eb"
+      };
+      socketAdmin.emit('Brigadiers', data);
+      mostrarMensaje('serverMessagesAdmin', 'Brigadista asignado a un caso');
+    }
+
+    function enviarAlertaGlobal() {
+      const data = {
+        emergencia: "Incendio"
+      };
+      socketAdmin.emit('GlovalWarning', data);
+      mostrarMensaje('serverMessagesAdmin', 'Alerta Global enviada');
+    }
+
+    // Acciones del APH
+    function pedirAyuda() {
+      const helpData = {
+        help: {
+          user_id: "cacd099c-338f-41ec-baaa-25b12d13a31f",
+          case_id: "f3764b7d-57a7-4beb-a152-0c429d9994eb",
+          partition_key: "Incendio"
+        },
+        hourArrive: "2:00",
+        close_case: "false"
+      };
+      socketAPH.emit('APH', helpData);
+      mostrarMensaje('serverMessagesAPH', 'APH solicitó ayuda');
+    }
+
+    function cerrarCaso() {
+      const closeData = {
+        help: {
+          user_id: "cacd099c-338f-41ec-baaa-25b12d13a31f",
+          case_id: "f3764b7d-57a7-4beb-a152-0c429d9994eb",
+          partition_key: "Incendio"
+        },
+        hourArrive: "2:00",
+        close_case: "true"
+      };
+      socketAPH.emit('APH', closeData);
+      mostrarMensaje('serverMessagesAPH', 'Caso cerrado por APH');
+    }
+  </script>
+
+</body>
+</html>
