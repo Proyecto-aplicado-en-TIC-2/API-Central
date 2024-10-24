@@ -3,6 +3,7 @@ import { AuthRepository } from './repositories/auth.repository';
 import { JwtService } from '@nestjs/jwt';
 import { Auth } from './models/auth.models';
 import {
+  RegisterAdminDto,
   RegisterAPHDto,
   RegisterBrigadierDto,
   RegisterUpbCommunityDto,
@@ -14,6 +15,9 @@ import { Brigadier } from '../brigadiers/models/brigadiers.model';
 import * as bcrypt from 'bcrypt';
 import { Community } from '../community/models/community.model';
 import { APH } from '../prehospital_care/models/aph.model';
+import { AdminService } from '../admin/admin.service';
+import { CreateAdminDto } from '../admin/dto/create-admin.dto';
+import { Admin } from '../admin/models/admin.models';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +28,7 @@ export class AuthService {
     @Inject(CommunityService) private communityService: CommunityService,
     @Inject(PrehospitalCareService)
     private prehospitalCareService: PrehospitalCareService,
+    @Inject(AdminService) private adminService: AdminService,
   ) {}
 
   async signIn(mail: string, pass: string): Promise<any> {
@@ -113,6 +118,32 @@ export class AuthService {
       if (!(result instanceof APH)) return result;
 
       const temp = <APH>result;
+
+      const salt = await bcrypt.genSalt();
+      const hash = await bcrypt.hash(register.password, salt);
+
+      const auth = new Auth().DtoCreate(
+        temp.id,
+        temp.mail,
+        hash,
+        temp.partition_key,
+      );
+
+      await this.authRepository.CreateAccount(auth);
+
+      return this.signIn(auth.mail, register.password);
+    } catch (e) {
+      throw new BadGatewayException('Error en GetBrigadiersById ' + e);
+    }
+  }
+
+  async registerAdmin(register: RegisterAdminDto) {
+    try {
+      const result = await this.adminService.createAdmin(register.user);
+
+      if (!(result instanceof Admin)) return result;
+
+      const temp = <Admin>result;
 
       const salt = await bcrypt.genSalt();
       const hash = await bcrypt.hash(register.password, salt);

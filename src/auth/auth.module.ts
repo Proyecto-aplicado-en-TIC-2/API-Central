@@ -11,12 +11,14 @@ import { PrehospitalCareModule } from '../prehospital_care/prehospital_care.modu
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { WebsocketGateway } from 'src/webSockets/websocket.gateway';
 import { GatewayModule } from 'src/webSockets/websocket.module';
+import { AdminModule } from '../admin/admin.module';
 
 @Module({
   imports: [
     BrigadiersModule,
     CommunityModule,
     PrehospitalCareModule,
+    AdminModule,
     GatewayModule,
     JwtModule.register({
       global: true,

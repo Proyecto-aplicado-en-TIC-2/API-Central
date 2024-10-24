@@ -1,5 +1,5 @@
 export enum Role {
-  Administration = 'user',
+  Administration = 'admin_account',
   Brigadiers = 'brigade_accounts',
   APH = 'prehospital_care_accounts',
   UPBCommunity = 'upb_community_accounts',

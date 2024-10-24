@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-In.dto';
 import { Public } from './decorators/public.decorator';
 import {
+  RegisterAdminDto,
   RegisterAPHDto,
   RegisterBrigadierDto,
   RegisterUpbCommunityDto,
@@ -38,5 +39,12 @@ export class AuthController {
   @Post('register/prehospital-care')
   registerAPH(@Body() register: RegisterAPHDto) {
     return this.authService.registerAPH(register);
+  }
+
+  @Public() // Publico solo en test para crear usuario admin
+  @HttpCode(HttpStatus.OK)
+  @Post('register/admin')
+  registerAdmin(@Body() register: RegisterAdminDto) {
+    return this.authService.registerAdmin(register);
   }
 }
