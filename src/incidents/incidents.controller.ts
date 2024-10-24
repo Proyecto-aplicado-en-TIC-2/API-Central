@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { IncidentsService } from './incidents.service';
-import { Incident } from './dto/create-incident.dto';
+import { Cases, Incident } from './dto/create-incident.dto';
 import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
 import { UpdateIncident } from './dto/update-incident.dto';
@@ -33,21 +33,25 @@ export class IncidentsController {
   }
 
   @Get('/:Id')
-  async GetIncidentById(@Param('Id') Id: string): Promise<any> {
+  async GetIncidentById(
+    @Param('Id') Id: string, 
+    @Param('partition_key') partition_key: Cases): Promise<any> {
     try {
       const incidents: Incident =
-        await this.incidentsService.GetIncidentById(Id);
+        await this.incidentsService.GetIncidentById(Id, partition_key);
       return incidents;
     } catch (error) {
       throw new GenericError('GetIncidentById', error);
     }
   }
 
-  @Delete('/:Id')
-  async DeleteIncidentByID(@Param('Id') Id: string): Promise<any> {
+  @Delete('/:Id/:partition_key')
+  async DeleteIncidentByID(
+    @Param('Id') Id: string, 
+    @Param('partition_key') partition_key: Cases): Promise<any> {
     try {
       const incidents: Incident =
-        await this.incidentsService.DeleteIncidentByID(Id);
+        await this.incidentsService.DeleteIncidentByID(Id, partition_key);
 
       return `The Incident was deleted succefully: ${incidents}`;
     } catch (error) {

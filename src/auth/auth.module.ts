@@ -9,12 +9,15 @@ import { BrigadiersModule } from '../brigadiers/brigadiers.module';
 import { CommunityModule } from '../community/community.module';
 import { PrehospitalCareModule } from '../prehospital_care/prehospital_care.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { WebsocketGateway } from 'src/webSockets/websocket.gateway';
+import { GatewayModule } from 'src/webSockets/websocket.module';
 
 @Module({
   imports: [
     BrigadiersModule,
     CommunityModule,
     PrehospitalCareModule,
+    GatewayModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

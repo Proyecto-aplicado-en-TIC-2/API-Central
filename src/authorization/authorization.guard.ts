@@ -12,18 +12,21 @@ import { Reflector } from '@nestjs/core';
 export class AuthorizationGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
   canActivate(context: ExecutionContext): boolean {
-    try {
-      const requiredRoles = this.reflector.getAllAndOverride<Role[]>(
-        ROLES_KEY,
-        [context.getHandler(), context.getClass()],
-      );
+    try {;
+      const requiredRoles = this.reflector
+        .getAllAndOverride<Role[]>(
+          ROLES_KEY,[
+          context.getHandler(), 
+          context.getClass()
+        ]);
       if (!requiredRoles) {
+        console.log("no hay roles requeridos");
         return true;
       }
-
       const { user } = context.switchToHttp().getRequest();
       return requiredRoles.some((role) => user.roles?.includes(role));
     } catch (e) {
+
       throw new UnauthorizedException(e);
     }
   }

@@ -38,3 +38,9 @@ export class Auth {
     return auth;
   }
 }
+
+export class AuthDto{
+  public id: string;
+  public mail: string;
+  public roles: string;
+}
