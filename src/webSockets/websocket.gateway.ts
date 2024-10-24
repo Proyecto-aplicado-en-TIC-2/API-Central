@@ -36,7 +36,15 @@ import { AuthService } from 'src/auth/auth.service';
 import { BrigadiersService } from 'src/brigadiers/brigadiers.service';
 import { Brigadier } from 'src/brigadiers/models/brigadiers.model';
 
-@WebSocketGateway({ namespace: '/WebSocketGateway' })
+@WebSocketGateway({
+  namespace: '/WebSocketGateway',
+  cors: {
+    origin: '*', // Asegúrate de permitir cualquier origen
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+  transports: ['websocket', 'polling'], // Acepta tanto websocket como polling
+})
 @UseGuards(AuthGuard, AuthorizationGuard) // Aplicar los guards aquí
 
 export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -58,18 +66,23 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   admiSaved: AuthDto = null;
 
   async handleConnection(client: Socket) {
+    console.log('Intentando conectar cliente...'); // Log adicional
     try {
       const token = this.extractTokenFromHeader(client);
       if (!token) {
+        
+        console.log('No se encontró token, desconectando cliente.');
+        console.log(token)
         client.disconnect();
         return;
       }
-
+      
       const user = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
 
       client['user'] = user;
+      console.log('Cliente autenticado:', user);
       const user_auth: AuthDto = plainToInstance(AuthDto, user)
       this.hashMap_users_conected.set(user.id, client.id)
       if (this.isAdmin(client)) {
@@ -274,12 +287,13 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   */
   async EmitById(id: string, eventName: string, data: any) {
 
+
+    if (!this.hashMap_users_conected.has(id)) {
+      new Error("La persona no existe o no esta conectada"); // Corrige aquí
+    }
     // Obtiene el WebSocket_id del mapa
     const WebSocket_id: string = await this.hashMap_users_conected.get(id);
 
-    if (WebSocket_id === undefined) {
-      new Error("La persona no existe o no esta conectada"); // Corrige aquí
-    }
     const adminListeningEmit = await (this.server?.sockets as any).get(WebSocket_id);
     await adminListeningEmit.emit(eventName, data);
   }
