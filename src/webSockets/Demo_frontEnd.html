@@ -144,6 +144,11 @@
         mostrarMensaje(messagesElementId, 'Alerta Global: ' + JSON.stringify(data));
       });
 
+      // Escuchar el evento Aph_help
+      socket.on('Aph_help', (data) => {
+        mostrarMensaje(messagesElementId, 'APH pide ayuda: ' + JSON.stringify(data));
+      });
+
       return socket;
     }
 
