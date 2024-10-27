@@ -12,11 +12,14 @@ import { Cases, Incident } from './dto/create-incident.dto';
 import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
 import { UpdateIncident } from './dto/update-incident.dto';
+import { Roles } from 'src/authorization/decorators/roles.decorator';
+import { Role } from 'src/authorization/role.enum';
 
 @Controller('incidents')
 export class IncidentsController {
   public constructor(private readonly incidentsService: IncidentsService) {}
 
+  @Roles(Role.Administration, Role.UPBCommunity, Role.APH, Role.Brigadiers)
   @Post()
   async CreateIncident(@Body() incident: Record<string, any>): Promise<any> {
     try {
@@ -26,12 +29,13 @@ export class IncidentsController {
       throw new GenericError('CreateIncident', error);
     }
   }
+  @Roles(Role.Administration)
   @Get()
   async GetAllIncidents(): Promise<any> {
     const incidents: Incident[] = await this.incidentsService.GetAllIncidents();
     return incidents;
   }
-
+  @Roles(Role.Administration)
   @Get('/:Id')
   async GetIncidentById(
     @Param('Id') Id: string,
@@ -47,7 +51,7 @@ export class IncidentsController {
       throw new GenericError('GetIncidentById', error);
     }
   }
-
+  @Roles(Role.Administration)
   @Delete('/:Id/:partition_key')
   async DeleteIncidentByID(
     @Param('Id') Id: string,
@@ -62,6 +66,7 @@ export class IncidentsController {
       throw new GenericError('DeleteIncident', error);
     }
   }
+  @Roles(Role.Administration)
   @Patch()
   async UpdateIncident(
     @Body() updateIncident: Record<string, any>,

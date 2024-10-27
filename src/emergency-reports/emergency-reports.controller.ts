@@ -11,13 +11,15 @@ import { EmergencyReportsService } from './emergency-reports.service';
 import { EmergencyReports } from './dto/create-emergency-reports.dto';
 import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
+import { Roles } from 'src/authorization/decorators/roles.decorator';
+import { Role } from 'src/authorization/role.enum';
 
 @Controller('emergency-reports')
 export class EmergencyReportsController {
   public constructor(
     private readonly emergencyReportsService: EmergencyReportsService,
   ) {}
-
+  @Roles(Role.APH, Role.Administration)
   @Post()
   async CreateEmergencyReport(
     @Body() emergencyReports: Record<string, any>,
@@ -34,6 +36,7 @@ export class EmergencyReportsController {
       throw new GenericError('CreateEmergencyReport', error);
     }
   }
+  @Roles(Role.Administration)
   @Get()
   async GetAllEmergencyReports(): Promise<any> {
     const emergencyReports: EmergencyReports[] =
@@ -41,6 +44,7 @@ export class EmergencyReportsController {
     return emergencyReports;
   }
 
+  @Roles(Role.Administration)
   @Get('/:Id')
   async GetEmergencyReportsById(@Param('Id') Id: string): Promise<any> {
     try {
@@ -52,6 +56,7 @@ export class EmergencyReportsController {
     }
   }
 
+  @Roles(Role.Administration)
   @Delete('/:Id')
   async DeleteEmergencyReportByID(@Param('Id') Id: string): Promise<any> {
     try {
@@ -63,6 +68,7 @@ export class EmergencyReportsController {
       throw new GenericError('DeleteEmergencyReportByID', error);
     }
   }
+  @Roles(Role.Administration)
   @Patch()
   async UpdateEmergencyReport(
     @Body() emergencyReports: Record<string, any>,
