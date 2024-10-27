@@ -1,5 +1,4 @@
 import { EmergencyReports } from './dto/create-emergency-reports.dto';
-import { UpdateEmergencyReports } from './dto/update-emergency-reports.dto';
 
 export interface IEmergencyReportsRepostiory {
   //-------------------- GET ------------------------
@@ -12,7 +11,7 @@ export interface IEmergencyReportsRepostiory {
   //-------------------- UPDATE ---------------------
   UpdateEmergencyReport(
     incident: EmergencyReports,
-  ): Promise<UpdateEmergencyReports>;
+  ): Promise<EmergencyReports>;
   //-------------------- DELETE ---------------------
   DeleteEmergencyReportByID(Id: string): Promise<EmergencyReports>;
   //-------------------- MORE -----------------------

@@ -35,6 +35,13 @@ import { audit, isEmpty } from 'rxjs';
 import { AuthService } from 'src/auth/auth.service';
 import { BrigadiersService } from 'src/brigadiers/brigadiers.service';
 import { Brigadier } from 'src/brigadiers/models/brigadiers.model';
+import { EmergencyReports } from 'src/emergency-reports/dto/create-emergency-reports.dto';
+import { EmergencyReportsService } from 'src/emergency-reports/emergency-reports.service';
+import { report } from 'process';
+import { CreateCommunityUserDto } from 'src/community/dto/create-community.dto';
+import { CommunityRepository } from 'src/community/repositories/community.repository';
+import { CommunityService } from 'src/community/community.service';
+import { Community } from 'src/community/models/community.model';
 
 @WebSocketGateway({
   namespace: '/WebSocketGateway',
@@ -54,7 +61,9 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     private readonly incidentsService: IncidentsService,
     private readonly websocketService: WebsocketService,
     private readonly prehospitalCareService: PrehospitalCareService,
-    private readonly brigadiersService: BrigadiersService
+    private readonly brigadiersService: BrigadiersService,
+    private readonly emergencyReportsService: EmergencyReportsService,
+    private readonly communityService: CommunityService
   ) { }
   @WebSocketServer()
   server: Server;
@@ -176,7 +185,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
         console.log('se pidio alludam a un brigadista')
       }
     }catch (error) {
-      throw new GenericError('handleReport', error);
+      throw new GenericError('handleBrigadiers', error);
     }
     
 
@@ -229,11 +238,43 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
           const time = now.toISOString().split('T')[1].split('.')[0];
           search_report.date.hourArrive = aph_actions.hourArrive;
           search_report.date.hourCloseAttentionn = time;
-          search_report.State = 'close;'
+          search_report.State = 'close';
   
           //obtener el reporte cerrado
+
           const report_close: ReportDto = await this.websocketService
           .PatchReport(search_report)
+
+          //se crea el reporte completo con los datos obyenidos y misma id
+
+          const incident: Incident = await this.incidentsService
+            .GetIncidentById(report_close.id, report_close.partition_key)
+          
+          const reporter: Community = await this.communityService
+            .GetCommunityUserById(report_close.reporter_Id)
+
+          const full_informe: EmergencyReports = {
+              id : report_close.id,
+              partition_key: report_close.partition_key,
+              date: report_close.date,
+              location: {
+                block: incident.location.block,
+                classroom: incident.location.classroom,
+                pointOfReference: incident.location.pointOfReference
+              },
+              reporter: {
+                names: reporter.names,
+                lastNames: reporter.last_names,
+                relationshipWithTheUniversity: reporter.relationshipWithTheUniversity
+              },
+              aphThatTakeCare: report_close.aphThatTakeCare_Id
+              
+            }
+
+          const full_inform_incert: EmergencyReports = await this.emergencyReportsService
+            .CreateEmergencyReport(full_informe)
+          console.log('----------full_inform_incert actualizado----------')
+          console.log(full_inform_incert)
 
           //enviar mensaje de que se cerro el incidente
           await this.AdminEmit('Close_incident_broadcast', {message: 'incidente cerrado',
@@ -268,7 +309,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       }
 
     } catch (error) {
-      throw new GenericError('handleReport', error);
+      throw new GenericError('handleAPH', error);
     }
   }
 

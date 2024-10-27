@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AppValidationException } from 'src/helpers/AppValidationException';
-import { UpdateEmergencyReports } from './dto/update-emergency-reports.dto';
 import { IEmergencyReportsRepostiory } from './emergency-reports.interface';
 import { EmergencyReports } from './dto/create-emergency-reports.dto';
 
@@ -44,11 +43,11 @@ export class EmergencyReportsService {
   }
 
   async UpdateEmergencyReport(
-    updateEmergencyReports: UpdateEmergencyReports,
-  ): Promise<UpdateEmergencyReports> {
-    const operation: UpdateEmergencyReports =
+    emergencyReports: EmergencyReports,
+  ): Promise<EmergencyReports> {
+    const operation: EmergencyReports =
       await this.emergencyReportsRepository.UpdateEmergencyReport(
-        updateEmergencyReports,
+        emergencyReports,
       );
 
     return operation;

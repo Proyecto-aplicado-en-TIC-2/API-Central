@@ -1,3 +1,5 @@
+import { RelationshipWithTheUniversity } from "src/incidents/dto/create-incident.dto";
+
 export enum Quadrant {
   'Division-1',
   'Division-2',
@@ -35,13 +37,6 @@ export enum Block {
   'ComplejoDeIngenierias',
   'Forum',
   'BloquesExternosAlCampus',
-}
-
-export enum RelationshipWithUniversity {
-  'EstudianteUniversitario',
-  'EstudianteEscuela',
-  'Docente',
-  'Visitante',
 }
 
 export enum Gender {
@@ -85,71 +80,78 @@ export enum EquipmentSource {
   'Gabinete',
   'TraumaPolideportivo',
 }
+
+export enum Cases {
+  Incendio,
+  Medico, 
+  Estrctural
+}
 export class EmergencyReports {
-  public readonly partition_key: string = 'complete_reports';
-  public date: {
-    date: string; // DD/MM/YY
-    hourRequest: string; // HH/MM/SS
-    hourGetRequest: string; // HH/MM/SS
-    hourArrive: string; // HH/MM/SS
-    hourCloseAttentionn: string; // HH/MM/SS
+  public id?: string;
+  public partition_key?: Cases;
+
+  public date?: {
+    date?: string;
+    hourRequest?: string;
+    hourArrive?: string;
+    hourCloseAttentionn?: string;
   };
 
-  public location: {
-    quadrant: Quadrant;
-    block: Block;
-    classroom: string;
-    pointOfReference: string;
+  public location?: {
+    quadrant?: Quadrant;
+    block?: Block;
+    classroom?: string;
+    pointOfReference?: string;
   };
 
   public reporter: {
     names: string;
     lastNames: string;
-    relationshipWithTheUniversity: RelationshipWithUniversity;
+    relationshipWithTheUniversity: RelationshipWithTheUniversity;
   };
 
-  public aphThatTakeCare: string;
+  public aphThatTakeCare?: string;
 
-  public classificationAttention: string;
+  public classificationAttention?: string;
 
-  public patient: {
-    names: string;
-    lastNames: string;
-    typeDocument: string;
-    numberOfDocument: string;
-    gender: Gender;
-    age: number;
-    relationshipWithTheUniversity: RelationshipWithUniversity;
+  public patient?: {
+    names?: string;
+    lastNames?: string;
+    typeDocument?: string;
+    numberOfDocument?: string;
+    gender?: Gender;
+    age?: number;
+    relationshipWithTheUniversity?: RelationshipWithTheUniversity;
   };
 
-  public contact: {
-    attentionForSecureLine: AttentionForSecureLine;
-    meansOfAttention: string;
-    startedInformation: string;
+  public contact?: {
+    attentionForSecureLine?: AttentionForSecureLine;
+    meansOfAttention?: string;
+    startedInformation?: string;
   };
 
-  public evaluation: {
-    reasonForConsultation: string;
-    disease: string;
-    physicalExam: string;
-    record: string;
-    sentTo: string;
-    diagnosticImpression: string;
-    treatment: string;
-    followUp: FollowUp;
+  public evaluation?: {
+    reasonForConsultation?: string;
+    disease?: string;
+    physicalExam?: string;
+    record?: string;
+    sentTo?: string;
+    diagnosticImpression?: string;
+    treatment?: string;
+    followUp?: FollowUp;
   };
    
   
-  public attendnt: {
-    callHour: string; // HH/MM/SS
-    callAttendntName: string;
+  public attendnt?: {
+    callHour?: string; // HH/MM/SS
+    callAttendntName?: string;
   };
 
-  public equipment: {
-    quantity: number;
-    type: EquipmentType;
-    source: EquipmentSource;
+  public equipment?: {
+    quantity?: number;
+    type?: EquipmentType;
+    source?: EquipmentSource;
   };
 
-  public noteForFollowUp: FollowUp;
+  public noteForFollowUp?: FollowUp;
 }
