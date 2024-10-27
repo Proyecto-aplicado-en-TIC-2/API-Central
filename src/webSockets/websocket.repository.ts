@@ -13,7 +13,41 @@ export class WebsocketRepository implements IWebsocketRepository {
   client: any;
   //DB conenection -------------------------------------------------------
   constructor(@Inject(KeyVaultService) private DbConnection: KeyVaultService) {}
+  
+  async GetNewReports(): Promise<ReportDto[]> {
+    try {
+    const now = new Date();
+    const date = now.toISOString().split('T')[0];
+    // Query
+    const querySpec = {
+      query: 'SELECT * FROM  e WHERE' +
+      ' e.State = "en_proceso"' +
+      ' AND e.brigadista_Id = ""'+
+      ' AND e.aphThatTakeCare_Id = ""'+
+      ' AND e.date.date = @date',
+      parameters: [
+        {
+          name: '@date',
+          value: date,
+        },
+      ],
+    };
 
+    // Consulta
+    const { resources: item } = await this.DbConnection
+      .getDbConnection()
+      .database(databaseId)
+      .container(containerId)
+      .items.query(querySpec)
+      .fetchAll();
+
+      const adminActiveDtow_obj: ReportDto[] = plainToInstance(ReportDto, item);
+      return adminActiveDtow_obj;
+
+  } catch (error) {
+    throw new DbOperationException(error.message);
+  }
+}
   async GetAdminActiveByPartitionKey(): Promise<AdminActiveDto> {
     try {
       // Query

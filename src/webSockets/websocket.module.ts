@@ -10,8 +10,10 @@ import { PrehospitalCareModule } from 'src/prehospital_care/prehospital_care.mod
 import { BrigadiersModule } from 'src/brigadiers/brigadiers.module';
 import { EmergencyReportsModule } from 'src/emergency-reports/emergency-reports.module';
 import { CommunityModule } from 'src/community/community.module';
+import { WebsocketController } from './websockets.controller';
 
 @Module({
+  controllers: [WebsocketController],
   imports: [
     IncidentsModule,
     PrehospitalCareModule,
@@ -33,5 +35,6 @@ import { CommunityModule } from 'src/community/community.module';
       useClass: WebsocketRepository, // Usamos la clase concreta
     },
   ],
+  exports: [WebsocketService],
 })
 export class GatewayModule {}

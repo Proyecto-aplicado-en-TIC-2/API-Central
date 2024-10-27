@@ -10,6 +10,10 @@ export class WebsocketService {
     private readonly websocketRepository: IWebsocketRepository,
   ) {}
 
+  async GetNewReports(): Promise<ReportDto[]> {
+
+    return await this.websocketRepository.GetNewReports();
+  }
   async GetAdminActiveByPartitionKey(): Promise<AdminActiveDto> {
     return this.websocketRepository.GetAdminActiveByPartitionKey();
   }
