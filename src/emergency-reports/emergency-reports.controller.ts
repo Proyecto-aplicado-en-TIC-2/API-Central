@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { EmergencyReportsService } from './emergency-reports.service';
 import { EmergencyReports } from './dto/create-emergency-reports.dto';
-import { UpdateEmergencyReports } from './dto/update-emergency-reports.dto';
 import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
 
@@ -66,14 +65,14 @@ export class EmergencyReportsController {
   }
   @Patch()
   async UpdateEmergencyReport(
-    @Body() updateEmergencyReports: Record<string, any>,
+    @Body() emergencyReports: Record<string, any>,
   ): Promise<any> {
     try {
-      const emergencyReports_obj: UpdateEmergencyReports = plainToInstance(
-        UpdateEmergencyReports,
-        updateEmergencyReports,
+      const emergencyReports_obj: EmergencyReports = plainToInstance(
+        EmergencyReports,
+        emergencyReports,
       );
-      const operation: UpdateEmergencyReports =
+      const operation: EmergencyReports =
         await this.emergencyReportsService.UpdateEmergencyReport(
           emergencyReports_obj,
         );

@@ -12,6 +12,7 @@ export class ReportDto {
   public aphThatTakeCare_Id?: string;
   public partition_key?: Cases;
   public State?: string;
+
   public date?: {
     date?: string;
     hourRequest?: string;

@@ -3,7 +3,6 @@ import { DbOperationException } from 'src/helpers/DbOperationException';
 import { plainToInstance } from 'class-transformer';
 import { IEmergencyReportsRepostiory } from './emergency-reports.interface';
 import { EmergencyReports } from './dto/create-emergency-reports.dto';
-import { UpdateEmergencyReports } from './dto/update-emergency-reports.dto';
 import { Inject, Injectable } from '@nestjs/common';
 
 const databaseId: string = 'risk_management';
@@ -69,16 +68,16 @@ export class EmergencyReportsRepository implements IEmergencyReportsRepostiory {
   }
 
   async UpdateEmergencyReport(
-    updateEmergencyReports: UpdateEmergencyReports,
-  ): Promise<UpdateEmergencyReports> {
+    emergencyReports: EmergencyReports,
+  ): Promise<EmergencyReports> {
     try {
       const { resource: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)
         .container(containerId)
-        .item(updateEmergencyReports.id, containerId)
-        .replace(updateEmergencyReports);
+        .item(emergencyReports.id, containerId)
+        .replace(emergencyReports);
 
-      return plainToInstance(UpdateEmergencyReports, item);
+      return plainToInstance(EmergencyReports, item);
     } catch (error) {
       throw new DbOperationException(error.message);
     }
