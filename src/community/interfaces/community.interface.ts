@@ -1,4 +1,4 @@
-import { RelationshipWithTheUniversity } from "src/incidents/dto/create-incident.dto";
+import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
 
 export interface ICommunity {
   readonly names: string;

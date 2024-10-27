@@ -34,11 +34,14 @@ export class IncidentsController {
 
   @Get('/:Id')
   async GetIncidentById(
-    @Param('Id') Id: string, 
-    @Param('partition_key') partition_key: Cases): Promise<any> {
+    @Param('Id') Id: string,
+    @Param('partition_key') partition_key: Cases,
+  ): Promise<any> {
     try {
-      const incidents: Incident =
-        await this.incidentsService.GetIncidentById(Id, partition_key);
+      const incidents: Incident = await this.incidentsService.GetIncidentById(
+        Id,
+        partition_key,
+      );
       return incidents;
     } catch (error) {
       throw new GenericError('GetIncidentById', error);
@@ -47,8 +50,9 @@ export class IncidentsController {
 
   @Delete('/:Id/:partition_key')
   async DeleteIncidentByID(
-    @Param('Id') Id: string, 
-    @Param('partition_key') partition_key: Cases): Promise<any> {
+    @Param('Id') Id: string,
+    @Param('partition_key') partition_key: Cases,
+  ): Promise<any> {
     try {
       const incidents: Incident =
         await this.incidentsService.DeleteIncidentByID(Id, partition_key);

@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { Request } from 'express';
@@ -8,7 +13,10 @@ import { Socket } from 'socket.io';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService, private reflector: Reflector) {}
+  constructor(
+    private jwtService: JwtService,
+    private reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -25,32 +33,31 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-
       throw new UnauthorizedException();
     }
     try {
-      console.log("verificando token")
+      console.log('verificando token');
       const user = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
-        
       });
       request['user'] = user;
-
     } catch {
-    
       throw new UnauthorizedException();
     }
     return true;
   }
 
-  private extractTokenFromHeader(request: Request | Socket): string | undefined {
+  private extractTokenFromHeader(
+    request: Request | Socket,
+  ): string | undefined {
     if ('headers' in request) {
       // Es una petición HTTP
       const [type, token] = request.headers.authorization?.split(' ') ?? [];
       return type === 'Bearer' ? token : undefined;
     } else if ('handshake' in request) {
       // Es una conexión WebSocket
-      const [type, token] = request.handshake.headers.authorization?.split(' ') ?? [];
+      const [type, token] =
+        request.handshake.headers.authorization?.split(' ') ?? [];
       return type === 'Bearer' ? token : undefined;
     }
     return undefined;

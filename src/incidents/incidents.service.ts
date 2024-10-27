@@ -45,7 +45,10 @@ export class IncidentsService {
 
     return operation;
   }
-  async DeleteIncidentByID(Id: string, partition_key: Cases): Promise<Incident> {
+  async DeleteIncidentByID(
+    Id: string,
+    partition_key: Cases,
+  ): Promise<Incident> {
     const operation: Incident =
       await this.incidensRepostiory.DeleteIncidentByID(Id, partition_key);
 

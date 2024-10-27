@@ -6,7 +6,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('/hello')
-  getHello(): string {
+  getHello(): boolean {
     return this.appService.getHello();
   }
 }

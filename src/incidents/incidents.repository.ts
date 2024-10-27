@@ -33,10 +33,12 @@ export class IncidentesRepository implements IIncidensRepostiory {
     }
   }
 
-  async GetIncidentById(Id: string, partition_key: Cases): Promise<Incident | null> {
+  async GetIncidentById(
+    Id: string,
+    partition_key: Cases,
+  ): Promise<Incident | null> {
     try {
-      const { resource: item } = await this.DbConnection
-        .getDbConnection()
+      const { resource: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)
         .container(containerId)
         .item(Id, partition_key)
@@ -84,7 +86,10 @@ export class IncidentesRepository implements IIncidensRepostiory {
     }
   }
 
-  async DeleteIncidentByID(Id: string, partition_key: Cases): Promise<Incident> {
+  async DeleteIncidentByID(
+    Id: string,
+    partition_key: Cases,
+  ): Promise<Incident> {
     try {
       const { resource: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)

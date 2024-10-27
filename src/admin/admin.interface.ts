@@ -1,5 +1,4 @@
 import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import { Admin } from './models/admin.models';
 
 export interface IAdminRepository {

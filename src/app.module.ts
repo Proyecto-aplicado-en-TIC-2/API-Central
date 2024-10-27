@@ -23,7 +23,7 @@ import { AdminModule } from './admin/admin.module';
     IncidentsModule,
     EmergencyReportsModule,
     GatewayModule,
-    AdminModule
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [

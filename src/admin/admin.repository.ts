@@ -1,11 +1,8 @@
 import { Injectable, Inject, BadGatewayException } from '@nestjs/common';
 import { KeyVaultService } from 'src/context_db/DbContext.service';
-import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import { IAdminRepository } from './admin.interface';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { DbOperationException } from 'src/helpers/DbOperationException';
-import { Brigadier } from '../brigadiers/models/brigadiers.model';
 import { Admin } from './models/admin.models';
 
 const databaseId = 'risk_management';

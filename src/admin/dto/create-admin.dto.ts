@@ -1,5 +1,5 @@
 // src/admin/dto/create-admin.dto.ts
-import { IsEmail, IsNotEmpty, IsString, IsEnum } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateAdminDto {
   @IsNotEmpty()

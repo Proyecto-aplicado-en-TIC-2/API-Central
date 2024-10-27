@@ -1,10 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { KeyVaultService } from "src/context_db/DbContext.service";
-import { IWebsocketRepository } from "./websocket.interface";
-import { AdminActiveDto, Cases, ReportDto } from "./websocket.dto";
-import { plainToClass, plainToInstance } from "class-transformer";
-import { DbOperationException } from "src/helpers/DbOperationException";
-import { IS_HEXADECIMAL } from "class-validator";
+import { Inject, Injectable } from '@nestjs/common';
+import { KeyVaultService } from 'src/context_db/DbContext.service';
+import { IWebsocketRepository } from './websocket.interface';
+import { AdminActiveDto, Cases, ReportDto } from './websocket.dto';
+import { plainToInstance } from 'class-transformer';
+import { DbOperationException } from 'src/helpers/DbOperationException';
 
 const databaseId: string = 'risk_management';
 const containerId: string = 'cases';
@@ -14,7 +13,7 @@ export class WebsocketRepository implements IWebsocketRepository {
   client: any;
   //DB conenection -------------------------------------------------------
   constructor(@Inject(KeyVaultService) private DbConnection: KeyVaultService) {}
- 
+
   async GetAdminActiveByPartitionKey(): Promise<AdminActiveDto> {
     try {
       // Query
@@ -29,21 +28,24 @@ export class WebsocketRepository implements IWebsocketRepository {
       };
 
       // Consulta
-      const { resources: item } = await this.DbConnection
-        .getDbConnection()
+      const { resources: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)
         .container(containerId)
         .items.query(querySpec)
         .fetchAll();
 
-        const adminActiveDtow_obj: AdminActiveDto = plainToInstance(AdminActiveDto, item[0]);
-        return adminActiveDtow_obj;
-
+      const adminActiveDtow_obj: AdminActiveDto = plainToInstance(
+        AdminActiveDto,
+        item[0],
+      );
+      return adminActiveDtow_obj;
     } catch (error) {
       throw new DbOperationException(error.message);
     }
   }
-  async PatchAdminActive(adminActiveDto: AdminActiveDto): Promise<AdminActiveDto> {
+  async PatchAdminActive(
+    adminActiveDto: AdminActiveDto,
+  ): Promise<AdminActiveDto> {
     try {
       const { resource: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)
@@ -56,29 +58,31 @@ export class WebsocketRepository implements IWebsocketRepository {
       throw new DbOperationException(error.message);
     }
   }
-  async GetAdminActive(adminActiveDto: AdminActiveDto): Promise<AdminActiveDto | null> {
+  async GetAdminActive(
+    adminActiveDto: AdminActiveDto,
+  ): Promise<AdminActiveDto | null> {
     try {
-      const { resource: item } = await this.DbConnection
-        .getDbConnection()
+      const { resource: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)
         .container(containerId)
         .item(adminActiveDto.id, 'admin_active')
         .read();
 
-        if (item) {
-          return plainToInstance(AdminActiveDto, item);
-        }
-        return null;
-      } catch (error) {
-        throw new DbOperationException(error.message);
+      if (item) {
+        return plainToInstance(AdminActiveDto, item);
       }
+      return null;
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
   }
-  
-  async CreateAdminActive(adminActiveDto: AdminActiveDto): Promise<AdminActiveDto | null> {
+
+  async CreateAdminActive(
+    adminActiveDto: AdminActiveDto,
+  ): Promise<AdminActiveDto | null> {
     try {
       const { resource: CreateAdminActiveDto } =
-        await this.DbConnection
-          .getDbConnection()
+        await this.DbConnection.getDbConnection()
           .database(databaseId)
           .container(containerId)
           .items.upsert(adminActiveDto);
@@ -94,8 +98,7 @@ export class WebsocketRepository implements IWebsocketRepository {
   async CreateReport(report: ReportDto): Promise<ReportDto | null> {
     try {
       const { resource: CreateReportDto } =
-        await this.DbConnection
-          .getDbConnection()
+        await this.DbConnection.getDbConnection()
           .database(databaseId)
           .container(containerId)
           .items.upsert(report);
@@ -108,23 +111,25 @@ export class WebsocketRepository implements IWebsocketRepository {
       throw new DbOperationException(error.message);
     }
   }
-  async GetReportById(id: string, partition_key_Cases: Cases ): Promise<ReportDto> {
+  async GetReportById(
+    id: string,
+    partition_key_Cases: Cases,
+  ): Promise<ReportDto> {
     try {
-      const { resource: item } = await this.DbConnection
-        .getDbConnection()
+      const { resource: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)
         .container(containerId)
         .item(id, partition_key_Cases)
         .read();
 
-        if (item) {
-          const report: ReportDto =  plainToInstance(ReportDto, item);
-          return report;
-        }
-        return null;
-      } catch (error) {
-        throw new DbOperationException(error.message);
+      if (item) {
+        const report: ReportDto = plainToInstance(ReportDto, item);
+        return report;
       }
+      return null;
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
   }
   async PatchReport(reportDto: ReportDto): Promise<ReportDto> {
     try {

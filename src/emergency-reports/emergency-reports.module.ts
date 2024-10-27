@@ -14,6 +14,6 @@ import { EmergencyReportsRepository } from './emergency-reports.repository';
       useClass: EmergencyReportsRepository, // Usamos la clase concreta
     },
   ],
-  exports: [EmergencyReportsService]
+  exports: [EmergencyReportsService],
 })
 export class EmergencyReportsModule {}

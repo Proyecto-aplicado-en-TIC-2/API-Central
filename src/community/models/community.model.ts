@@ -37,8 +37,7 @@ export class Community implements ICommunity {
     community.last_names = Dto.last_names;
     community.mail = Dto.mail;
     community.phone_number = Dto.phone_number;
-    community.relationshipWithTheUniversity =
-      Dto.relationshipWithTheUniversity;
+    community.relationshipWithTheUniversity = Dto.relationshipWithTheUniversity;
     return community;
   }
 
@@ -49,8 +48,7 @@ export class Community implements ICommunity {
     community.last_names = Dto.last_names;
     community.mail = mail;
     community.phone_number = Dto.phone_number;
-    community.relationshipWithTheUniversity =
-      Dto.relationshipWithTheUniversity;
+    community.relationshipWithTheUniversity = Dto.relationshipWithTheUniversity;
     return community;
   }
 
@@ -63,8 +61,7 @@ export class Community implements ICommunity {
       this.last_names === other.last_names &&
       this.mail === other.mail &&
       this.phone_number === other.phone_number &&
-      this.relationshipWithTheUniversity ===
-        other.relationshipWithTheUniversity
+      this.relationshipWithTheUniversity === other.relationshipWithTheUniversity
     );
   }
 }

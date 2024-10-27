@@ -14,6 +14,6 @@ import { IncidentesRepository } from './incidents.repository';
       useClass: IncidentesRepository, // Usamos la clase concreta
     },
   ],
-  exports: [IncidentsService]
+  exports: [IncidentsService],
 })
 export class IncidentsModule {}
