@@ -12,6 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthorizationGuard } from './authorization/authorization.guard';
 import { GatewayModule } from './webSockets/websocket.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { GatewayModule } from './webSockets/websocket.module';
     AuthModule,
     IncidentsModule,
     EmergencyReportsModule,
-    GatewayModule
+    GatewayModule,
+    AdminModule
   ],
   controllers: [AppController],
   providers: [
