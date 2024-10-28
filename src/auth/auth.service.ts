@@ -65,7 +65,6 @@ export class AuthService {
         userid: auth.id,
         names: user_details.names,
         lastNames: user_details.last_names,
-        Phone: user_details.phone_number
       };
     } catch (e) {
       throw new BadGatewayException('Error en GetBrigadiersById ' + e);
