@@ -33,10 +33,12 @@ export class IncidentesRepository implements IIncidensRepostiory {
     }
   }
 
-  async GetIncidentById(Id: string, partition_key: Cases): Promise<Incident | null> {
+  async GetIncidentById(
+    Id: string,
+    partition_key: Cases,
+  ): Promise<Incident | null> {
     try {
-      const { resource: item } = await this.DbConnection
-        .getDbConnection()
+      const { resource: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)
         .container(containerId)
         .item(Id, partition_key)
@@ -84,7 +86,10 @@ export class IncidentesRepository implements IIncidensRepostiory {
     }
   }
 
-  async DeleteIncidentByID(Id: string, partition_key: Cases): Promise<Incident> {
+  async DeleteIncidentByID(
+    Id: string,
+    partition_key: Cases,
+  ): Promise<Incident> {
     try {
       const { resource: item } = await this.DbConnection.getDbConnection()
         .database(databaseId)
@@ -98,6 +103,29 @@ export class IncidentesRepository implements IIncidensRepostiory {
       throw new DbOperationException(
         `Couldn't delete, Incident with the Id: ${Id} doesn't exist`,
       );
+    }
+  }
+
+  async GetIncidentsOfTheDay(ids: string[]): Promise<Incident[]> {
+    try {
+      const query = {
+        query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@ids, c.id)',
+        parameters: [
+          {
+            name: '@ids',
+            value: ids,
+          },
+        ],
+      };
+      const { resources: results } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(query)
+        .fetchAll();
+
+      return plainToInstance(Incident, results);
+    } catch (error) {
+      throw new DbOperationException('Joham Morales ->' + error.message);
     }
   }
 }

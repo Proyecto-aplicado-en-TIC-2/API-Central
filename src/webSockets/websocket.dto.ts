@@ -1,7 +1,7 @@
 export enum Cases {
   Incendio,
-  Medico, 
-  Estrctural
+  Medico,
+  Estrctural,
 }
 
 export class ReportDto {
@@ -18,32 +18,31 @@ export class ReportDto {
     hourRequest?: string;
     hourArrive?: string;
     hourCloseAttentionn?: string;
-  };  
+  };
 }
 
-export class AdminActiveDto{
-  public readonly partition_key: string = "admin_active";
+export class AdminActiveDto {
+  public readonly partition_key: string = 'admin_active';
   public WebSocket_id_admin_active: string;
   public id: string;
-  constructor(webSocket_id_admin_active:string, id:string){
+  constructor(webSocket_id_admin_active: string, id: string) {
     this.WebSocket_id_admin_active = webSocket_id_admin_active;
-    this.id = id
+    this.id = id;
   }
 }
 
-export class PayLoadDto{
+export class PayLoadDto {
   public user_id: string;
   public case_id: string;
   public partition_key: Cases;
 }
 
-export class AphCases{
-
+export class AphCases {
   public help?: {
-     user_id: string;
-     case_id: string;
-     partition_key: Cases;
-  }
+    user_id: string;
+    case_id: string;
+    partition_key: Cases;
+  };
   public hourArrive?: string;
   public close_case?: string;
 }

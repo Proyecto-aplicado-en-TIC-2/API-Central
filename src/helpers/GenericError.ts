@@ -5,13 +5,13 @@ import { DbOperationException } from './DbOperationException';
 export class GenericError {
   constructor(MethodName: string, error: any) {
     if (error instanceof AppValidationException) {
-      console.log(        
+      console.log(
         '------------------------',
         ' Ops! Validation Error',
         '------------------------',
         `Error in method:   ${MethodName}`,
-        `This happened:     ${error.message}`
-      )
+        `This happened:     ${error.message}`,
+      );
       throw new BadRequestException({
         message: [
           '------------------------',
@@ -22,13 +22,13 @@ export class GenericError {
         ],
       });
     } else if (error instanceof DbOperationException) {
-      console.log(        
+      console.log(
         '-------------------------------------------',
         ' Ops! Something went wrong in DB Operation',
         '-------------------------------------------',
         `Error in method:   ${MethodName}`,
-        `This happened:     ${error.message}`
-      )
+        `This happened:     ${error.message}`,
+      );
       throw new BadRequestException({
         message: [
           '-------------------------------------------',
@@ -39,13 +39,13 @@ export class GenericError {
         ],
       });
     } else {
-      console.log(        
+      console.log(
         '----------------------------------------',
         ' Ops! An unexpected error has occurred',
         '----------------------------------------',
         `Error in method:   ${MethodName}`,
-        `This happened:     ${error.message}`
-      )
+        `This happened:     ${error.message}`,
+      );
       throw new BadRequestException({
         message: [
           '----------------------------------------',

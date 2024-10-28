@@ -9,9 +9,7 @@ export interface IEmergencyReportsRepostiory {
     incident: EmergencyReports,
   ): Promise<EmergencyReports | null>;
   //-------------------- UPDATE ---------------------
-  UpdateEmergencyReport(
-    incident: EmergencyReports,
-  ): Promise<EmergencyReports>;
+  UpdateEmergencyReport(incident: EmergencyReports): Promise<EmergencyReports>;
   //-------------------- DELETE ---------------------
   DeleteEmergencyReportByID(Id: string): Promise<EmergencyReports>;
   //-------------------- MORE -----------------------

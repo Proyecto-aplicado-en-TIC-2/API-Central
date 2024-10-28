@@ -22,4 +22,3 @@ export class RegisterAdminDto {
   password: string;
   user: CreateAdminDto;
 }
-

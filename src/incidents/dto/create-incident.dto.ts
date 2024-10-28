@@ -1,4 +1,4 @@
-import { Block, Quadrant } from "src/emergency-reports/dto/create-emergency-reports.dto";
+import { Block } from 'src/emergency-reports/dto/create-emergency-reports.dto';
 
 export enum RelationshipWithTheUniversity {
   universitary,
@@ -9,8 +9,8 @@ export enum RelationshipWithTheUniversity {
 
 export enum Cases {
   Incendio,
-  Medico, 
-  Estrctural
+  Medico,
+  Estrctural,
 }
 
 export class Incident {
@@ -28,5 +28,3 @@ export class Incident {
     pointOfReference?: string;
   };
 }
-
-

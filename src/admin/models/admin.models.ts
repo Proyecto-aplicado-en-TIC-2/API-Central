@@ -40,7 +40,7 @@ export class Admin {
     return admin;
   }
 
-  DtoUpdate(id: string, mail:string, dto: UpdateAdminDto) {
+  DtoUpdate(id: string, mail: string, dto: UpdateAdminDto) {
     const admin = new Admin();
     admin.id = id;
     admin.partition_key = partitionKey;
@@ -51,10 +51,12 @@ export class Admin {
   }
 
   equals(admin: Admin) {
-    return this.id === admin.id &&
+    return (
+      this.id === admin.id &&
       this.partition_key === partitionKey &&
       this.names === admin.names &&
       this.last_names === admin.last_names &&
-      this.mail === admin.mail;
+      this.mail === admin.mail
+    );
   }
 }

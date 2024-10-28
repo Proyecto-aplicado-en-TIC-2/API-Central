@@ -16,7 +16,6 @@ import * as bcrypt from 'bcrypt';
 import { Community } from '../community/models/community.model';
 import { APH } from '../prehospital_care/models/aph.model';
 import { AdminService } from '../admin/admin.service';
-import { CreateAdminDto } from '../admin/dto/create-admin.dto';
 import { Admin } from '../admin/models/admin.models';
 
 @Injectable()

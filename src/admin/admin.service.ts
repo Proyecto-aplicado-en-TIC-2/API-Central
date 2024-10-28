@@ -5,8 +5,6 @@ import { AppValidationException } from 'src/helpers/AppValidationException';
 import { AdminRepository } from './admin.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { Admin } from './models/admin.models';
-import { Brigadier } from '../brigadiers/models/brigadiers.model';
-
 
 @Injectable()
 export class AdminService {
@@ -54,8 +52,7 @@ export class AdminService {
   async updateAdmin(id: string, admin: UpdateAdminDto) {
     try {
       // Validamos si existe él, Id
-      const ExistingAdmin =
-        await this.adminRepository.GetAdminById(id);
+      const ExistingAdmin = await this.adminRepository.GetAdminById(id);
       if (!ExistingAdmin) return false;
 
       // Item temporal con cambios
@@ -69,12 +66,10 @@ export class AdminService {
       if (ExistingAdmin.equals(TempBrigadier)) return false;
 
       // Enviamos cambios
-      const IdResult =
-        await this.adminRepository.updateAdmin(TempBrigadier);
+      const IdResult = await this.adminRepository.updateAdmin(TempBrigadier);
 
       // Consultamos el item actualizado
-      const AdminUpdate =
-        await this.adminRepository.GetAdminById(IdResult);
+      const AdminUpdate = await this.adminRepository.GetAdminById(IdResult);
 
       // Validamos si el item de la base de datos tiene cambios
       if (ExistingAdmin.equals(AdminUpdate)) return false;

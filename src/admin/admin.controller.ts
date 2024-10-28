@@ -3,9 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete, Put,
+  Delete,
+  Put,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
@@ -60,7 +60,8 @@ export class AdminController {
   @Put('/:id')
   async updateAdmin(
     @Param('id') id: string,
-    @Body() admin: UpdateAdminDto): Promise<any> {
+    @Body() admin: UpdateAdminDto,
+  ): Promise<any> {
     try {
       return await this.adminService.updateAdmin(id, admin);
     } catch (error) {

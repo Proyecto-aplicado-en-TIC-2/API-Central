@@ -1,4 +1,4 @@
-import { RelationshipWithTheUniversity } from "src/incidents/dto/create-incident.dto";
+import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
 
 export enum Quadrant {
   'Division-1',
@@ -83,8 +83,8 @@ export enum EquipmentSource {
 
 export enum Cases {
   Incendio,
-  Medico, 
-  Estrctural
+  Medico,
+  Estrctural,
 }
 export class EmergencyReports {
   public id?: string;
@@ -140,8 +140,7 @@ export class EmergencyReports {
     treatment?: string;
     followUp?: FollowUp;
   };
-   
-  
+
   public attendnt?: {
     callHour?: string; // HH/MM/SS
     callAttendntName?: string;

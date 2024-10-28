@@ -39,7 +39,7 @@ export class Auth {
   }
 }
 
-export class AuthDto{
+export class AuthDto {
   public id: string;
   public mail: string;
   public roles: string;
