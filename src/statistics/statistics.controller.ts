@@ -12,7 +12,11 @@ import { StatisticsService } from './statistics.service';
 import { error } from 'console';
 import { Role } from 'src/authorization/role.enum';
 import { Roles } from 'src/authorization/decorators/roles.decorator';
-import { Cases, EmergencyReports, Gender } from 'src/emergency-reports/dto/create-emergency-reports.dto';
+import {
+  Cases,
+  EmergencyReports,
+  Gender,
+} from 'src/emergency-reports/dto/create-emergency-reports.dto';
 import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
 import { GenericError } from 'src/helpers/GenericError';
 
@@ -20,17 +24,20 @@ import { GenericError } from 'src/helpers/GenericError';
 export class StatisticsController {
   public constructor(private readonly statisticsService: StatisticsService) {}
 
-
   @Roles(Role.Administration)
   @Get('/partition/:partition_key')
-  async GetAllReportByPartitionKey(@Param('partition_key') partition_key: Cases): Promise<EmergencyReports[][]> {
+  async GetAllReportByPartitionKey(
+    @Param('partition_key') partition_key: Cases,
+  ): Promise<EmergencyReports[][]> {
     try {
-      return await this.statisticsService.GetAllReportByPartitionKey(partition_key);
+      return await this.statisticsService.GetAllReportByPartitionKey(
+        partition_key,
+      );
     } catch (error) {
       throw new GenericError('GetAllReportByPartitionKey', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/month')
   async GetAllReportByMonth(): Promise<EmergencyReports[]> {
@@ -40,7 +47,7 @@ export class StatisticsController {
       throw new GenericError('GetAllReportByMonth', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/quarter')
   async GetAllReportByQuarter(): Promise<EmergencyReports[]> {
@@ -50,7 +57,7 @@ export class StatisticsController {
       throw new GenericError('GetAllReportByQuarter', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/year')
   async GetAllReportByYear(): Promise<EmergencyReports[]> {
@@ -60,7 +67,7 @@ export class StatisticsController {
       throw new GenericError('GetAllReportByYear', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/quadrant')
   async GetAllReportByQuadrant(): Promise<EmergencyReports[]> {
@@ -70,7 +77,7 @@ export class StatisticsController {
       throw new GenericError('GetAllReportByQuadrant', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/block')
   async GetAllReportByBlock(): Promise<EmergencyReports[]> {
@@ -80,7 +87,7 @@ export class StatisticsController {
       throw new GenericError('GetAllReportByBlock', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/classroom')
   async GetAllReportByClassroom(): Promise<EmergencyReports[]> {
@@ -90,60 +97,76 @@ export class StatisticsController {
       throw new GenericError('GetAllReportByClassroom', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/relationship/:relationshipWithUniversity/partition/:partition_key')
   async GetAllReportByRelationshipWithUniversity(
-    @Param('relationshipWithUniversity') relationshipWithTheUniversity: RelationshipWithTheUniversity,
-    @Param('partition_key') partition_key: Cases
+    @Param('relationshipWithUniversity')
+    relationshipWithTheUniversity: RelationshipWithTheUniversity,
+    @Param('partition_key') partition_key: Cases,
   ): Promise<EmergencyReports[]> {
     try {
-      return await this.statisticsService.GetAllReportByRelationshipWithUniversity(relationshipWithTheUniversity, partition_key);
+      return await this.statisticsService.GetAllReportByRelationshipWithUniversity(
+        relationshipWithTheUniversity,
+        partition_key,
+      );
     } catch (error) {
       throw new GenericError('GetAllReportByRelationshipWithUniversity', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/gender/:gender')
-  async GetAllReportByGender(@Param('gender') gender: Gender): Promise<EmergencyReports[]> {
+  async GetAllReportByGender(
+    @Param('gender') gender: Gender,
+  ): Promise<EmergencyReports[]> {
     try {
       return await this.statisticsService.GetAllReportByGender(gender);
     } catch (error) {
       throw new GenericError('GetAllReportByGender', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/age/:age')
-  async GetAllReportByRangeOfAge(@Param('age') age: string): Promise<EmergencyReports[]> {
+  async GetAllReportByRangeOfAge(
+    @Param('age') age: string,
+  ): Promise<EmergencyReports[]> {
     try {
       return await this.statisticsService.GetAllReportByRangeOfAge(age);
     } catch (error) {
       throw new GenericError('GetAllReportByRangeOfAge', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/avg-response-time/partition/:partition_key')
-  async GetAllReportByAvrgResponseTimeByCase(@Param('partition_key') partition_key: Cases): Promise<EmergencyReports[]> {
+  async GetAllReportByAvrgResponseTimeByCase(
+    @Param('partition_key') partition_key: Cases,
+  ): Promise<EmergencyReports[]> {
     try {
-      return await this.statisticsService.GetAllReportByAvrgResponseTimeByCase(partition_key);
+      return await this.statisticsService.GetAllReportByAvrgResponseTimeByCase(
+        partition_key,
+      );
     } catch (error) {
       throw new GenericError('GetAllReportByAvrgResponseTimeByCase', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/avg-attention-time/partition/:partition_key')
-  async GetAllReportByAvrgAttentionTimeByCase(@Param('partition_key') partition_key: Cases): Promise<EmergencyReports[]> {
+  async GetAllReportByAvrgAttentionTimeByCase(
+    @Param('partition_key') partition_key: Cases,
+  ): Promise<EmergencyReports[]> {
     try {
-      return await this.statisticsService.GetAllReportByAvrgAttentionTimeByCase(partition_key);
+      return await this.statisticsService.GetAllReportByAvrgAttentionTimeByCase(
+        partition_key,
+      );
     } catch (error) {
       throw new GenericError('GetAllReportByAvrgAttentionTimeByCase', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/follow-up')
   async GetAllReportByFollowUp(): Promise<EmergencyReports[]> {
@@ -153,7 +176,7 @@ export class StatisticsController {
       throw new GenericError('GetAllReportByFollowUp', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/equipment-type')
   async GetAllReportByEquipmentType(): Promise<EmergencyReports[]> {
@@ -163,7 +186,7 @@ export class StatisticsController {
       throw new GenericError('GetAllReportByEquipmentType', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/equipment-source')
   async GetAllReportByEquipmentSource(): Promise<EmergencyReports[]> {
@@ -173,7 +196,7 @@ export class StatisticsController {
       throw new GenericError('GetAllReportByEquipmentSource', error);
     }
   }
-  
+
   @Roles(Role.Administration)
   @Get('/secure-line')
   async GetAllReportByUsedSecureLine(): Promise<EmergencyReports[]> {

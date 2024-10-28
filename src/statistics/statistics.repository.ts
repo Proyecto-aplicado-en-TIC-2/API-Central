@@ -1,9 +1,12 @@
 import { KeyVaultService } from 'src/context_db/DbContext.service';
 import { Inject, Injectable } from '@nestjs/common';
-import { Cases, EmergencyReports, Gender } from 'src/emergency-reports/dto/create-emergency-reports.dto';
+import {
+  Cases,
+  EmergencyReports,
+  Gender,
+} from 'src/emergency-reports/dto/create-emergency-reports.dto';
 import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
 import { IStatisticsRepostiory } from './statistics.interface';
-
 
 const databaseId: string = 'risk_management';
 const containerId: string = 'community_upb_reports';
@@ -12,7 +15,9 @@ const containerId: string = 'community_upb_reports';
 export class StatisticsRepostiory implements IStatisticsRepostiory {
   //DB conenection -------------------------------------------------------
   constructor(@Inject(KeyVaultService) private DbConnection: KeyVaultService) {}
-  GetAllReportByPartitionKey(partition_key: Cases): Promise<EmergencyReports[][]> {
+  GetAllReportByPartitionKey(
+    partition_key: Cases,
+  ): Promise<EmergencyReports[][]> {
     throw new Error('Method not implemented.');
   }
   GetAllReportByMonth(): Promise<EmergencyReports[]> {
@@ -33,7 +38,10 @@ export class StatisticsRepostiory implements IStatisticsRepostiory {
   GetAllReportByClassroom(): Promise<EmergencyReports[]> {
     throw new Error('Method not implemented.');
   }
-  GetAllReportByRelationshipWithUniversity(relationshipWithTheUniversity: RelationshipWithTheUniversity, partition_key: Cases): Promise<EmergencyReports[]> {
+  GetAllReportByRelationshipWithUniversity(
+    relationshipWithTheUniversity: RelationshipWithTheUniversity,
+    partition_key: Cases,
+  ): Promise<EmergencyReports[]> {
     throw new Error('Method not implemented.');
   }
   GetAllReportByGender(gender: Gender): Promise<EmergencyReports[]> {
@@ -42,10 +50,14 @@ export class StatisticsRepostiory implements IStatisticsRepostiory {
   GetAllReportByRangeOfAge(age: string): Promise<EmergencyReports[]> {
     throw new Error('Method not implemented.');
   }
-  GetAllReportByAvrgResponseTimeByCase(partition_key: Cases): Promise<EmergencyReports[]> {
+  GetAllReportByAvrgResponseTimeByCase(
+    partition_key: Cases,
+  ): Promise<EmergencyReports[]> {
     throw new Error('Method not implemented.');
   }
-  GetAllReportByAvrgAttentionTimeByCase(partition_key: Cases): Promise<EmergencyReports[]> {
+  GetAllReportByAvrgAttentionTimeByCase(
+    partition_key: Cases,
+  ): Promise<EmergencyReports[]> {
     throw new Error('Method not implemented.');
   }
   GetAllReportByFollowUp(): Promise<EmergencyReports[]> {
@@ -60,5 +72,4 @@ export class StatisticsRepostiory implements IStatisticsRepostiory {
   GetAllReportByUsedSecureLine(): Promise<EmergencyReports[]> {
     throw new Error('Method not implemented.');
   }
-
 }

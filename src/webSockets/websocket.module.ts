@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  forwardRef,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
 import { WebsocketGateway } from './websocket.gateway';
 import { APP_GUARD, Reflector } from '@nestjs/core'; // Importar Reflector
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -15,7 +20,7 @@ import { WebsocketController } from './websockets.controller';
 @Module({
   controllers: [WebsocketController],
   imports: [
-    IncidentsModule,
+    forwardRef(() => IncidentsModule),
     PrehospitalCareModule,
     BrigadiersModule,
     EmergencyReportsModule,

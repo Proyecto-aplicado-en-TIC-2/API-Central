@@ -376,21 +376,21 @@ export class WebsocketGateway
   isAdmin(client: Socket): boolean {
     const user = client['user'];
     console.log('User object:', user.roles);
-    if (user.roles == Role.Administration || user.roles == 'user') // el user es temporal
-    {
+    if (user.roles == Role.Administration || user.roles == 'user') {
+      // el user es temporal
       return true;
     }
     return false;
   }
   extractTokenFromHeader(client: Socket): string | undefined {
     if (client.handshake.headers.cookie?.match(/token=([^;]+)/)?.[1]) {
-      console.log('Encavezados de la peticion', client.handshake.headers);
+      //console.log('Encavezados de la peticion', client.handshake.headers);
       return client.handshake.headers.cookie?.match(/token=([^;]+)/)?.[1];
     }
 
-    console.log('Encavezados de la peticion', client.handshake.headers);
+    //console.log('Encavezados de la peticion', client.handshake.headers);
     const [type, token] =
-    client.handshake.headers.authorization?.split(' ') ?? [];
+      client.handshake.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
 }

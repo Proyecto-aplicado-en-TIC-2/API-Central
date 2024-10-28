@@ -1,11 +1,14 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { IncidentsService } from './incidents.service';
 import { IncidentsController } from './incidents.controller';
 import { KeyVaultService } from 'src/context_db/DbContext.service';
 import { IncidentesRepository } from './incidents.repository';
+import { GatewayModule } from '../webSockets/websocket.module';
+import { WebsocketRepository } from '../webSockets/websocket.repository';
 
 @Module({
   controllers: [IncidentsController],
+  imports: [forwardRef(() => GatewayModule)],
   providers: [
     IncidentsService,
     KeyVaultService,
@@ -13,6 +16,7 @@ import { IncidentesRepository } from './incidents.repository';
       provide: 'IIncidensRepostiory', // Usamos un token para la interfaz
       useClass: IncidentesRepository, // Usamos la clase concreta
     },
+    WebsocketRepository,
   ],
   exports: [IncidentsService],
 })

@@ -1,4 +1,7 @@
-import { EmergencyReports, Gender } from 'src/emergency-reports/dto/create-emergency-reports.dto';
+import {
+  EmergencyReports,
+  Gender,
+} from 'src/emergency-reports/dto/create-emergency-reports.dto';
 import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
 import { Cases } from 'src/webSockets/websocket.dto';
 
@@ -10,7 +13,9 @@ export interface IStatisticsRepostiory {
    * @param partition_key - El tipo de caso (por ejemplo, Incendio, Medico).
    * @returns Una promesa que resuelve con una matriz de reportes de emergencia agrupados por clave de partición.
    */
-  GetAllReportByPartitionKey(partition_key: Cases): Promise<EmergencyReports[][]>;
+  GetAllReportByPartitionKey(
+    partition_key: Cases,
+  ): Promise<EmergencyReports[][]>;
 
   /**
    * Obtiene todos los reportes del mes actual.
@@ -56,7 +61,7 @@ export interface IStatisticsRepostiory {
    */
   GetAllReportByRelationshipWithUniversity(
     relationshipWithTheUniversity: RelationshipWithTheUniversity,
-    partition_key: Cases
+    partition_key: Cases,
   ): Promise<EmergencyReports[]>;
 
   /**
@@ -78,14 +83,18 @@ export interface IStatisticsRepostiory {
    * @param partition_key - El tipo de caso.
    * @returns Una promesa que resuelve con el tiempo promedio de respuesta para el tipo de caso.
    */
-  GetAllReportByAvrgResponseTimeByCase(partition_key: Cases): Promise<EmergencyReports[]>;
+  GetAllReportByAvrgResponseTimeByCase(
+    partition_key: Cases,
+  ): Promise<EmergencyReports[]>;
 
   /**
    * Calcula el tiempo promedio de atención para un tipo de caso específico.
    * @param partition_key - El tipo de caso.
    * @returns Una promesa que resuelve con el tiempo promedio de atención para el tipo de caso.
    */
-  GetAllReportByAvrgAttentionTimeByCase(partition_key: Cases): Promise<EmergencyReports[]>;
+  GetAllReportByAvrgAttentionTimeByCase(
+    partition_key: Cases,
+  ): Promise<EmergencyReports[]>;
 
   /**
    * Obtiene todos los reportes que requieren seguimiento.

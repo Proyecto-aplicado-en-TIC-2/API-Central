@@ -11,7 +11,6 @@ export class WebsocketService {
   ) {}
 
   async GetNewReports(): Promise<ReportDto[]> {
-
     return await this.websocketRepository.GetNewReports();
   }
   async GetAdminActiveByPartitionKey(): Promise<AdminActiveDto> {

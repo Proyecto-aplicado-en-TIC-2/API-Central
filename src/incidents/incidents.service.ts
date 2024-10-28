@@ -1,14 +1,18 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Cases, Incident } from './dto/create-incident.dto';
 import { IIncidensRepostiory } from './incidets.interface';
 import { AppValidationException } from 'src/helpers/AppValidationException';
 import { UpdateIncident } from './dto/update-incident.dto';
+import { IWebsocketRepository } from '../webSockets/websocket.interface';
+import { WebsocketRepository } from '../webSockets/websocket.repository';
 
 @Injectable()
 export class IncidentsService {
   constructor(
     @Inject('IIncidensRepostiory')
     private readonly incidensRepostiory: IIncidensRepostiory,
+    @Inject(forwardRef(() => WebsocketRepository))
+    private readonly websocketRepository: WebsocketRepository,
   ) {}
 
   async GetAllIncidents(): Promise<Incident[]> {
@@ -53,5 +57,9 @@ export class IncidentsService {
       await this.incidensRepostiory.DeleteIncidentByID(Id, partition_key);
 
     return operation;
+  }
+
+  async GetIncidentsOfTheDay(ids: string[]) {
+    return await this.incidensRepostiory.GetIncidentsOfTheDay(ids);
   }
 }

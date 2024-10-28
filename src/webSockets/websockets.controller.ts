@@ -15,11 +15,10 @@ import { Roles } from 'src/authorization/decorators/roles.decorator';
 @Controller('websockets')
 export class WebsocketController {
   public constructor(private readonly websocketService: WebsocketService) {}
-  
+
   @Roles(Role.Administration)
   @Get()
   async GetNewReports(): Promise<ReportDto[]> {
     return await this.websocketService.GetNewReports();
   }
-
 }

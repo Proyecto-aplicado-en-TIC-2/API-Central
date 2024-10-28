@@ -14,6 +14,6 @@ import { StatisticsRepostiory } from './statistics.repository';
       useClass: StatisticsRepostiory, // Usamos la clase concreta
     },
   ],
-  exports: [StatisticsService]
+  exports: [StatisticsService],
 })
 export class IncidentsModule {}

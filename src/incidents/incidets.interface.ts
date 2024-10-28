@@ -12,4 +12,5 @@ export interface IIncidensRepostiory {
   //-------------------- DELETE ---------------------
   DeleteIncidentByID(Id: string, partition_key: Cases): Promise<Incident>;
   //-------------------- MORE -----------------------
+  GetIncidentsOfTheDay(ids: string[]): Promise<Incident[]>;
 }

@@ -1,6 +1,4 @@
-import {
-  Block,
-} from 'src/emergency-reports/dto/create-emergency-reports.dto';
+import { Block } from 'src/emergency-reports/dto/create-emergency-reports.dto';
 
 export enum RelationshipWithTheUniversity {
   universitary,

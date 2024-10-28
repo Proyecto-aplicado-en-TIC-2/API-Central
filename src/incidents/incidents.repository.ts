@@ -105,4 +105,27 @@ export class IncidentesRepository implements IIncidensRepostiory {
       );
     }
   }
+
+  async GetIncidentsOfTheDay(ids: string[]): Promise<Incident[]> {
+    try {
+      const query = {
+        query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@ids, c.id)',
+        parameters: [
+          {
+            name: '@ids',
+            value: ids,
+          },
+        ],
+      };
+      const { resources: results } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(query)
+        .fetchAll();
+
+      return plainToInstance(Incident, results);
+    } catch (error) {
+      throw new DbOperationException('Joham Morales ->' + error.message);
+    }
+  }
 }

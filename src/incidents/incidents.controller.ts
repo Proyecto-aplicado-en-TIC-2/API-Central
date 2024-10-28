@@ -29,6 +29,17 @@ export class IncidentsController {
       throw new GenericError('CreateIncident', error);
     }
   }
+
+  @Roles(Role.Administration)
+  @Post('/GetIncidentsOfTheDay')
+  async GetIncidentsOfTheDay(@Body() ids: string[]) {
+    try {
+      return await this.incidentsService.GetIncidentsOfTheDay(ids);
+    } catch (error) {
+      throw new GenericError('Get incidents of the day', error);
+    }
+  }
+
   @Roles(Role.Administration)
   @Get()
   async GetAllIncidents(): Promise<any> {
@@ -36,7 +47,7 @@ export class IncidentsController {
     return incidents;
   }
   @Roles(Role.Administration)
-  @Get('/:Id')
+  @Get('/:Id/:partition_key')
   async GetIncidentById(
     @Param('Id') Id: string,
     @Param('partition_key') partition_key: Cases,
