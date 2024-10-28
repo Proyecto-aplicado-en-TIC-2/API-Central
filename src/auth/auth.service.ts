@@ -50,7 +50,8 @@ export class AuthService {
       return {
         operation: true,
         access_token: token,
-        roles: auth.type_partition_key
+        roles: auth.type_partition_key,
+        userid: auth.id
 
       };
     } catch (e) {

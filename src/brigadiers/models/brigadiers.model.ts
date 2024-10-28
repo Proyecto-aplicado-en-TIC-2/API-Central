@@ -2,6 +2,7 @@ import { IBrigadier } from '../interfaces/brigadiers.interface';
 import { Exclude } from 'class-transformer';
 import { CreateBrigadierDto } from '../dto/create-brigadiers.dto';
 import { UpdateBrigadiersDto } from '../dto/update-brigadiers.dto';
+import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
 
 const partitionKey = 'brigade_accounts';
 
@@ -12,7 +13,7 @@ export class Brigadier implements IBrigadier {
   last_names: string;
   mail: string;
   phone_number: string;
-  relationship_with_the_university: string;
+  relationshipWithTheUniversity: RelationshipWithTheUniversity;
   in_service: boolean;
   quadrant: string;
 
@@ -42,8 +43,8 @@ export class Brigadier implements IBrigadier {
     brigadier.last_names = Dto.last_names;
     brigadier.mail = Dto.mail;
     brigadier.phone_number = Dto.phone_number;
-    brigadier.relationship_with_the_university =
-      Dto.relationship_with_the_university;
+    brigadier.relationshipWithTheUniversity =
+      Dto.relationshipWithTheUniversity;
     brigadier.in_service = Dto.in_service;
     brigadier.quadrant = Dto.quadrant;
     return brigadier;
@@ -56,8 +57,8 @@ export class Brigadier implements IBrigadier {
     brigadier.last_names = Dto.last_names;
     brigadier.mail = mail;
     brigadier.phone_number = Dto.phone_number;
-    brigadier.relationship_with_the_university =
-      Dto.relationship_with_the_university;
+    brigadier.relationshipWithTheUniversity =
+      Dto.relationshipWithTheUniversity;
     brigadier.in_service = Dto.in_service;
     brigadier.quadrant = Dto.quadrant;
     return brigadier;
@@ -72,8 +73,8 @@ export class Brigadier implements IBrigadier {
       this.last_names === other.last_names &&
       this.mail === other.mail &&
       this.phone_number === other.phone_number &&
-      this.relationship_with_the_university ===
-        other.relationship_with_the_university &&
+      this.relationshipWithTheUniversity ===
+        other.relationshipWithTheUniversity &&
       this.in_service === other.in_service &&
       this.quadrant === other.quadrant
     );

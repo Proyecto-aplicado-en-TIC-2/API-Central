@@ -2,6 +2,7 @@ import { Exclude } from 'class-transformer';
 import { IAPH } from '../interfaces/aph.interface';
 import { CreateAphDto } from '../dto/create-aph.dto';
 import { UpdateAphDto } from '../dto/update-aph.dto';
+import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
 
 const partitionKey = 'prehospital_care_accounts';
 
@@ -12,7 +13,7 @@ export class APH implements IAPH {
   last_names: string;
   mail: string;
   phone_number: string;
-  relationship_with_the_university: string;
+  relationshipWithTheUniversity: RelationshipWithTheUniversity;
   in_service: boolean;
   quadrant: string;
 
@@ -42,8 +43,8 @@ export class APH implements IAPH {
       this.last_names === other.last_names &&
       this.mail === other.mail &&
       this.phone_number === other.phone_number &&
-      this.relationship_with_the_university ===
-        other.relationship_with_the_university &&
+      this.relationshipWithTheUniversity ===
+        other.relationshipWithTheUniversity &&
       this.in_service === other.in_service &&
       this.quadrant === other.quadrant
     );
@@ -56,7 +57,7 @@ export class APH implements IAPH {
     aph.last_names = Dto.last_names;
     aph.mail = Dto.mail;
     aph.phone_number = Dto.phone_number;
-    aph.relationship_with_the_university = Dto.relationship_with_the_university;
+    aph.relationshipWithTheUniversity = Dto.relationshipWithTheUniversity;
     aph.in_service = Dto.in_service;
     aph.quadrant = Dto.quadrant;
     return aph;
@@ -69,7 +70,7 @@ export class APH implements IAPH {
     aph.last_names = Dto.last_names;
     aph.mail = mail;
     aph.phone_number = Dto.phone_number;
-    aph.relationship_with_the_university = Dto.relationship_with_the_university;
+    aph.relationshipWithTheUniversity = Dto.relationshipWithTheUniversity;
     aph.in_service = Dto.in_service;
     aph.quadrant = Dto.quadrant;
     return aph;

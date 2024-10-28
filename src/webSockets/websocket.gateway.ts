@@ -24,12 +24,14 @@ import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
 import { UpdateIncident } from 'src/incidents/dto/update-incident.dto';
 import { PrehospitalCareService } from 'src/prehospital_care/prehospital_care.service';
-import { AuthDto } from 'src/auth/models/auth.models';
+import { Auth, AuthDto } from 'src/auth/models/auth.models';
 import { BrigadiersService } from 'src/brigadiers/brigadiers.service';
 import { EmergencyReports } from 'src/emergency-reports/dto/create-emergency-reports.dto';
 import { EmergencyReportsService } from 'src/emergency-reports/emergency-reports.service';
 import { CommunityService } from 'src/community/community.service';
 import { Community } from 'src/community/models/community.model';
+import { AuthService } from 'src/auth/auth.service';
+import { AuthRepository } from 'src/auth/repositories/auth.repository';
 
 @WebSocketGateway({
   namespace: '/WebSocketGateway',
@@ -53,7 +55,7 @@ export class WebsocketGateway
     private readonly prehospitalCareService: PrehospitalCareService,
     private readonly brigadiersService: BrigadiersService,
     private readonly emergencyReportsService: EmergencyReportsService,
-    private readonly communityService: CommunityService,
+    private readonly communityService: CommunityService
   ) {}
   @WebSocketServer()
   server: Server;
@@ -110,9 +112,33 @@ export class WebsocketGateway
     const user = client['user'];
     console.log(data);
 
+
+
     try {
       //creamos el incidente
       const incident_obj: Incident = plainToInstance(Incident, data);
+      let user_info
+      
+      if(this.isAPH(client)){
+        console.log('es aph')
+        user_info =  await this.prehospitalCareService.GetAPHById(user.id);
+      }else if(this.isBrigadiers(client)){
+        console.log('es brigadisa')
+        user_info =  await this.brigadiersService.GetBrigadierById(user.id);
+      }else if(this.isUser(client)){
+        console.log('es usuario')
+        user_info =  await this.communityService.GetCommunityUserById(user.id);
+      }else{
+        console.log('es admin o algo salio mal')
+        user_info = undefined;
+      }
+      console.log(user_info)
+      incident_obj.reporter = {
+        id: user.id,
+        names: user_info.names,
+        lastNames: user_info.last_names,
+        relationshipWithTheUniversity: user_info.relationshipWithTheUniversity
+      }
       const inicdent: UpdateIncident =
         await this.incidentsService.CreateIncident(incident_obj);
       //creamos el reporte de seguimiento
@@ -379,6 +405,36 @@ export class WebsocketGateway
     const user = client['user'];
     console.log('User object:', user.roles);
     if (user.roles == Role.Administration || user.roles == 'user') {
+      // el user es temporal
+      return true;
+    }
+    return false;
+  }
+
+  isAPH(client: Socket): boolean {
+    const user = client['user'];
+    console.log('User object:', user.roles);
+    if (user.roles == Role.APH) {
+      // el user es temporal
+      return true;
+    }
+    return false;
+  }
+
+  isBrigadiers(client: Socket): boolean {
+    const user = client['user'];
+    console.log('User object:', user.roles);
+    if (user.roles == Role.Brigadiers) {
+      // el user es temporal
+      return true;
+    }
+    return false;
+  }
+
+  isUser(client: Socket): boolean {
+    const user = client['user'];
+    console.log('User object:', user.roles);
+    if (user.roles == Role.UPBCommunity) {
       // el user es temporal
       return true;
     }
