@@ -17,6 +17,8 @@ import { Community } from '../community/models/community.model';
 import { APH } from '../prehospital_care/models/aph.model';
 import { AdminService } from '../admin/admin.service';
 import { Admin } from '../admin/models/admin.models';
+import { Roles } from 'src/authorization/decorators/roles.decorator';
+import { Role } from 'src/authorization/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -44,9 +46,18 @@ export class AuthService {
         mail: auth.mail,
         roles: auth.type_partition_key,
       };
-
+      let user_details;
       const token = this.jwtService.sign(payload);
-      const user_details: Community = await this.communityService.GetCommunityUserById(auth.id);
+      if(auth.type_partition_key == Role.UPBCommunity){
+        user_details = await this.communityService.GetCommunityUserById(auth.id);
+      } else if(auth.type_partition_key == Role.Brigadiers){
+        user_details = await this.brigadiersService.GetBrigadierById(auth.id);
+      }else if(auth.type_partition_key == Role.APH){
+        user_details = await this.prehospitalCareService.GetAPHById(auth.id);
+      }else{
+        user_details = await this.adminService.getAdminById(auth.id);
+      }
+      
       return {
         operation: true,
         access_token: token,
