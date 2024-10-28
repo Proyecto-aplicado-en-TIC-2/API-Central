@@ -46,13 +46,15 @@ export class AuthService {
       };
 
       const token = this.jwtService.sign(payload);
-
+      const user_details: Community = await this.communityService.GetCommunityUserById(auth.id);
       return {
         operation: true,
         access_token: token,
         roles: auth.type_partition_key,
-        userid: auth.id
-
+        userid: auth.id,
+        names: user_details.names,
+        lastNames: user_details.last_names,
+        Phone: user_details.phone_number
       };
     } catch (e) {
       throw new BadGatewayException('Error en GetBrigadiersById ' + e);

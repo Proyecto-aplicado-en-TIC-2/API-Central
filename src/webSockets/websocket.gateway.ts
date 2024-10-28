@@ -112,8 +112,6 @@ export class WebsocketGateway
     const user = client['user'];
     console.log(data);
 
-
-
     try {
       //creamos el incidente
       const incident_obj: Incident = plainToInstance(Incident, data);
@@ -441,14 +439,16 @@ export class WebsocketGateway
     return false;
   }
   extractTokenFromHeader(client: Socket): string | undefined {
-    if (client.handshake.headers.cookie?.match(/token=([^;]+)/)?.[1]) {
-      //console.log('Encavezados de la peticion', client.handshake.headers);
-      return client.handshake.headers.cookie?.match(/token=([^;]+)/)?.[1];
+    console.log(client.handshake.query.authorization)
+    console.log(client.handshake.query.Authorization)
+    const authorizationHeader = client.handshake.headers.authorization;
+    if (authorizationHeader) {
+      const [type, token] = authorizationHeader.split(' ');
+      return type === 'Bearer' ? token : undefined;
     }
-
-    //console.log('Encavezados de la peticion', client.handshake.headers);
-    const [type, token] =
-      client.handshake.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    
+    // Alternativa si está en cookies
+    return client.handshake.headers.cookie?.match(/token=([^;]+)/)?.[1];
+   
   }
 }
