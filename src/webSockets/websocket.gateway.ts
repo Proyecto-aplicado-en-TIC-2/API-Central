@@ -19,7 +19,7 @@ import { Reflector } from '@nestjs/core';
 import { IncidentsService } from 'src/incidents/incidents.service';
 import { WebsocketService } from './websocket.service';
 import { AphCases, PayLoadDto, ReportDto } from './websocket.dto';
-import { Incident } from 'src/incidents/dto/create-incident.dto';
+import { Incident, Priorty } from 'src/incidents/dto/create-incident.dto';
 import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
 import { UpdateIncident } from 'src/incidents/dto/update-incident.dto';
@@ -178,6 +178,7 @@ export class WebsocketGateway
           Lugar: incident.location,
           Id_reporte: case_data.case_id,
           partition_key: case_data.partition_key,
+          Priorty: incident.priority
         });
         console.log('se pidio alludam a un brigadista');
       }
@@ -219,6 +220,7 @@ export class WebsocketGateway
           Lugar: incident.location,
           Id_reporte: case_data.case_id,
           partition_key: case_data.partition_key,
+          Priorty: incident.priority
         });
       } else {
         console.log('no es admin, se evaluan casos');

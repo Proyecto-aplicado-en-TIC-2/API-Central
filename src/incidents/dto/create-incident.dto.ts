@@ -13,9 +13,16 @@ export enum Cases {
   Estrctural,
 }
 
+export enum Priorty{
+  Alta,
+  Media,
+  Baja
+}
+
 export class Incident {
   //Id Auto generate for CosmosDB
   public partition_key: Cases;
+  public priority?: Priorty
   public reporter?: {
     id?: string;
     names?: string;
