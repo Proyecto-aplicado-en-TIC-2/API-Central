@@ -368,15 +368,17 @@ export class WebsocketGateway
    */
   async EmitById(id: string, eventName: string, data: any) {
     if (!this.hashMap_users_conected.has(id)) {
-      new Error('La persona no existe o no esta conectada'); // Corrige aquí
-    }
-    // Obtiene el WebSocket_id del mapa
-    const WebSocket_id: string = await this.hashMap_users_conected.get(id);
+      console.log('🟪','El Socket con el id=',id,'No existe 💀💀💀')
+      //new Error('La persona no existe o no esta conectada'); // Corrige aquí
+    } else  {
+      // Obtiene el WebSocket_id del mapa
+      const WebSocket_id: string = await this.hashMap_users_conected.get(id);
 
-    const adminListeningEmit = await (this.server?.sockets as any).get(
-      WebSocket_id,
-    );
-    await adminListeningEmit.emit(eventName, data);
+      const adminListeningEmit = await (this.server?.sockets as any).get(
+        WebSocket_id,
+      );
+      await adminListeningEmit.emit(eventName, data);
+    }
   }
   /**
    * event emit hacia el admin conectado, si no esta coenctado error

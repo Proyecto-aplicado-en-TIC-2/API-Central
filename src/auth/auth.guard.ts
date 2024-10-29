@@ -56,9 +56,19 @@ export class AuthGuard implements CanActivate {
       return type === 'Bearer' ? token : undefined;
     } else if ('handshake' in request) {
       // Es una conexión WebSocket
-      const [type, token] =
+      console.log('🔥','----- Guard Es una conexión WebSocket -----','🔥')
+      /**const [type, token] =
         request.handshake.headers.authorization?.split(' ') ?? [];
-      return type === 'Bearer' ? token : undefined;
+      return type === 'Bearer' ? token : undefined;*/
+
+      const authorizationHeader = request.handshake.headers.authorization;
+      if (authorizationHeader) {
+        const [type, token] = authorizationHeader.split(' ');
+        return type === 'Bearer' ? token : undefined;
+      }
+
+      // Alternativa si está en cookies
+      return request.handshake.headers.cookie?.match(/token=([^;]+)/)?.[1];
     }
     return undefined;
   }
