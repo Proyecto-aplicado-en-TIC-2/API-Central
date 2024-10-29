@@ -202,7 +202,7 @@ export class WebsocketGateway
           Lugar: incident.location,
           Id_reporte: case_data.case_id,
           partition_key: case_data.partition_key,
-          Priorty: incident.priority,
+          priority: incident.priority,
           Reporter: incident.reporter
         });
         console.log('se pidio alludam a un brigadista');
