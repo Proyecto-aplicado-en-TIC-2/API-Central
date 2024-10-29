@@ -257,7 +257,7 @@ export class WebsocketGateway
         });
       } else {
         console.log('no es admin, se evaluan casos');
-        const aph_actions: AphCases = plainToInstance(AphCases, data);
+        let aph_actions: AphCases = plainToInstance(AphCases, data);
         console.log(aph_actions);
 
         if (aph_actions.close_case == 'true') {
@@ -290,25 +290,25 @@ export class WebsocketGateway
             await this.communityService.GetCommunityUserById(
               report_close.reporter_Id,
             );
-
-          const full_informe: EmergencyReports = {
-            id: report_close.id,
-            partition_key: report_close.partition_key,
-            date: report_close.date,
-            location: {
-              block: incident.location.block,
-              classroom: incident.location.classroom,
-              pointOfReference: incident.location.pointOfReference,
-            },
-            reporter: {
-              names: reporter.names,
-              lastNames: reporter.last_names,
-              relationshipWithTheUniversity:
-                reporter.relationshipWithTheUniversity,
-            },
-            aphThatTakeCare: report_close.aphThatTakeCare_Id,
-          };
-
+            
+            // Agregar o actualizar campos en `aph_actions` con nuevos datos
+            aph_actions = Object.assign(aph_actions, {
+              id: report_close.id,
+              partition_key: report_close.partition_key,
+              date: report_close.date,
+              location: {
+                block: incident.location.block,
+                classroom: incident.location.classroom,
+                pointOfReference: incident.location.pointOfReference,
+              },
+              reporter: {
+                names: reporter.names,
+                lastNames: reporter.last_names,
+                relationshipWithTheUniversity: reporter.relationshipWithTheUniversity,
+              },
+              aphThatTakeCare: report_close.aphThatTakeCare_Id,
+            });
+          const full_informe: EmergencyReports = plainToInstance(EmergencyReports, aph_actions)
           const full_inform_incert: EmergencyReports =
             await this.emergencyReportsService.CreateEmergencyReport(
               full_informe,

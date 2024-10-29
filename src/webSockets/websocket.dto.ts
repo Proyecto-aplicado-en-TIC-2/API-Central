@@ -1,3 +1,5 @@
+import { EmergencyReports } from "src/emergency-reports/dto/create-emergency-reports.dto";
+
 export enum Cases {
   Incendio,
   Medico,
@@ -37,11 +39,11 @@ export class PayLoadDto {
   public partition_key: Cases;
 }
 
-export class AphCases {
+export class AphCases extends EmergencyReports {
   public help?: {
-    user_id: string;
-    case_id: string;
-    partition_key: Cases;
+    user_id?: string;
+    case_id?: string;
+    partition_key?: Cases;
   };
   public hourArrive?: string;
   public close_case?: string;
