@@ -20,7 +20,7 @@ export class WebsocketRepository implements IWebsocketRepository {
         const querySpec = {
           query:
              'SELECT * FROM c WHERE c.aphThatTakeCare_Id = @aphThatTakeCare_Id' +
-             'AND c.State = "en_proceso"',
+             ' AND c.State = "en_proceso"',
           parameters: [
             {
               name: '@aphThatTakeCare_Id',
