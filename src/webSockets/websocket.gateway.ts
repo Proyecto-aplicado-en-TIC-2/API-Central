@@ -453,16 +453,14 @@ export class WebsocketGateway
     return false;
   }
   extractTokenFromHeader(client: Socket): string | undefined {
-    console.log(client.handshake.query.authorization)
-    console.log(client.handshake.query.Authorization)
-    const authorizationHeader = client.handshake.headers.authorization;
-    if (authorizationHeader) {
-      const [type, token] = authorizationHeader.split(' ');
-      return type === 'Bearer' ? token : undefined;
+    if (client.handshake.headers.cookie?.match(/token=([^;]+)/)?.[1]) {
+      console.log('Encavezados de la peticion', client.handshake.headers);
+      return client.handshake.headers.cookie?.match(/token=([^;]+)/)?.[1];
     }
-    
-    // Alternativa si está en cookies
-    return client.handshake.headers.cookie?.match(/token=([^;]+)/)?.[1];
-   
+
+    console.log('Encavezados de la peticion', client.handshake.headers);
+    const [type, token] =
+    client.handshake.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
   }
 }
