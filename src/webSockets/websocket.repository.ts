@@ -132,8 +132,12 @@ export class WebsocketRepository implements IWebsocketRepository {
           .container(containerId)
           .items.upsert(report);
 
+      console.log('upsert CreateReport good' )
+      console.log(CreateReportDto)
       if (CreateReportDto) {
-        return plainToInstance(ReportDto, CreateReportDto);
+        const item: ReportDto = plainToInstance(ReportDto, CreateReportDto);
+        console.log(item)
+        return item;
       }
       return null;
     } catch (error) {

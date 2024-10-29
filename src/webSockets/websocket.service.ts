@@ -23,6 +23,7 @@ export class WebsocketService {
     if (operation == null) {
       throw new AppValidationException("Operation executed but wasn't changes");
     }
+    console.log('CreateReportservice good')
     return operation;
   }
 

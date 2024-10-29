@@ -137,8 +137,11 @@ export class WebsocketGateway
         lastNames: user_info.last_names,
         relationshipWithTheUniversity: user_info.relationshipWithTheUniversity
       }
+      console.log('incident_obj actualizado');
+      console.log(incident_obj);
       const inicdent: UpdateIncident =
         await this.incidentsService.CreateIncident(incident_obj);
+      console.log('UpdateIncident good');
       //creamos el reporte de seguimiento
       const now = new Date();
       const date = now.toISOString().split('T')[0];
@@ -158,10 +161,14 @@ export class WebsocketGateway
           hourCloseAttentionn: '',
         },
       };
+      console.log('report update good');
+      console.log(report)
       await this.websocketService.CreateReport(report);
 
-      this.AdminEmit('Reporte_Resivido', inicdent);
+      //
       client.emit('Mensaje_Enviado', 'Su reporte a sido enviado con extio');
+      this.AdminEmit('Reporte_Resivido', inicdent);
+      
     } catch (error) {
       throw new GenericError('handleReport', error);
     }
@@ -385,20 +392,23 @@ export class WebsocketGateway
   /**
    * event emit hacia el admin conectado, si no esta coenctado error
    */
+
   AdminEmit(eventName: string, data: any) {
-    const WebSocket_id: string = this.hashMap_users_conected.get(
-      this.admiSaved.id,
-    );
-    console.log(WebSocket_id);
-
-    const adminListeningEmit = (this.server?.sockets as any).get(WebSocket_id);
-
-    this.hashMap_users_conected.forEach((value, key) => {
-      console.log(`Clave: ${key}, Valor: ${value}`);
-    });
-
-    adminListeningEmit.emit(eventName, data);
-  }
+    if(!this.hashMap_users_conected.has(this.admiSaved.id))    {
+      console.log('🟪','El Socket para admin con el id=',this.admiSaved.id,'No esta conectado 💀💀💀')} {
+      const WebSocket_id: string = this.hashMap_users_conected.get(
+        this.admiSaved.id,);
+      console.log(WebSocket_id);
+  
+        const adminListeningEmit = (this.server?.sockets as any).get(WebSocket_id);
+  
+        this.hashMap_users_conected.forEach((value, key) => {
+          console.log(`Clave: ${key}, Valor: ${value}`);
+        });
+  
+        adminListeningEmit.emit(eventName, data);
+      }
+    }
   /**
    * devuelve true si es Administration
    * falso si no es Administration
