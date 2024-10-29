@@ -55,7 +55,7 @@ export class IncidentesRepository implements IIncidensRepostiory {
 
   async CreateIncident(incident: Incident): Promise<UpdateIncident | null> {
     try {
-      const { resource: CreateIncident } =
+      const { resource: CreateIncident } = 
         await this.DbConnection.getDbConnection()
           .database(databaseId)
           .container(containerId)

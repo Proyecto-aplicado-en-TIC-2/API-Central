@@ -10,6 +10,11 @@ export class WebsocketService {
     private readonly websocketRepository: IWebsocketRepository,
   ) {}
 
+  async GetReportsIdsById(id: string): Promise<string[]> {
+
+    return await this.websocketRepository.GetReportsIdsById(id);
+  }
+   
   async GetNewReports(): Promise<ReportDto[]> {
     return await this.websocketRepository.GetNewReports();
   }

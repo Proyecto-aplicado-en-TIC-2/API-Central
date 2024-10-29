@@ -14,10 +14,23 @@ import { GenericError } from 'src/helpers/GenericError';
 import { UpdateIncident } from './dto/update-incident.dto';
 import { Roles } from 'src/authorization/decorators/roles.decorator';
 import { Role } from 'src/authorization/role.enum';
+import { WebsocketService } from 'src/webSockets/websocket.service';
 
 @Controller('incidents')
 export class IncidentsController {
-  public constructor(private readonly incidentsService: IncidentsService) {}
+  public constructor(
+    private readonly incidentsService: IncidentsService,
+    private readonly websocketService: WebsocketService
+  ) {}
+
+
+  
+  @Roles(Role.Administration, Role.APH, Role.Brigadiers)
+  @Get('/IncidentIdsById/:id')
+  async GetIncidentIdsById(@Param('id') id: string): Promise<Incident[]>{
+    const ids: string[] = await this.websocketService.GetReportsIdsById(id)
+    return await this.incidentsService.GetIncidentsOfTheDay(ids);
+  }
 
   @Roles(Role.Administration, Role.UPBCommunity, Role.APH, Role.Brigadiers)
   @Post()

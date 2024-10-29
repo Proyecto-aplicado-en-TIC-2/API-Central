@@ -24,7 +24,7 @@ import { WebsocketController } from './websockets.controller';
     PrehospitalCareModule,
     BrigadiersModule,
     EmergencyReportsModule,
-    CommunityModule,
+    CommunityModule
   ], // Importa el módulo que contiene el controlador
   providers: [
     WebsocketService,

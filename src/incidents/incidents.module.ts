@@ -5,10 +5,13 @@ import { KeyVaultService } from 'src/context_db/DbContext.service';
 import { IncidentesRepository } from './incidents.repository';
 import { GatewayModule } from '../webSockets/websocket.module';
 import { WebsocketRepository } from '../webSockets/websocket.repository';
+import { WebsocketController } from 'src/webSockets/websockets.controller';
 
 @Module({
   controllers: [IncidentsController],
-  imports: [forwardRef(() => GatewayModule)],
+  imports: [forwardRef(() => GatewayModule),
+    GatewayModule
+  ],
   providers: [
     IncidentsService,
     KeyVaultService,
