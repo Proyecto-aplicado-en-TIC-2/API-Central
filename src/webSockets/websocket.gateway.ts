@@ -15,7 +15,7 @@ import { Roles } from 'src/authorization/decorators/roles.decorator';
 import { Role } from 'src/authorization/role.enum';
 import { jwtConstants } from 'src/auth/constants';
 import { JwtService } from '@nestjs/jwt';
-import { Reflector } from '@nestjs/core';
+import { InitializeOnPreviewAllowlist, Reflector } from '@nestjs/core';
 import { IncidentsService } from 'src/incidents/incidents.service';
 import { WebsocketService } from './websocket.service';
 import { AphCases, PayLoadDto, ReportDto } from './websocket.dto';
@@ -202,7 +202,8 @@ export class WebsocketGateway
           Lugar: incident.location,
           Id_reporte: case_data.case_id,
           partition_key: case_data.partition_key,
-          Priorty: incident.priority
+          Priorty: incident.priority,
+          Reporter: incident.reporter
         });
         console.log('se pidio alludam a un brigadista');
       }
@@ -244,7 +245,8 @@ export class WebsocketGateway
           Lugar: incident.location,
           Id_reporte: case_data.case_id,
           partition_key: case_data.partition_key,
-          Priorty: incident.priority
+          Priorty: incident.priority,
+          Reporter: incident.reporter
         });
       } else {
         console.log('no es admin, se evaluan casos');
