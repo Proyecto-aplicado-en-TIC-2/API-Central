@@ -372,7 +372,7 @@ export class WebsocketGateway
         }else{
           const case_info_user : Incident = await this.incidentsService
             .GetIncidentById(aph_actions.help.case_id, aph_actions.help.partition_key)
-          this.EmitById(case_info_user.reporter.id, 'on_the_way', {on_the_way: true})
+          this.EmitById(case_info_user.reporter.id, 'on_the_way', true)
         }
       }
     } catch (error) {
