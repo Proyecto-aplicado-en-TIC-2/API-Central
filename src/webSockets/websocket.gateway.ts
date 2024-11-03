@@ -311,6 +311,8 @@ export class WebsocketGateway
             
             // Agregar o actualizar campos en `aph_actions` con nuevos datos
             aph_actions = Object.assign(aph_actions, {
+              whatIsHappening: incident.whatIsHappening,
+              affected: incident.affected,
               id: report_close.id,
               partition_key: report_close.partition_key,
               date: report_close.date,
