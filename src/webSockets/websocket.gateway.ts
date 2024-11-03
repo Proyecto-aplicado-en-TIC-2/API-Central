@@ -32,6 +32,7 @@ import { CommunityService } from 'src/community/community.service';
 import { Community } from 'src/community/models/community.model';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthRepository } from 'src/auth/repositories/auth.repository';
+import { APH } from 'src/prehospital_care/models/aph.model';
 
 @WebSocketGateway({
   namespace: '/WebSocketGateway',
@@ -225,17 +226,26 @@ export class WebsocketGateway
     try {
       console.log('se entro a aph');
       if (this.isAdmin(client)) {
+        console.log('es un admin adentro de aph');
         //--------------actualizar el reporte con el nuevo id ----------
         const case_data: PayLoadDto = plainToInstance(PayLoadDto, data);
+        console.log('PayLoadDto aph good');
         //obtener el reporte
-        const search_report: ReportDto =
+        let search_report: ReportDto =
           await this.websocketService.GetReportById(
             case_data.case_id,
             case_data.partition_key,
           );
+          console.log('search_report aph good');
         //asignar el aph a cargo
-        search_report.aphThatTakeCare_Id = case_data.user_id;
+        console.log(case_data.user_id)
+        console.log(search_report)
 
+        search_report = Object.assign(search_report, {
+          aphThatTakeCare_Id: case_data.user_id
+        });
+        console.log('aphThatTakeCare_Id = user_id good');
+        console.log(search_report);
         await this.websocketService.PatchReport(search_report);
         console.log('PatchReport good');
         //enviar data
@@ -248,19 +258,27 @@ export class WebsocketGateway
         console.log('UpdateIncident good');
         this.EmitById(case_data.user_id, 'APH_case', {
           message:
-            'Se le a asignado un caso, por favor dirijirse inmediatmentea : ',
+            'Se le a asignado un caso',
           Lugar: incident.location,
           Id_reporte: case_data.case_id,
           partition_key: case_data.partition_key,
           Priorty: incident.priority,
           Reporter: incident.reporter
         });
+
+        const APH_info: APH = await this.prehospitalCareService.GetAPHById(case_data.user_id);
+        this.EmitById(incident.reporter.id, 'Report_assign', {
+          APH_name: `${APH_info.names} ${APH_info.last_names}`,
+          APH_phone: APH_info.phone_number,
+          APH_time: '10'
+        });
+
       } else {
         console.log('no es admin, se evaluan casos');
         let aph_actions: AphCases = plainToInstance(AphCases, data);
         console.log(aph_actions);
 
-        if (aph_actions.close_case == 'true') {
+        if (aph_actions.close_case == 'true' && aph_actions.on_the_way == 'false') {
           const search_report: ReportDto =
             await this.websocketService.GetReportById(
               aph_actions.help.case_id,
@@ -345,12 +363,16 @@ export class WebsocketGateway
           console.log('se envio al reporter');
 
           console.log('caso cerrado correctmante');
-        } else {
+        } else if(aph_actions.close_case == 'false' && aph_actions.on_the_way == 'false'){
           this.AdminEmit('Aph_help', {
             message: 'Un ahp necesita alluda con un caso',
             case_info: aph_actions.help,
           });
           console.log('aph pide alluda');
+        }else{
+          const case_info_user : Incident = await this.incidentsService
+            .GetIncidentById(aph_actions.help.case_id, aph_actions.help.partition_key)
+          this.EmitById(case_info_user.reporter.id, 'on_the_way', {on_the_way: true})
         }
       }
     } catch (error) {

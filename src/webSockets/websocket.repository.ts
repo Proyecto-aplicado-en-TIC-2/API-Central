@@ -203,6 +203,8 @@ export class WebsocketRepository implements IWebsocketRepository {
         .container(containerId)
         .item(reportDto.id, reportDto.partition_key)
         .replace(reportDto);
+
+        console.log(item)
       return plainToInstance(ReportDto, item);
     } catch (error) {
       throw new DbOperationException(error.message);

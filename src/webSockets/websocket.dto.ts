@@ -47,4 +47,5 @@ export class AphCases extends EmergencyReports {
   };
   public hourArrive?: string;
   public close_case?: string;
+  public on_the_way?: string;
 }
