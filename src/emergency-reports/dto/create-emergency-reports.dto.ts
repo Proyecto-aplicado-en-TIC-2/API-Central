@@ -89,6 +89,8 @@ export enum Cases {
 export class EmergencyReports {
   public id?: string;
   public partition_key?: Cases;
+  public whatIsHappening?: string;
+  public affected?: string;
 
   public date?: {
     date?: string;

@@ -23,6 +23,8 @@ export class Incident {
   //Id Auto generate for CosmosDB
   public partition_key: Cases;
   public priority?: Priorty
+  public whatIsHappening?: string;
+  public affected?: string;
   public reporter?: {
     id?: string;
     names?: string;
