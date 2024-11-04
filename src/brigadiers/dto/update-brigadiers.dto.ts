@@ -1,5 +1,6 @@
 import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
 import { IBrigadier } from '../interfaces/brigadiers.interface';
+import { UserDetails } from 'src/auth/dto/user-details.dto';
 
 export class UpdateBrigadiersDto implements IBrigadier {
   readonly names: string;
@@ -8,4 +9,5 @@ export class UpdateBrigadiersDto implements IBrigadier {
   readonly relationshipWithTheUniversity: RelationshipWithTheUniversity;
   readonly in_service: boolean;
   readonly quadrant: string;
+  public userDetails : UserDetails;
 }

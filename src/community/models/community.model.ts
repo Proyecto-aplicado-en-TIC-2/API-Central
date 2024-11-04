@@ -3,6 +3,7 @@ import { Exclude } from 'class-transformer';
 import { CreateCommunityUserDto } from '../dto/create-community.dto';
 import { UpdateCommunityUserDto } from '../dto/update-community.dto';
 import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
+import { UserDetails } from 'src/auth/dto/user-details.dto';
 
 export class Community implements ICommunity {
   static partition_key: string = 'upb_community_accounts';
@@ -14,6 +15,7 @@ export class Community implements ICommunity {
   mail: string;
   phone_number: string;
   relationshipWithTheUniversity: RelationshipWithTheUniversity;
+  public userDetails : UserDetails;
 
   @Exclude() // Esconder propiedad
   _rid: string;
@@ -38,6 +40,7 @@ export class Community implements ICommunity {
     community.mail = Dto.mail;
     community.phone_number = Dto.phone_number;
     community.relationshipWithTheUniversity = Dto.relationshipWithTheUniversity;
+    community.userDetails = Dto.userDetails;
     return community;
   }
 
@@ -49,6 +52,7 @@ export class Community implements ICommunity {
     community.mail = mail;
     community.phone_number = Dto.phone_number;
     community.relationshipWithTheUniversity = Dto.relationshipWithTheUniversity;
+    community.userDetails = Dto.userDetails;
     return community;
   }
 
@@ -61,7 +65,8 @@ export class Community implements ICommunity {
       this.last_names === other.last_names &&
       this.mail === other.mail &&
       this.phone_number === other.phone_number &&
-      this.relationshipWithTheUniversity === other.relationshipWithTheUniversity
+      this.relationshipWithTheUniversity === other.relationshipWithTheUniversity &&
+      this.userDetails === other.userDetails
     );
   }
 }

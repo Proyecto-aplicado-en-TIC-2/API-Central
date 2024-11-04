@@ -3,6 +3,7 @@ import { Exclude } from 'class-transformer';
 import { CreateBrigadierDto } from '../dto/create-brigadiers.dto';
 import { UpdateBrigadiersDto } from '../dto/update-brigadiers.dto';
 import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
+import { UserDetails } from 'src/auth/dto/user-details.dto';
 
 const partitionKey = 'brigade_accounts';
 
@@ -16,6 +17,7 @@ export class Brigadier implements IBrigadier {
   relationshipWithTheUniversity: RelationshipWithTheUniversity;
   in_service: boolean;
   quadrant: string;
+  public userDetails : UserDetails;
 
   @Exclude() // Esconder propiedad
   _rid: string;
@@ -47,6 +49,7 @@ export class Brigadier implements IBrigadier {
       Dto.relationshipWithTheUniversity;
     brigadier.in_service = Dto.in_service;
     brigadier.quadrant = Dto.quadrant;
+    brigadier.userDetails = Dto.userDetails;
     return brigadier;
   }
 
@@ -61,6 +64,7 @@ export class Brigadier implements IBrigadier {
       Dto.relationshipWithTheUniversity;
     brigadier.in_service = Dto.in_service;
     brigadier.quadrant = Dto.quadrant;
+    brigadier.userDetails = Dto.userDetails;
     return brigadier;
   }
 
@@ -76,7 +80,8 @@ export class Brigadier implements IBrigadier {
       this.relationshipWithTheUniversity ===
         other.relationshipWithTheUniversity &&
       this.in_service === other.in_service &&
-      this.quadrant === other.quadrant
+      this.quadrant === other.quadrant &&
+      this.userDetails === other.userDetails
     );
   }
 }

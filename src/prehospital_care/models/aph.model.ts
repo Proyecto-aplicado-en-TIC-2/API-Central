@@ -3,6 +3,7 @@ import { IAPH } from '../interfaces/aph.interface';
 import { CreateAphDto } from '../dto/create-aph.dto';
 import { UpdateAphDto } from '../dto/update-aph.dto';
 import { RelationshipWithTheUniversity } from 'src/incidents/dto/create-incident.dto';
+import { UserDetails } from 'src/auth/dto/user-details.dto';
 
 const partitionKey = 'prehospital_care_accounts';
 
@@ -16,6 +17,7 @@ export class APH implements IAPH {
   relationshipWithTheUniversity: RelationshipWithTheUniversity;
   in_service: boolean;
   quadrant: string;
+  public userDetails : UserDetails;
 
   @Exclude() // Esconder propiedad
   _rid: string;
@@ -46,7 +48,8 @@ export class APH implements IAPH {
       this.relationshipWithTheUniversity ===
         other.relationshipWithTheUniversity &&
       this.in_service === other.in_service &&
-      this.quadrant === other.quadrant
+      this.quadrant === other.quadrant &&
+      this.userDetails === other.userDetails
     );
   }
 
@@ -60,6 +63,7 @@ export class APH implements IAPH {
     aph.relationshipWithTheUniversity = Dto.relationshipWithTheUniversity;
     aph.in_service = Dto.in_service;
     aph.quadrant = Dto.quadrant;
+    aph.userDetails = Dto.userDetails;
     return aph;
   }
 
@@ -73,6 +77,7 @@ export class APH implements IAPH {
     aph.relationshipWithTheUniversity = Dto.relationshipWithTheUniversity;
     aph.in_service = Dto.in_service;
     aph.quadrant = Dto.quadrant;
+    aph.userDetails = Dto.userDetails;
     return aph;
   }
 }
