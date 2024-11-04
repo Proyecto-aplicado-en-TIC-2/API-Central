@@ -65,6 +65,11 @@ export class AuthService {
         userid: auth.id,
         names: user_details.names,
         lastNames: user_details.last_names,
+        mail: user_details.mail,
+        phone_number: user_details.phone_number,
+        relationshipWithTheUniversity: user_details.relationshipWithTheUniversity,
+        userDetails: user_details.userDetails
+
       };
     } catch (e) {
       throw new BadGatewayException('Error en GetBrigadiersById ' + e);
