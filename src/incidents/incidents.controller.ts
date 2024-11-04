@@ -29,7 +29,7 @@ export class IncidentsController {
   @Get('/IncidentIdsById/:id')
   async GetIncidentIdsById(@Param('id') id: string): Promise<Incident[]>{
     const ids: string[] = await this.websocketService.GetReportsIdsById(id)
-    return await this.incidentsService.GetIncidentsOfTheDay(ids);
+    return await this.incidentsService.GetIncidentsFromList(ids);
   }
 
   @Roles(Role.Administration, Role.UPBCommunity, Role.APH, Role.Brigadiers)
@@ -44,10 +44,10 @@ export class IncidentsController {
   }
 
   @Roles(Role.Administration)
-  @Post('/GetIncidentsOfTheDay')
-  async GetIncidentsOfTheDay(@Body() ids: string[]) {
+  @Post('/IncidentsFromList')
+  async GetIncidentsFromList(@Body() ids: string[]) {
     try {
-      return await this.incidentsService.GetIncidentsOfTheDay(ids);
+      return await this.incidentsService.GetIncidentsFromList(ids);
     } catch (error) {
       throw new GenericError('Get incidents of the day', error);
     }

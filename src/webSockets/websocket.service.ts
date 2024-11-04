@@ -84,4 +84,8 @@ export class WebsocketService {
       partition_key_Cases,
     );
   }
+
+  async GetOpenReports() {
+    return await this.websocketRepository.GetOpenReports();
+  }
 }

@@ -4,7 +4,6 @@ import { IWebsocketRepository } from './websocket.interface';
 import { AdminActiveDto, Cases, ReportDto } from './websocket.dto';
 import { plainToInstance } from 'class-transformer';
 import { DbOperationException } from 'src/helpers/DbOperationException';
-import { Incident } from 'src/incidents/dto/create-incident.dto';
 import { UpdateIncident } from 'src/incidents/dto/update-incident.dto';
 
 const databaseId: string = 'risk_management';
@@ -16,32 +15,37 @@ export class WebsocketRepository implements IWebsocketRepository {
   //DB conenection -------------------------------------------------------
   constructor(@Inject(KeyVaultService) private DbConnection: KeyVaultService) {}
   async GetReportsIdsById(id: string): Promise<string[]> {
-      try {
-        const querySpec = {
-          query:
-             'SELECT * FROM c WHERE c.aphThatTakeCare_Id = @aphThatTakeCare_Id' +
-             ' AND c.State = "en_proceso"',
-          parameters: [
-            {
-              name: '@aphThatTakeCare_Id',
-              value: id,
-            },
-          ],
-        };
-        const { resources: results } = await this.DbConnection.getDbConnection()
-          .database(databaseId)
-          .container(containerId)
-          .items.query(querySpec)
-          .fetchAll();
-  
-        const incidentInstances: UpdateIncident[] = plainToInstance(UpdateIncident, results);
-        // Mapea los incidentes para obtener solo los ids y los devuelve
-        const incidentIds: string[] = incidentInstances.map(incident => incident.id);
-        console.log(incidentIds)
-        return incidentIds;
-      } catch (error) {
-        throw new DbOperationException(error.message);
-      }
+    try {
+      const querySpec = {
+        query:
+          'SELECT * FROM c WHERE c.aphThatTakeCare_Id = @aphThatTakeCare_Id' +
+          ' AND c.State = "en_proceso"',
+        parameters: [
+          {
+            name: '@aphThatTakeCare_Id',
+            value: id,
+          },
+        ],
+      };
+      const { resources: results } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(querySpec)
+        .fetchAll();
+
+      const incidentInstances: UpdateIncident[] = plainToInstance(
+        UpdateIncident,
+        results,
+      );
+      // Mapea los incidentes para obtener solo los ids y los devuelve
+      const incidentIds: string[] = incidentInstances.map(
+        (incident) => incident.id,
+      );
+      console.log(incidentIds);
+      return incidentIds;
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
   }
 
   async GetNewReports(): Promise<ReportDto[]> {
@@ -73,7 +77,6 @@ export class WebsocketRepository implements IWebsocketRepository {
       throw new DbOperationException(error.message);
     }
   }
-
 
   async GetAdminActiveByPartitionKey(): Promise<AdminActiveDto> {
     try {
@@ -164,11 +167,11 @@ export class WebsocketRepository implements IWebsocketRepository {
           .container(containerId)
           .items.upsert(report);
 
-      console.log('upsert CreateReport good' )
-      console.log(CreateReportDto)
+      console.log('upsert CreateReport good');
+      console.log(CreateReportDto);
       if (CreateReportDto) {
         const item: ReportDto = plainToInstance(ReportDto, CreateReportDto);
-        console.log(item)
+        console.log(item);
         return item;
       }
       return null;
@@ -204,7 +207,30 @@ export class WebsocketRepository implements IWebsocketRepository {
         .item(reportDto.id, reportDto.partition_key)
         .replace(reportDto);
 
-        console.log(item)
+      console.log(item);
+      return plainToInstance(ReportDto, item);
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
+
+  async GetOpenReports(): Promise<ReportDto[]> {
+    try {
+      const now = new Date();
+      const date = now.toISOString().split('T')[0];
+      // Query
+      const querySpec = {
+        query:
+          'SELECT * FROM c WHERE c.State = "en_proceso" AND c.aphThatTakeCare_Id != ""',
+      };
+
+      // Consulta
+      const { resources: item } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(querySpec)
+        .fetchAll();
+
       return plainToInstance(ReportDto, item);
     } catch (error) {
       throw new DbOperationException(error.message);
