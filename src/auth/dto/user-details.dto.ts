@@ -1,4 +1,4 @@
-enum DocumetnType{
+enum DocumentType{
   CedulaDeCiudadania,
   TarjetDeIdentidad,
   CedulaDeExtranjeria
@@ -17,7 +17,7 @@ enum BloodType {
 
 export class UserDetails{
   public idUniversity: number;
-  public documentType: DocumetnType;
+  public documentType: DocumentType;
   public documentNumber: string;
   public address: string;
   public emergencyContactPhoneNumber: number;
