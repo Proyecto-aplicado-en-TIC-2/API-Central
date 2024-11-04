@@ -17,7 +17,7 @@ enum BloodType {
 
 export class UserDetails{
   public idUniversity: number;
-  public documetnType: DocumetnType;
+  public documentType: DocumetnType;
   public documentNumber: string;
   public address: string;
   public emergencyContactPhoneNumber: number;
