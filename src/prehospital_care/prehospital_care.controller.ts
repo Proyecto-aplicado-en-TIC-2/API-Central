@@ -51,6 +51,16 @@ export class PrehospitalCareController {
   }
 
   @Roles(Role.Administration)
+  @Post('/GetAphFromList')
+  async GetAphFromList(@Body() list: string[]) {
+    try {
+      return this.prehospitalCareService.GetAphFromList(list);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  @Roles(Role.Administration)
   @Post()
   async CreateAPH(@Body() aph: CreateAphDto) {
     try {

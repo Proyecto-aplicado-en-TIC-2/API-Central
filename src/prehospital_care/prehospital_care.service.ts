@@ -28,9 +28,17 @@ export class PrehospitalCareService {
     }
   }
 
-  GetAPHByMail(mail: string) {
+  async GetAPHByMail(mail: string) {
     try {
-      return this.prehospitalCareRepository.GetAPHByMail(mail);
+      return await this.prehospitalCareRepository.GetAPHByMail(mail);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  async GetAphFromList(list: string[]) {
+    try {
+      return await this.prehospitalCareRepository.GetAphFromList(list);
     } catch (e) {
       throw new BadRequestException(e);
     }
