@@ -4,7 +4,7 @@ import { UpdateIncident } from './dto/update-incident.dto';
 export interface IIncidensRepostiory {
   //-------------------- GET ------------------------
   GetAllIncidents(): Promise<Incident[]>;
-  GetIncidentsOfTheDay(ids: string[]): Promise<Incident[]>
+  GetIncidentsFromList(ids: string[]): Promise<Incident[]>
   GetIncidentById(Id: string, partition_key: Cases): Promise<Incident | null>;
   //-------------------- SET ------------------------
   CreateIncident(incident: Incident): Promise<UpdateIncident | null>;
@@ -13,5 +13,4 @@ export interface IIncidensRepostiory {
   //-------------------- DELETE ---------------------
   DeleteIncidentByID(Id: string, partition_key: Cases): Promise<Incident>;
   //-------------------- MORE -----------------------
-  GetIncidentsOfTheDay(ids: string[]): Promise<Incident[]>;
 }

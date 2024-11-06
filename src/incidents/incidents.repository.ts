@@ -106,7 +106,7 @@ export class IncidentesRepository implements IIncidensRepostiory {
     }
   }
 
-  async GetIncidentsOfTheDay(ids: string[]): Promise<Incident[]> {
+  async GetIncidentsFromList(ids: string[]): Promise<Incident[]> {
     try {
       const query = {
         query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@ids, c.id)',

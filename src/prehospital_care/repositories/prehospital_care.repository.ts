@@ -89,6 +89,31 @@ export class PrehospitalCareRepository implements IPrehospitalCareRepository {
     }
   }
 
+  async GetAphFromList(list: string[]) {
+    try {
+      const query = {
+        query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@ids, c.id)',
+        parameters: [
+          {
+            name: '@ids',
+            value: list,
+          },
+        ],
+      };
+
+      const { resources: item } = await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .items.query(query)
+        .fetchAll();
+
+      return item.map((item: APH) => plainToClass(APH, item));
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
+    }
+  }
+
   async UpdateAPHById(aph: APH) {
     try {
       const { resource: resource } = await this.client

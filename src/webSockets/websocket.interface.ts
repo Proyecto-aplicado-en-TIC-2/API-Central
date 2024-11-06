@@ -7,6 +7,7 @@ export interface IWebsocketRepository {
   ): Promise<AdminActiveDto | null>;
   GetAdminActiveByPartitionKey(): Promise<AdminActiveDto>;
   GetNewReports(): Promise<ReportDto[]>;
+  GetOpenReports(): Promise<ReportDto[]>;
   GetReportById(id: string, partition_key: Cases): Promise<ReportDto>;
   GetReportsIdsById(id: string): Promise<string[]>
   //-------------------- PATCH ---------------------

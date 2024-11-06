@@ -59,7 +59,7 @@ export class IncidentsService {
     return operation;
   }
 
-  async GetIncidentsOfTheDay(ids: string[]) {
-    return await this.incidensRepostiory.GetIncidentsOfTheDay(ids);
+  async GetIncidentsFromList(ids: string[]) {
+    return await this.incidensRepostiory.GetIncidentsFromList(ids);
   }
 }
