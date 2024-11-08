@@ -20,14 +20,14 @@ jobs:
     - name: Build and Push Docker image to ACR
       run: |
         az acr login --name gdrdockerimage
-        docker build -t gdr-api:testing .
-        docker tag gdr-api:testing gdrdockerimage.azurecr.io/gdr-api:testing
-        docker push gdrdockerimage.azurecr.io/gdr-api:testing
+        docker build -t gdr-api:latest .
+        docker tag gdr-api:latest gdrdockerimage.azurecr.io/gdr-api:latest
+        docker push gdrdockerimage.azurecr.io/gdr-api:latest
 
     - name: Deploy to Azure Container Apps
       run: |
         az containerapp update \
-          --name gdr-container-testing \
+          --name gdr-container \
           --resource-group GestionDeRiesgosUPB \
           --image gdrdockerimage.azurecr.io/gdr-api:testing \
           --set-env-vars KEY_VAULT_NAME=${{ secrets.KEY_VAULT_NAME }} \
@@ -38,7 +38,7 @@ jobs:
                           AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }} \
                           AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }} \
           --min-replicas 0 \
-          --max-replicas 1 \
+          --max-replicas 10 \
           --scale-rule-name azure-http-rule-scale \
           --scale-rule-type http \
-          --scale-rule-http-concurrency 1
+          --scale-rule-http-concurrency 100
