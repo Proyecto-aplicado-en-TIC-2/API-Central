@@ -41,7 +41,7 @@ export class KeyVaultService implements OnModuleInit {
     return secret.value!;
   }
 
-  getDbConnection(): any {
+  getDbConnection(): CosmosClient {
     return this.dbConnection;
   }
 }
