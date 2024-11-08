@@ -18,10 +18,10 @@ import { JwtService } from '@nestjs/jwt';
 import { InitializeOnPreviewAllowlist, Reflector } from '@nestjs/core';
 import { IncidentsService } from 'src/incidents/incidents.service';
 import { WebsocketService } from './websocket.service';
-import { AphCases, PayLoadDto, ReportDto } from './websocket.dto';
+import { AphCases, PayLoadDto, ReportDto, UserWebsocketInfo } from './websocket.dto';
 import { Incident, Priorty } from 'src/incidents/dto/create-incident.dto';
 import { plainToInstance } from 'class-transformer';
-import { GenericError } from 'src/helpers/GenericError';
+import { GenericError, GenericErrorWebsockets } from 'src/helpers/GenericError';
 import { UpdateIncident } from 'src/incidents/dto/update-incident.dto';
 import { PrehospitalCareService } from 'src/prehospital_care/prehospital_care.service';
 import { Auth, AuthDto } from 'src/auth/models/auth.models';
@@ -33,6 +33,8 @@ import { Community } from 'src/community/models/community.model';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthRepository } from 'src/auth/repositories/auth.repository';
 import { APH } from 'src/prehospital_care/models/aph.model';
+import { isNull } from 'util';
+import { isEmpty } from 'rxjs';
 
 @WebSocketGateway({
   namespace: '/WebSocketGateway',
@@ -60,12 +62,7 @@ export class WebsocketGateway
   ) {}
   @WebSocketServer()
   server: Server;
-  /**
-   * Key: string = user.id
-   * Value: string = cliente.id
-   */
-  hashMap_users_conected: Map<string, string> = new Map();
-  admiSaved: AuthDto = null;
+
 
   async handleConnection(client: Socket) {
     console.log('Intentando conectar cliente...'); // Log adicional
@@ -82,16 +79,21 @@ export class WebsocketGateway
         secret: jwtConstants.secret,
       });
 
+
       client['user'] = user;
       console.log('Cliente autenticado:', user);
-      const user_auth: AuthDto = plainToInstance(AuthDto, user);
-      this.hashMap_users_conected.set(user.id, client.id);
-      if (this.isAdmin(client)) {
-        this.admiSaved = user_auth;
-        console.log(`es admin: ${JSON.stringify(user_auth)}`);
-      } else {
-        console.log(`no es admin: ${JSON.stringify(user_auth)}`);
+
+      const userWebsocketInfo : UserWebsocketInfo = {
+        id: user.id,
+        partition_key: user.roles,
+        webSocketId: client.id,
+        cuadrant: null,
+        inService: false
       }
+
+      const Info: UserWebsocketInfo = 
+        await this.websocketService.CreatetWebsocketInfo(userWebsocketInfo)
+        console.log('Cliente guarado correctamente:', Info);
 
       client.emit('Connexion_Exitosa', 'Coneccion exitosa');
     } catch (e) {
@@ -101,7 +103,23 @@ export class WebsocketGateway
   }
 
   async handleDisconnect(client: Socket) {
-    console.log('Client disconnected:', client.id);
+    const user = client['user'];
+    console.log('handleDisconnect: ' + user);
+    if(user == null || user.isEmpty){
+      client.disconnect();
+    }else{
+      const operation : boolean = 
+      await this.websocketService.DeleteWebsocketInfo(user.id, user.roles);
+      if(operation){
+        console.log('Client disconnected:', client.id);
+        client.disconnect();
+      }else{
+        console.log('Client disconnected pero no se elimino de la db:', client.id);
+        client.disconnect();
+      }
+    }
+
+    
   }
   //-----------------------------------------------------------------------------
   @SubscribeMessage('report')
@@ -400,39 +418,48 @@ export class WebsocketGateway
    * emite un mensaje hacia la persona conectada haciendo uso de su id de usaurio
    */
   async EmitById(id: string, eventName: string, data: any) {
-    if (!this.hashMap_users_conected.has(id)) {
-      console.log('🟪','El Socket con el id=',id,'No existe 💀💀💀')
-      //new Error('La persona no existe o no esta conectada'); // Corrige aquí
-    } else  {
-      // Obtiene el WebSocket_id del mapa
-      const WebSocket_id: string = await this.hashMap_users_conected.get(id);
+    try {
+        const websocketInfo:  UserWebsocketInfo =
+        await this.websocketService.GetWebsocketInfo(id);
+      if (websocketInfo) {
+        // Obtiene el WebSocket_id 
+        const listeningEmit: any = await (this.server?.sockets as any).get(
+          websocketInfo.webSocketId,
+        );
+        await listeningEmit.emit(eventName, data);
+      
+      } else  {
+          //new Error('La persona no existe o no esta conectada'); // Corrige aquí
+        console.log('🟪','El Socket con el id=',id,'No existe 💀💀💀')
 
-      const adminListeningEmit = await (this.server?.sockets as any).get(
-        WebSocket_id,
-      );
-      await adminListeningEmit.emit(eventName, data);
+      }
+    } catch (e) {
+      new GenericErrorWebsockets('EmitById', e)
     }
+   
   }
   /**
    * event emit hacia el admin conectado, si no esta coenctado error
    */
 
-  AdminEmit(eventName: string, data: any) {
-    if(!this.hashMap_users_conected.has(this.admiSaved.id))    {
-      console.log('🟪','El Socket para admin con el id=',this.admiSaved.id,'No esta conectado 💀💀💀')} {
-      const WebSocket_id: string = this.hashMap_users_conected.get(
-        this.admiSaved.id,);
-      console.log(WebSocket_id);
-  
-        const adminListeningEmit = (this.server?.sockets as any).get(WebSocket_id);
-  
-        this.hashMap_users_conected.forEach((value, key) => {
-          console.log(`Clave: ${key}, Valor: ${value}`);
-        });
-  
+  async AdminEmit(eventName: string, data: any) {
+
+    try{
+        const websocketInfo:  UserWebsocketInfo =
+        await this.websocketService.GetWebsocketInfoAdmin();
+      if(websocketInfo){
+        const adminListeningEmit = await (this.server?.sockets as any).get(
+          websocketInfo.webSocketId,
+        );
         adminListeningEmit.emit(eventName, data);
+      }else{
+        console.log('🟪','El Socket para admin no esta conectado 💀💀💀')
       }
+    }catch(e){
+       new GenericErrorWebsockets('AdminEmit', e)
     }
+  }
+
   /**
    * devuelve true si es Administration
    * falso si no es Administration

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IWebsocketRepository } from './websocket.interface';
-import { AdminActiveDto, Cases, ReportDto } from './websocket.dto';
+import { Cases, ReportDto, UserWebsocketInfo } from './websocket.dto';
 import { AppValidationException } from 'src/helpers/AppValidationException';
 
 @Injectable()
@@ -9,6 +9,54 @@ export class WebsocketService {
     @Inject('IWebsocketRepository')
     private readonly websocketRepository: IWebsocketRepository,
   ) {}
+  //-----------------------------------------------------------
+  //----------------------WebSocketsInfo ----------------------
+  //-----------------------------------------------------------
+  async CreatetWebsocketInfo(userWebsocketIfo: UserWebsocketInfo): Promise<UserWebsocketInfo | null> {
+    const operation: UserWebsocketInfo | null =
+    await this.websocketRepository.CreatetWebsocketInfo(userWebsocketIfo);
+
+    if (operation == null) {
+      throw new AppValidationException("Operation executed but wasn't changes");
+    }
+
+    return operation;
+  }
+  async GetWebsocketInfoAdmin(): Promise<UserWebsocketInfo> {
+    const operation: UserWebsocketInfo | null =
+      await this.websocketRepository.GetWebsocketInfoAdmin();
+
+    if (operation == null) {
+      throw new AppValidationException(`No admin found`);
+    }
+    return operation;
+  }
+  async GetWebsocketInfo(id: string): Promise<UserWebsocketInfo> {
+
+    const operation: UserWebsocketInfo | null =
+      await this.websocketRepository.GetWebsocketInfo(id);
+
+    if (operation == null) {
+      throw new AppValidationException(`WebsocketInfo with ID ${id} not found.`);
+    }
+    return operation;
+  }
+
+  async PatchWebsocketInfo(userWebsocketIfo: UserWebsocketInfo): Promise<UserWebsocketInfo> {
+    const operation: UserWebsocketInfo =
+      await this.websocketRepository.PatchWebsocketInfo(userWebsocketIfo);
+    if (operation == null) {
+      throw new AppValidationException("Operation executed but wasn't changes");
+    }
+    return operation;
+  }
+  async DeleteWebsocketInfo(id: string,  partition_key: string): Promise<boolean> {
+    const operation: boolean =
+    await this.websocketRepository.DeleteWebsocketInfo(id, partition_key);
+
+    return operation;
+  }
+
 
   async GetReportsIdsById(id: string): Promise<string[]> {
 
@@ -18,9 +66,7 @@ export class WebsocketService {
   async GetNewReports(): Promise<ReportDto[]> {
     return await this.websocketRepository.GetNewReports();
   }
-  async GetAdminActiveByPartitionKey(): Promise<AdminActiveDto> {
-    return this.websocketRepository.GetAdminActiveByPartitionKey();
-  }
+
   async CreateReport(report: ReportDto): Promise<ReportDto> {
     const operation: ReportDto | null =
       await this.websocketRepository.CreateReport(report);
@@ -32,35 +78,6 @@ export class WebsocketService {
     return operation;
   }
 
-  async CreateAdminActive(
-    admin: AdminActiveDto,
-  ): Promise<AdminActiveDto | null> {
-    const operation: AdminActiveDto | null =
-      await this.websocketRepository.CreateAdminActive(admin);
-
-    if (operation == null) {
-      throw new AppValidationException("Operation executed but wasn't changes");
-    }
-    return operation;
-  }
-  async GetAdminActive(adminActiveDto: AdminActiveDto): Promise<boolean> {
-    const operation: AdminActiveDto | null =
-      await this.websocketRepository.GetAdminActive(adminActiveDto);
-
-    if (operation == null) return true;
-    return false;
-  }
-
-  async PatchAdminActive(
-    adminActiveDto: AdminActiveDto,
-  ): Promise<AdminActiveDto> {
-    const operation: AdminActiveDto =
-      await this.websocketRepository.PatchAdminActive(adminActiveDto);
-    if (operation == null) {
-      throw new AppValidationException("Operation executed but wasn't changes");
-    }
-    return operation;
-  }
 
   async PatchReport(reportDto: ReportDto): Promise<ReportDto> {
     const operation: ReportDto =

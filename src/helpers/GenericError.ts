@@ -6,11 +6,11 @@ export class GenericError {
   constructor(MethodName: string, error: any) {
     if (error instanceof AppValidationException) {
       console.log(
-        '------------------------',
-        ' Ops! Validation Error',
-        '------------------------',
-        `Error in method:   ${MethodName}`,
-        `This happened:     ${error.message}`,
+        '------------------------\n',
+        ' Ops! Validation Error\n',
+        '------------------------\n',
+        `Error in method:   ${MethodName}\n`,
+        `This happened:     ${error.message}\n`,
       );
       throw new BadRequestException({
         message: [
@@ -23,11 +23,11 @@ export class GenericError {
       });
     } else if (error instanceof DbOperationException) {
       console.log(
-        '-------------------------------------------',
-        ' Ops! Something went wrong in DB Operation',
-        '-------------------------------------------',
-        `Error in method:   ${MethodName}`,
-        `This happened:     ${error.message}`,
+        '-------------------------------------------\n',
+        ' Ops! Something went wrong in DB Operation\n',
+        '-------------------------------------------\n',
+        `Error in method:   ${MethodName}\n`,
+        `This happened:     ${error.message}\n`,
       );
       throw new BadRequestException({
         message: [
@@ -40,9 +40,9 @@ export class GenericError {
       });
     } else {
       console.log(
-        '----------------------------------------',
-        ' Ops! An unexpected error has occurred',
-        '----------------------------------------',
+        '----------------------------------------\n',
+        ' Ops! An unexpected error has occurred\n',
+        '----------------------------------------\n',
         `Error in method:   ${MethodName}`,
         `This happened:     ${error.message}`,
       );
@@ -55,6 +55,36 @@ export class GenericError {
           `This happened:     ${error.message}`,
         ],
       });
+    }
+  }
+}
+
+export class GenericErrorWebsockets {
+  constructor(MethodName: string, error: any) {
+    if (error instanceof AppValidationException) {
+      console.log(
+        '------------------------\n',
+        ' Ops! Validation Error\n',
+        '------------------------\n',
+        `Error in method:   ${MethodName}\n`,
+        `This happened:     ${error.message}\n`,
+      );
+    } else if (error instanceof DbOperationException) {
+      console.log(
+        '-------------------------------------------\n',
+        ' Ops! Something went wrong in DB Operation\n',
+        '-------------------------------------------\n',
+        `Error in method:   ${MethodName}\n`,
+        `This happened:     ${error.message}\n`,
+      );
+    } else {
+      console.log(
+        '----------------------------------------\n',
+        ' Ops! An unexpected error has occurred\n',
+        '----------------------------------------\n',
+        `Error in method:   ${MethodName}`,
+        `This happened:     ${error.message}`,
+      );
     }
   }
 }

@@ -1,23 +1,22 @@
-import { AdminActiveDto, Cases, ReportDto } from './websocket.dto';
+import { UserWebsocketInfo, Cases, ReportDto } from './websocket.dto';
 
 export interface IWebsocketRepository {
   //-------------------- GET ------------------------
-  GetAdminActive(
-    adminActiveDto: AdminActiveDto,
-  ): Promise<AdminActiveDto | null>;
-  GetAdminActiveByPartitionKey(): Promise<AdminActiveDto>;
+ 
   GetNewReports(): Promise<ReportDto[]>;
   GetReportById(id: string, partition_key: Cases): Promise<ReportDto>;
   GetReportsIdsById(id: string): Promise<string[]>
+
+  GetWebsocketInfo(id: string): Promise<UserWebsocketInfo>;
+  GetWebsocketInfoAdmin(): Promise<UserWebsocketInfo> 
   //-------------------- PATCH ---------------------
+  PatchWebsocketInfo(userWebsocketIfo: UserWebsocketInfo): Promise<UserWebsocketInfo>;
   PatchReport(reportDto: ReportDto): Promise<ReportDto>;
-  PatchAdminActive(
-    adminActiveDto: AdminActiveDto,
-  ): Promise<AdminActiveDto | null>;
+
   //-------------------- SET ------------------------
+  CreatetWebsocketInfo(userWebsocketIfo: UserWebsocketInfo): Promise<UserWebsocketInfo>;
   CreateReport(incident: ReportDto): Promise<ReportDto | null>;
-  CreateAdminActive(
-    adminActiveDto: AdminActiveDto,
-  ): Promise<AdminActiveDto | null>;
+
   //-------------------- DELETE ---------------------
+  DeleteWebsocketInfo(id: string,  partition_key: string): Promise<boolean>;
 }

@@ -1,4 +1,4 @@
-import { EmergencyReports } from "src/emergency-reports/dto/create-emergency-reports.dto";
+import { EmergencyReports, Quadrant } from "src/emergency-reports/dto/create-emergency-reports.dto";
 
 export enum Cases {
   Incendio,
@@ -23,14 +23,12 @@ export class ReportDto {
   };
 }
 
-export class AdminActiveDto {
-  public readonly partition_key: string = 'admin_active';
-  public WebSocket_id_admin_active: string;
+export class UserWebsocketInfo {
   public id: string;
-  constructor(webSocket_id_admin_active: string, id: string) {
-    this.WebSocket_id_admin_active = webSocket_id_admin_active;
-    this.id = id;
-  }
+  public partition_key: string;
+  public webSocketId: string;
+  public cuadrant?: Quadrant;
+  public inService: boolean;
 }
 
 export class PayLoadDto {
