@@ -154,7 +154,8 @@ export class WebsocketGateway
         id: user.id,
         names: user_info.names,
         lastNames: user_info.last_names,
-        relationshipWithTheUniversity: user_info.relationshipWithTheUniversity
+        relationshipWithTheUniversity: user_info.relationshipWithTheUniversity,
+        roles: user.roles
       }
       console.log('incident_obj actualizado');
       console.log(incident_obj);

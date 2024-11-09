@@ -115,7 +115,6 @@ export class WebsocketRepository implements IWebsocketRepository {
     }
   }
 
-
   async GetReportsIdsById(id: string): Promise<string[]> {
     try {
       const querySpec = {
