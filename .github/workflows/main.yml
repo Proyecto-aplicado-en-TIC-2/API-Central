@@ -42,3 +42,18 @@ jobs:
           --scale-rule-name azure-http-rule-scale \
           --scale-rule-type http \
           --scale-rule-http-concurrency 1
+
+    - name: Stop the container
+      run: |
+        az containerapp revision stop \
+          --name gdr-container-testing \
+          --resource-group GestionDeRiesgosUPB
+
+    - name: Wait for 20 seconds
+      run: sleep 20
+
+    - name: Start the container
+      run: |
+        az containerapp revision restart \
+          --name gdr-container-testing \
+          --resource-group GestionDeRiesgosUPB
