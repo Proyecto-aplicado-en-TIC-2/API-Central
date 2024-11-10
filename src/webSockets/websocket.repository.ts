@@ -149,6 +149,40 @@ export class WebsocketRepository implements IWebsocketRepository {
     }
   }
 
+  async GetReportsColsedIdsById(id: string): Promise<string[]> {
+    try {
+      const querySpec = {
+        query:
+          'SELECT * FROM c WHERE c.aphThatTakeCare_Id = @aphThatTakeCare_Id' +
+          ' AND c.State = "close"',
+        parameters: [
+          {
+            name: '@aphThatTakeCare_Id',
+            value: id,
+          },
+        ],
+      };
+      const { resources: results } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(querySpec)
+        .fetchAll();
+
+      const incidentInstances: UpdateIncident[] = plainToInstance(
+        UpdateIncident,
+        results,
+      );
+      // Mapea los incidentes para obtener solo los ids y los devuelve
+      const incidentIds: string[] = incidentInstances.map(
+        (incident) => incident.id,
+      );
+      console.log(incidentIds);
+      return incidentIds;
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
+
   async GetNewReports(): Promise<ReportDto[]> {
     try {
       const now = new Date();

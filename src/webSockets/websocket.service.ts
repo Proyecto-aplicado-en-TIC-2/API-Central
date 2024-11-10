@@ -62,6 +62,10 @@ export class WebsocketService {
 
     return await this.websocketRepository.GetReportsIdsById(id);
   }
+  async GetReportsColsedIdsById(id: string): Promise<string[]> {
+
+    return await this.websocketRepository.GetReportsColsedIdsById(id);
+  }
    
   async GetNewReports(): Promise<ReportDto[]> {
     return await this.websocketRepository.GetNewReports();
