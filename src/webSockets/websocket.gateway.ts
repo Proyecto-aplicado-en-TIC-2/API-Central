@@ -35,6 +35,8 @@ import { AuthRepository } from 'src/auth/repositories/auth.repository';
 import { APH } from 'src/prehospital_care/models/aph.model';
 import { isNull } from 'util';
 import { isEmpty } from 'rxjs';
+import { Brigadier } from 'src/brigadiers/models/brigadiers.model';
+import { UpdateBrigadiersDto } from 'src/brigadiers/dto/update-brigadiers.dto';
 
 @WebSocketGateway({
   namespace: '/WebSocketGateway',
@@ -224,8 +226,17 @@ export class WebsocketGateway
             search_report.id,
             search_report.partition_key,
           );
-
         console.log('UpdateIncident good');
+        const aph_id_confirm: ReportDto = await this.websocketService
+          .GetReportById(case_data.case_id, case_data.partition_key);
+        const brigadiers_assigned: Brigadier = await this.brigadiersService
+          .GetBrigadierById(case_data.user_id);
+        this.EmitById(aph_id_confirm.aphThatTakeCare_Id, 'Brigadista_case_assigned', {
+
+          names: brigadiers_assigned.names,
+          lastNames: brigadiers_assigned.last_names,
+          phone_number: brigadiers_assigned.phone_number
+        }  )
         this.EmitById(case_data.user_id, 'Brigadista_case', {
           message:
             'Se le a asignado como colavorador de un caso a un aph, dirijirse inmediatamente a : ',
@@ -236,6 +247,23 @@ export class WebsocketGateway
           Reporter: incident.reporter
         });
         console.log('se pidio alludam a un brigadista');
+      }else{
+        
+        const user = client['user']
+        console.log(data.in_service);
+        console.log(data);
+  
+        const brigadierDetails: Brigadier = await this.brigadiersService
+          .GetBrigadierById(user.id)
+        brigadierDetails.in_service = data.in_service;
+        await this.brigadiersService
+          .UpdateBrigadiersById(
+            brigadierDetails.id, 
+            plainToInstance(UpdateBrigadiersDto, brigadierDetails)
+          )
+        this.AdminEmit("Brigadier_update_state", {in_service: data.in_service})
+        client.emit('Brigadier_update_state_confirmation',{in_service: data.in_service});
+        
       }
     } catch (error) {
       throw new GenericError('handleBrigadiers', error);
