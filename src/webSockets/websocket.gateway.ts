@@ -361,7 +361,7 @@ export class WebsocketGateway
             incident_id: report_close.id,
           });
           console.log('se envio al admin');
-           client.emit('Caso cerrado');
+           client.emit('close_case', 'Caso cerrado correctamente');
           console.log('se envio al aph');
           if (report_close.brigadista_Id) {
             await this.EmitById(
@@ -371,7 +371,6 @@ export class WebsocketGateway
             );
             console.log('se envio al brigadista');
           }
-
           await this.EmitById(
             report_close.reporter_Id,
             'Close_incident_broadcast',
@@ -389,8 +388,8 @@ export class WebsocketGateway
         }else{
           const case_info_user : Incident = await this.incidentsService
             .GetIncidentById(aph_actions.help.case_id, aph_actions.help.partition_key)
-          this.EmitById(case_info_user.reporter.id, 'on_the_way', true)
-          client.emit('En camino!!!')
+            client.emit('on_the_way_aph', 'En camino!!!');
+          this.EmitById(case_info_user.reporter.id, 'on_the_way', true);
         }
       }
     } catch (error) {
