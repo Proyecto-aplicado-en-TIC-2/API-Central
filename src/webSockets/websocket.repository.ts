@@ -110,7 +110,7 @@ export class WebsocketRepository implements IWebsocketRepository {
 
     } catch (error) {
       throw new DbOperationException(
-        `Couldn't delete, Incident with the Id: ${id} doesn't exist`,
+        `Couldn't delete, WebsocketInfo with the Id: ${id} doesn't exist`, 
       );
     }
   }

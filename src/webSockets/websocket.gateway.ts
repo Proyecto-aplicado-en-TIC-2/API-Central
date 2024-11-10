@@ -103,22 +103,25 @@ export class WebsocketGateway
   }
 
   async handleDisconnect(client: Socket) {
-    const user = client['user'];
-    console.log('handleDisconnect: ' + user);
-    if(user == null || user.isEmpty){
-      client.disconnect();
-    }else{
-      const operation : boolean = 
-      await this.websocketService.DeleteWebsocketInfo(user.id, user.roles);
-      if(operation){
-        console.log('Client disconnected:', client.id);
+    try{
+      const user = client['user'];
+      console.log('handleDisconnect: ' + user);
+      if(user == null || user.isEmpty){
         client.disconnect();
       }else{
-        console.log('Client disconnected pero no se elimino de la db:', client.id);
-        client.disconnect();
+        const operation : boolean = 
+        await this.websocketService.DeleteWebsocketInfo(user.id, user.roles);
+        if(operation){
+          console.log('Client disconnected:', client.id);
+          client.disconnect();
+        }else{
+          console.log('Client disconnected pero no se elimino de la db:', client.id);
+          client.disconnect();
+        }
       }
+    }catch(e){
+        new GenericErrorWebsockets('handleDisconnect', e);
     }
-
     
   }
   //-----------------------------------------------------------------------------
