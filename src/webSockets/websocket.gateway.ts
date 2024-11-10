@@ -411,6 +411,7 @@ export class WebsocketGateway
 
           console.log('caso cerrado correctmante');
         } else if(aph_actions.close_case == 'false' && aph_actions.on_the_way == 'false'){
+          client.emit('Aph_help_confirm', 'A pedido ayuda correctamente')
           this.AdminEmit('Aph_help', {
             message: 'Un ahp necesita alluda con un caso',
             case_info: aph_actions.help,
