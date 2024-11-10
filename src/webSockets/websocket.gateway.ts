@@ -238,6 +238,9 @@ export class WebsocketGateway
           phone_number: brigadiers_assigned.phone_number,
           case_id: case_data.case_id
         }  )
+
+        const aph_info: APH = await this.prehospitalCareService
+          .GetAPHById(aph_id_confirm.aphThatTakeCare_Id);
         this.EmitById(case_data.user_id, 'Brigadista_case', {
           message:
             'Se le a asignado como colavorador de un caso a un aph, dirijirse inmediatamente a : ',
@@ -245,7 +248,8 @@ export class WebsocketGateway
           Id_reporte: case_data.case_id,
           partition_key: case_data.partition_key,
           priority: incident.priority,
-          Reporter: incident.reporter
+          Reporter: incident.reporter,
+          aphPhone: aph_info.phone_number
         });
         console.log('se pidio alludam a un brigadista');
       }else{
