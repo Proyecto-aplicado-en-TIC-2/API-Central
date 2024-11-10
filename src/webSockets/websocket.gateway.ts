@@ -200,7 +200,7 @@ export class WebsocketGateway
   }
 
   @SubscribeMessage('Brigadiers')
-  @Roles(Role.Brigadiers, Role.Administration) // Usar roles para permisos específicos
+  @Roles(Role.Brigadiers, Role.Administration, Role.APH) // Usar roles para permisos específicos
   async handleBrigadiers(
     @MessageBody() data: any,
     @ConnectedSocket() client: Socket,
