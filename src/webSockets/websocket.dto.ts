@@ -14,6 +14,7 @@ export class ReportDto {
   public aphThatTakeCare_Id?: string;
   public partition_key?: Cases;
   public State?: string;
+  public neededBrigadier?: boolean = false;
 
   public date?: {
     date?: string;

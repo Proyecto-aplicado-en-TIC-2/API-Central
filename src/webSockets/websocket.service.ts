@@ -109,4 +109,12 @@ export class WebsocketService {
   async GetOpenReports() {
     return await this.websocketRepository.GetOpenReports();
   }
+
+  async PatchCaseHelpAph(case_id: string, partition_key: Cases) {
+    // Obtenemos el caso
+    const caseTemp = await this.GetReportById(case_id, partition_key)
+    // Se modifica el estado de ayuda
+    caseTemp.neededBrigadier = true;
+    return await this.websocketRepository.PatchReport(caseTemp)
+  }
 }

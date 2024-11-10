@@ -414,12 +414,14 @@ export class WebsocketGateway
 
           console.log('caso cerrado correctmante');
         } else if(aph_actions.close_case == 'false' && aph_actions.on_the_way == 'false'){
+          // Modificamos el caso para que tenga el estado de ayuda activa
+          await this.websocketService.PatchCaseHelpAph(aph_actions.help.case_id, aph_actions.help.partition_key)
           client.emit('Aph_help_confirm', 'A pedido ayuda correctamente')
           this.AdminEmit('Aph_help', {
-            message: 'Un ahp necesita alluda con un caso',
+            message: 'Un ahp necesita ayuda con un caso',
             case_info: aph_actions.help,
           });
-          console.log('aph pide alluda');
+          console.log('aph pide ayuda');
         }else{
           const case_info_user : Incident = await this.incidentsService
             .GetIncidentById(aph_actions.help.case_id, aph_actions.help.partition_key)
