@@ -235,7 +235,8 @@ export class WebsocketGateway
 
           names: brigadiers_assigned.names,
           lastNames: brigadiers_assigned.last_names,
-          phone_number: brigadiers_assigned.phone_number
+          phone_number: brigadiers_assigned.phone_number,
+          case_id: case_data.case_id
         }  )
         this.EmitById(case_data.user_id, 'Brigadista_case', {
           message:
