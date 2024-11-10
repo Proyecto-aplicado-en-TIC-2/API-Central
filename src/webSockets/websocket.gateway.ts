@@ -261,7 +261,9 @@ export class WebsocketGateway
             brigadierDetails.id, 
             plainToInstance(UpdateBrigadiersDto, brigadierDetails)
           )
-        this.AdminEmit("Brigadier_update_state", {in_service: data.in_service})
+        this.AdminEmit("Brigadier_update_state", {
+            in_service: data.in_service,
+           brigadier_id: brigadierDetails.id })
         client.emit('Brigadier_update_state_confirmation',{in_service: data.in_service});
         
       }
