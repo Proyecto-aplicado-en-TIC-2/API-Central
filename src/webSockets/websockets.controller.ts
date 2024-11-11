@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { WebsocketService } from './websocket.service';
-import { ReportDto } from './websocket.dto';
+import { Cases, ReportDto } from './websocket.dto';
 import { Role } from 'src/authorization/role.enum';
 import { Roles } from 'src/authorization/decorators/roles.decorator';
 import { Incident } from 'src/incidents/dto/create-incident.dto';
@@ -24,6 +24,14 @@ export class WebsocketController {
   @Get()
   async GetNewReports(): Promise<ReportDto[]> {
     return await this.websocketService.GetNewReports();
+  }
+
+  @Roles(Role.Administration)
+  @Get('id/:id/:partitionKey')
+  async GetReportById(
+    @Param('id') Id: string,
+    @Param('partitionKey') Key: Cases): Promise<ReportDto> {
+    return await this.websocketService.GetReportById(Id,Key);
   }
 
   @Roles(Role.Administration)
