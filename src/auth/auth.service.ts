@@ -19,6 +19,7 @@ import { AdminService } from '../admin/admin.service';
 import { Admin } from '../admin/models/admin.models';
 import { Roles } from 'src/authorization/decorators/roles.decorator';
 import { Role } from 'src/authorization/role.enum';
+import { Quadrant } from 'src/emergency-reports/dto/create-emergency-reports.dto';
 
 @Injectable()
 export class AuthService {
@@ -63,6 +64,8 @@ export class AuthService {
         access_token: token,
         roles: auth.type_partition_key,
         userid: auth.id,
+        in_service: user_details.in_service ?? 'N/A',
+        quadrant: user_details.quadrant ?? 'N/A',
         names: user_details.names,
         lastNames: user_details.last_names,
         mail: user_details.mail,
