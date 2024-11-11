@@ -40,6 +40,12 @@ export class WebsocketController {
     return await this.websocketService.GetReportById(Id,Key);
   }
 
+  @Roles(Role.Administration, Role.APH, Role.Brigadiers, Role.UPBCommunity)
+  @Get('GetWebsocketInfo/:id')
+  async GetWebsocketInfo(@Param('id') Id: string, ): Promise<UserWebsocketInfo> {
+    return await this.websocketService.GetWebsocketInfo(Id);
+  }
+
   @Roles(Role.Administration)
   @Get('GetOpenReports')
   async GetOpenReports(){
