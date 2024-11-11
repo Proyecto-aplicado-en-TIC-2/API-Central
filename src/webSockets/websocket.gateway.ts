@@ -20,7 +20,7 @@ import { IncidentsService } from 'src/incidents/incidents.service';
 import { WebsocketService } from './websocket.service';
 import { AphCases, PayLoadDto, ReportDto, UserWebsocketInfo } from './websocket.dto';
 import { Incident, Priorty } from 'src/incidents/dto/create-incident.dto';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { GenericError, GenericErrorWebsockets } from 'src/helpers/GenericError';
 import { UpdateIncident } from 'src/incidents/dto/update-incident.dto';
 import { PrehospitalCareService } from 'src/prehospital_care/prehospital_care.service';
@@ -337,11 +337,9 @@ export class WebsocketGateway
         console.log(aph_actions);
 
         if (aph_actions.close_case == 'true' && aph_actions.on_the_way == 'false') {
-          const search_report: ReportDto =
-            await this.websocketService.GetReportById(
-              aph_actions.help.case_id,
-              aph_actions.help.partition_key,
-            );
+        
+          const search_report: ReportDto =await this.websocketService
+            .GetReportById( aph_actions.help.case_id, aph_actions.help.partition_key );
 
           const now = new Date();
           const time = now.toISOString().split('T')[1].split('.')[0];
@@ -374,7 +372,12 @@ export class WebsocketGateway
               id: report_close.id,
               partition_key: report_close.partition_key,
               classificationAttention: incident.priority,
-              date: report_close.date,
+              date: {
+                date: report_close.date.date,
+                hourRequest: report_close.date.hourRequest,
+                hourArrive: report_close.date.hourArrive,
+                hourCloseAttentionn: report_close.date.hourCloseAttentionn
+              },
               location: {
                 block: incident.location.block,
                 classroom: incident.location.classroom,
@@ -387,7 +390,7 @@ export class WebsocketGateway
               },
               aphThatTakeCare: report_close.aphThatTakeCare_Id,
             });
-          const full_informe: EmergencyReports = plainToInstance(EmergencyReports, aph_actions)
+          const full_informe: EmergencyReports = plainToClass(EmergencyReports, aph_actions)
           const full_inform_incert: EmergencyReports =
             await this.emergencyReportsService.CreateEmergencyReport(
               full_informe,
