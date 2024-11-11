@@ -372,6 +372,7 @@ export class WebsocketGateway
               affected: incident.affected,
               id: report_close.id,
               partition_key: report_close.partition_key,
+              classificationAttention: incident.priority,
               date: report_close.date,
               location: {
                 block: incident.location.block,
