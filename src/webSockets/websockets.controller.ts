@@ -32,4 +32,10 @@ export class WebsocketController {
     return await this.websocketService.GetOpenReports();
   }
 
+  @Roles(Role.Administration)
+  @Get('GetReportsNeedHelp')
+  async GetReportsNeedHelp(){
+    return await this.websocketService.GetReportsNeedHelp();
+  }
+
 }

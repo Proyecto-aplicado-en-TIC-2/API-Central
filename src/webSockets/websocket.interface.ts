@@ -10,7 +10,8 @@ export interface IWebsocketRepository {
   GetReportsColsedIdsById(id: string): Promise<string[]>
 
   GetWebsocketInfo(id: string): Promise<UserWebsocketInfo>;
-  GetWebsocketInfoAdmin(): Promise<UserWebsocketInfo> 
+  GetWebsocketInfoAdmin(): Promise<UserWebsocketInfo>
+  GetReportsNeedHelp(): Promise<ReportDto[]>;
   //-------------------- PATCH ---------------------
   PatchWebsocketInfo(userWebsocketIfo: UserWebsocketInfo): Promise<UserWebsocketInfo>;
   PatchReport(reportDto: ReportDto): Promise<ReportDto>;
