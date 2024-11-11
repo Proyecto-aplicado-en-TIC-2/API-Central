@@ -262,6 +262,13 @@ export class WebsocketGateway
         const brigadierDetails: Brigadier = await this.brigadiersService
           .GetBrigadierById(user.id)
         brigadierDetails.in_service = data.in_service;
+
+        const websocketinfo: UserWebsocketInfo = await this.websocketService
+          .GetWebsocketInfo(user.id);
+          
+        websocketinfo.inService = data.in_service
+        await this.websocketService.PatchWebsocketInfo(websocketinfo);
+
         await this.brigadiersService
           .UpdateBrigadiersById(
             brigadierDetails.id, 

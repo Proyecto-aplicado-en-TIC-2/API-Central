@@ -184,6 +184,7 @@ export class WebsocketRepository implements IWebsocketRepository {
     }
   }
 
+  
   async GetNewReports(): Promise<ReportDto[]> {
     try {
       const now = new Date();
@@ -369,4 +370,8 @@ export class WebsocketRepository implements IWebsocketRepository {
       throw new DbOperationException(error.message);
     }
   }
+
+ 
+ 
+
 }
