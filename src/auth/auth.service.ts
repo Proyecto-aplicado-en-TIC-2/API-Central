@@ -1,4 +1,4 @@
-import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { AuthRepository } from './repositories/auth.repository';
 import { JwtService } from '@nestjs/jwt';
 import { Auth } from './models/auth.models';
@@ -182,6 +182,32 @@ export class AuthService {
       return this.signIn(auth.mail, register.password);
     } catch (e) {
       throw new BadGatewayException('Error en GetBrigadiersById ' + e);
+    }
+  }
+
+  async DeleteAuthByEmail(email: string) {
+
+    try {
+      let result: Auth | undefined;
+      let result2: Auth | undefined;
+
+      // Validamos si existe él, Id
+      result = await this.authRepository.GetAccountEmail(email);
+      if (result) {
+        await this.authRepository.DeleteAuthByEmail(result);
+
+        // Validamos la eliminación en la base de datos
+        result2 = await this.authRepository.GetAccountEmail(email);
+        if (result2 == undefined) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } catch (e) {
+      throw new BadRequestException(e);
     }
   }
 }

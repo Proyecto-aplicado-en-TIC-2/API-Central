@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-In.dto';
 import { Public } from './decorators/public.decorator';
@@ -8,6 +8,8 @@ import {
   RegisterBrigadierDto,
   RegisterUpbCommunityDto,
 } from './dto/register.dto';
+import { Roles } from '../authorization/decorators/roles.decorator';
+import { Role } from '../authorization/role.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -46,5 +48,12 @@ export class AuthController {
   @Post('register/admin')
   registerAdmin(@Body() register: RegisterAdminDto) {
     return this.authService.registerAdmin(register);
+  }
+
+  // Eliminar una cuenta creada
+  @Roles(Role.Administration)
+  @Delete('/:email')
+  DeleteAuthByEmail(@Param('email') email: string) {
+    return this.authService.DeleteAuthByEmail(email);
   }
 }
