@@ -48,6 +48,16 @@ export class BrigadiersController {
     }
   }
 
+  @Roles(Role.Administration, Role.APH)
+  @Post('/GetBrigadierFromList')
+  async GetBrigadierFromList(@Body() list: string[]) {
+    try {
+      return this.brigadiersService.GetBrigadierFromList(list);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
   @Roles(Role.Administration)
   @Post()
   async CreateBrigade(@Body() brigadier: CreateBrigadierDto) {

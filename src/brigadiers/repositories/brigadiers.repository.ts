@@ -3,6 +3,7 @@ import { IBrigadiersRepository } from '../interfaces/brigadiers.repository.inter
 import { Brigadier } from '../models/brigadiers.model';
 import { plainToClass } from 'class-transformer';
 import { KeyVaultService } from '../../context_db/DbContext.service';
+import { Community } from '../../community/models/community.model';
 
 @Injectable()
 export class BrigadiersRepository implements IBrigadiersRepository {
@@ -74,6 +75,31 @@ export class BrigadiersRepository implements IBrigadiersRepository {
       return plainToClass(Brigadier, item[0]);
     } catch (e) {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
+    }
+  }
+
+  async GetBrigadierFromList(list: string[]) {
+    try {
+      const query = {
+        query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@ids, c.id)',
+        parameters: [
+          {
+            name: '@ids',
+            value: list,
+          },
+        ],
+      };
+
+      const { resources: item } = await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .items.query(query)
+        .fetchAll();
+
+      return item.map((item: Brigadier) => plainToClass(Brigadier, item));
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
   }
 
