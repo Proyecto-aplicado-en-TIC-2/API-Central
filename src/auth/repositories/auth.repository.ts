@@ -53,4 +53,18 @@ export class AuthRepository {
       throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
   }
+
+  async DeleteAuthByEmail(auth: Auth) {
+    try {
+      // Consulta
+      await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .item(auth.id, auth.partition_key)
+        .delete();
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
+    }
+  }
 }
