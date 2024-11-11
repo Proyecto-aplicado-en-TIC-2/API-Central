@@ -5,8 +5,8 @@ import { Cases, ReportDto, UserWebsocketInfo } from './websocket.dto';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { DbOperationException } from 'src/helpers/DbOperationException';
 import { UpdateIncident } from 'src/incidents/dto/update-incident.dto';
-import { Role } from 'src/authorization/role.enum';
 import { Community } from '../community/models/community.model';
+import * as console from 'node:console';
 
 const databaseId: string = 'risk_management';
 const containerId: string = 'cases';
@@ -316,6 +316,55 @@ export class WebsocketRepository implements IWebsocketRepository {
         .fetchAll();
 
       return items.map((item: Community) => plainToClass(ReportDto, item));
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
+
+  async GetIdBrigadeAssignedCase(): Promise<{ anybrigadista_Id: string }[]> {
+    try {
+      const now = new Date();
+      const date = now.toISOString().split('T')[0];
+      // Query
+      const querySpec = {
+        query:
+          'SELECT c.brigadista_Id FROM c WHERE c.State = "en_proceso" AND c.brigadista_Id != "" AND c.date.date = @date',
+        parameters: [
+          {
+            name: '@date',
+            value: date,
+          },
+        ],
+      };
+
+      // Consulta
+      const { resources: items } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(querySpec)
+        .fetchAll();
+
+      return items
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
+
+  async GetAllConnections(): Promise<UserWebsocketInfo[]> {
+    try {
+      // Query
+      const querySpec = {
+        query: 'SELECT * FROM c',
+      };
+
+      // Consulta
+      const { resources: items } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId_websockets)
+        .items.query(querySpec)
+        .fetchAll();
+
+      return items
     } catch (error) {
       throw new DbOperationException(error.message);
     }

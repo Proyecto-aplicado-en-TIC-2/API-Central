@@ -121,4 +121,12 @@ export class WebsocketService {
   async GetReportsNeedHelp() {
     return this.websocketRepository.GetReportsNeedHelp()
   }
+
+  async GetIdBrigadeAssignedCase() {
+    return this.websocketRepository.GetIdBrigadeAssignedCase()
+  }
+
+  async GetAllConnections() {
+    return this.websocketRepository.GetAllConnections()
+  }
 }
