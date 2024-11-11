@@ -28,9 +28,17 @@ export class BrigadiersService {
     }
   }
 
-  GetBrigadierByEmail(mail: string) {
+  async GetBrigadierByEmail(mail: string) {
     try {
-      return this.brigadiersRepository.GetBrigadierByEmail(mail);
+      return await this.brigadiersRepository.GetBrigadierByEmail(mail);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
+  async GetBrigadierFromList(list: string[]) {
+    try {
+      return await this.brigadiersRepository.GetBrigadierFromList(list);
     } catch (e) {
       throw new BadRequestException(e);
     }
