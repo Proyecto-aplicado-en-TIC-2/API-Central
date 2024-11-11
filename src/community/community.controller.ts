@@ -50,6 +50,16 @@ export class CommunityController {
     }
   }
 
+  @Roles(Role.Administration, Role.APH)
+  @Post('/GetCommunityFromList')
+  async GetCommunityFromList(@Body() list: string[]) {
+    try {
+      return this.communityService.GetCommunityFromList(list);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
   @Roles(Role.Administration)
   @Post()
   async CreateUserCommunity(@Body() UserCommunity: CreateCommunityUserDto) {

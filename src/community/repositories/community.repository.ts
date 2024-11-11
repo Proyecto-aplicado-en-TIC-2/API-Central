@@ -3,6 +3,7 @@ import { KeyVaultService } from '../../context_db/DbContext.service';
 import { Community } from '../models/community.model';
 import { ICommunityRepositories } from '../interfaces/community.repository.interface';
 import { plainToClass } from 'class-transformer';
+import { APH } from '../../prehospital_care/models/aph.model';
 
 @Injectable()
 export class CommunityRepository implements ICommunityRepositories {
@@ -81,6 +82,31 @@ export class CommunityRepository implements ICommunityRepositories {
       return plainToClass(Community, item[0]);
     } catch (e) {
       throw new BadGatewayException('Error en GetCommunityById ' + e);
+    }
+  }
+
+  async GetCommunityFromList(list: string[]) {
+    try {
+      const query = {
+        query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@ids, c.id)',
+        parameters: [
+          {
+            name: '@ids',
+            value: list,
+          },
+        ],
+      };
+
+      const { resources: item } = await this.client
+        .getDbConnection()
+        .database(this.databaseId)
+        .container(this.containerId)
+        .items.query(query)
+        .fetchAll();
+
+      return item.map((item: Community) => plainToClass(Community, item));
+    } catch (e) {
+      throw new BadGatewayException('Error en CreateUserCommunity ' + e);
     }
   }
 
