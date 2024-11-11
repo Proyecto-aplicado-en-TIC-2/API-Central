@@ -117,4 +117,8 @@ export class WebsocketService {
     caseTemp.neededBrigadier = true;
     return await this.websocketRepository.PatchReport(caseTemp)
   }
+
+  async GetReportsNeedHelp() {
+    return this.websocketRepository.GetReportsNeedHelp()
+  }
 }

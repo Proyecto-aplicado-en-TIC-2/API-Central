@@ -2,10 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { KeyVaultService } from 'src/context_db/DbContext.service';
 import { IWebsocketRepository } from './websocket.interface';
 import { Cases, ReportDto, UserWebsocketInfo } from './websocket.dto';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { DbOperationException } from 'src/helpers/DbOperationException';
 import { UpdateIncident } from 'src/incidents/dto/update-incident.dto';
 import { Role } from 'src/authorization/role.enum';
+import { Community } from '../community/models/community.model';
 
 const databaseId: string = 'risk_management';
 const containerId: string = 'cases';
@@ -286,6 +287,35 @@ export class WebsocketRepository implements IWebsocketRepository {
         .fetchAll();
 
       return plainToInstance(ReportDto, item);
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
+
+  async GetReportsNeedHelp(): Promise<ReportDto[]> {
+    try {
+      const now = new Date();
+      const date = now.toISOString().split('T')[0];
+      // Query
+      const querySpec = {
+        query:
+          'SELECT * FROM c WHERE c.neededBrigadier = true AND c.brigadista_Id = "" AND c.date.date = @date',
+        parameters: [
+          {
+            name: '@date',
+            value: date,
+          },
+        ],
+      };
+
+      // Consulta
+      const { resources: items } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(querySpec)
+        .fetchAll();
+
+      return items.map((item: Community) => plainToClass(ReportDto, item));
     } catch (error) {
       throw new DbOperationException(error.message);
     }

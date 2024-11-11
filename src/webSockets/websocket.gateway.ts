@@ -172,6 +172,7 @@ export class WebsocketGateway
       const date = now.toISOString().split('T')[0];
       const time = now.toISOString().split('T')[1].split('.')[0];
       const report: ReportDto = {
+        neededBrigadier: false,
         id: inicdent.id,
         WebSocket_id_attendant: client.id,
         brigadista_Id: '',
