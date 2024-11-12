@@ -21,9 +21,9 @@ import { WebsocketController } from './websockets.controller';
   controllers: [WebsocketController],
   imports: [
     forwardRef(() => IncidentsModule),
+    forwardRef(() => EmergencyReportsModule),
     PrehospitalCareModule,
     BrigadiersModule,
-    EmergencyReportsModule,
     CommunityModule
   ], // Importa el módulo que contiene el controlador
   providers: [

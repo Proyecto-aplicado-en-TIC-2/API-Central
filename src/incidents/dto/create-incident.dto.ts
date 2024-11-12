@@ -26,6 +26,7 @@ export class Incident {
   public whatIsHappening?: string;
   public affected?: string;
   public reporter?: {
+    roles?: String, 
     id?: string;
     names?: string;
     lastNames?: string;

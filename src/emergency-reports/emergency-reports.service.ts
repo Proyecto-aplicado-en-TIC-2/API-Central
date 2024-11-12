@@ -58,4 +58,8 @@ export class EmergencyReportsService {
 
     return operation;
   }
+
+  async GetReportsFromList(ids: string[]) {
+    return await this.emergencyReportsRepository.GetReportsFromList(ids);
+  }
 }

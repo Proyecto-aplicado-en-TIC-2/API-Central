@@ -9,9 +9,7 @@ import { WebsocketController } from 'src/webSockets/websockets.controller';
 
 @Module({
   controllers: [IncidentsController],
-  imports: [forwardRef(() => GatewayModule),
-    GatewayModule
-  ],
+  imports: [forwardRef(() => GatewayModule)],
   providers: [
     IncidentsService,
     KeyVaultService,
@@ -19,7 +17,7 @@ import { WebsocketController } from 'src/webSockets/websockets.controller';
       provide: 'IIncidensRepostiory', // Usamos un token para la interfaz
       useClass: IncidentesRepository, // Usamos la clase concreta
     },
-    WebsocketRepository,
+
   ],
   exports: [IncidentsService],
 })

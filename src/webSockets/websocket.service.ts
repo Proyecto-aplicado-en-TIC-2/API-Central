@@ -62,6 +62,10 @@ export class WebsocketService {
 
     return await this.websocketRepository.GetReportsIdsById(id);
   }
+  async GetReportsColsedIdsById(id: string): Promise<string[]> {
+
+    return await this.websocketRepository.GetReportsColsedIdsById(id);
+  }
    
   async GetNewReports(): Promise<ReportDto[]> {
     return await this.websocketRepository.GetNewReports();
@@ -104,5 +108,25 @@ export class WebsocketService {
 
   async GetOpenReports() {
     return await this.websocketRepository.GetOpenReports();
+  }
+
+  async PatchCaseHelpAph(case_id: string, partition_key: Cases) {
+    // Obtenemos el caso
+    const caseTemp = await this.GetReportById(case_id, partition_key)
+    // Se modifica el estado de ayuda
+    caseTemp.neededBrigadier = true;
+    return await this.websocketRepository.PatchReport(caseTemp)
+  }
+
+  async GetReportsNeedHelp() {
+    return this.websocketRepository.GetReportsNeedHelp()
+  }
+
+  async GetIdBrigadeAssignedCase() {
+    return this.websocketRepository.GetIdBrigadeAssignedCase()
+  }
+
+  async GetAllConnections() {
+    return this.websocketRepository.GetAllConnections()
   }
 }

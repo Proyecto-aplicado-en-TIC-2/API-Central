@@ -99,4 +99,27 @@ export class EmergencyReportsRepository implements IEmergencyReportsRepostiory {
       );
     }
   }
+
+  async GetReportsFromList(ids: string[]): Promise<EmergencyReports[]> {
+    try {
+      const query = {
+        query: 'SELECT * FROM c WHERE ARRAY_CONTAINS(@ids, c.id)',
+        parameters: [
+          {
+            name: '@ids',
+            value: ids,
+          },
+        ],
+      };
+      const { resources: results } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(query)
+        .fetchAll();
+
+      return plainToInstance(EmergencyReports, results);
+    } catch (error) {
+      throw new DbOperationException('Joham Morales ->' + error.message);
+    }
+  }
 }

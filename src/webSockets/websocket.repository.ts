@@ -2,10 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { KeyVaultService } from 'src/context_db/DbContext.service';
 import { IWebsocketRepository } from './websocket.interface';
 import { Cases, ReportDto, UserWebsocketInfo } from './websocket.dto';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { DbOperationException } from 'src/helpers/DbOperationException';
 import { UpdateIncident } from 'src/incidents/dto/update-incident.dto';
-import { Role } from 'src/authorization/role.enum';
+import { Community } from '../community/models/community.model';
+import * as console from 'node:console';
 
 const databaseId: string = 'risk_management';
 const containerId: string = 'cases';
@@ -110,11 +111,10 @@ export class WebsocketRepository implements IWebsocketRepository {
 
     } catch (error) {
       throw new DbOperationException(
-        `Couldn't delete, Incident with the Id: ${id} doesn't exist`,
+        `Couldn't delete, WebsocketInfo with the Id: ${id} doesn't exist`, 
       );
     }
   }
-
 
   async GetReportsIdsById(id: string): Promise<string[]> {
     try {
@@ -150,6 +150,41 @@ export class WebsocketRepository implements IWebsocketRepository {
     }
   }
 
+  async GetReportsColsedIdsById(id: string): Promise<string[]> {
+    try {
+      const querySpec = {
+        query:
+          'SELECT * FROM c WHERE c.aphThatTakeCare_Id = @aphThatTakeCare_Id' +
+          ' AND c.State = "close"',
+        parameters: [
+          {
+            name: '@aphThatTakeCare_Id',
+            value: id,
+          },
+        ],
+      };
+      const { resources: results } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(querySpec)
+        .fetchAll();
+
+      const incidentInstances: UpdateIncident[] = plainToInstance(
+        UpdateIncident,
+        results,
+      );
+      // Mapea los incidentes para obtener solo los ids y los devuelve
+      const incidentIds: string[] = incidentInstances.map(
+        (incident) => incident.id,
+      );
+      console.log(incidentIds);
+      return incidentIds;
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
+
+  
   async GetNewReports(): Promise<ReportDto[]> {
     try {
       const now = new Date();
@@ -257,4 +292,86 @@ export class WebsocketRepository implements IWebsocketRepository {
       throw new DbOperationException(error.message);
     }
   }
+
+  async GetReportsNeedHelp(): Promise<ReportDto[]> {
+    try {
+      const now = new Date();
+      const date = now.toISOString().split('T')[0];
+      // Query
+      const querySpec = {
+        query:
+          'SELECT * FROM c WHERE c.neededBrigadier = true AND c.brigadista_Id = "" AND c.date.date = @date',
+        parameters: [
+          {
+            name: '@date',
+            value: date,
+          },
+        ],
+      };
+
+      // Consulta
+      const { resources: items } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(querySpec)
+        .fetchAll();
+
+      return items.map((item: Community) => plainToClass(ReportDto, item));
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
+
+  async GetIdBrigadeAssignedCase(): Promise<{ anybrigadista_Id: string }[]> {
+    try {
+      const now = new Date();
+      const date = now.toISOString().split('T')[0];
+      // Query
+      const querySpec = {
+        query:
+          'SELECT c.brigadista_Id FROM c WHERE c.State = "en_proceso" AND c.brigadista_Id != "" AND c.date.date = @date',
+        parameters: [
+          {
+            name: '@date',
+            value: date,
+          },
+        ],
+      };
+
+      // Consulta
+      const { resources: items } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId)
+        .items.query(querySpec)
+        .fetchAll();
+
+      return items
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
+
+  async GetAllConnections(): Promise<UserWebsocketInfo[]> {
+    try {
+      // Query
+      const querySpec = {
+        query: 'SELECT * FROM c',
+      };
+
+      // Consulta
+      const { resources: items } = await this.DbConnection.getDbConnection()
+        .database(databaseId)
+        .container(containerId_websockets)
+        .items.query(querySpec)
+        .fetchAll();
+
+      return items
+    } catch (error) {
+      throw new DbOperationException(error.message);
+    }
+  }
+
+ 
+ 
+
 }

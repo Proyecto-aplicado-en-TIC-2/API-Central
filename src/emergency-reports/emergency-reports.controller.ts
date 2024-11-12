@@ -13,12 +13,22 @@ import { plainToInstance } from 'class-transformer';
 import { GenericError } from 'src/helpers/GenericError';
 import { Roles } from 'src/authorization/decorators/roles.decorator';
 import { Role } from 'src/authorization/role.enum';
+import { WebsocketService } from 'src/webSockets/websocket.service';
 
 @Controller('emergency-reports')
 export class EmergencyReportsController {
   public constructor(
     private readonly emergencyReportsService: EmergencyReportsService,
+    private readonly websocketService: WebsocketService,
   ) {}
+
+
+  @Roles(Role.Administration, Role.APH, Role.Brigadiers)
+  @Get('/GetReportsClosedIdsById/:id')
+  async GetReportsClosedIdsById(@Param('id') id: string): Promise<EmergencyReports[]>{
+    const ids: string[] = await this.websocketService.GetReportsColsedIdsById(id)
+    return await this.emergencyReportsService.GetReportsFromList(ids);
+  }
   @Roles(Role.APH, Role.Administration)
   @Post()
   async CreateEmergencyReport(

@@ -45,6 +45,14 @@ export class CommunityService {
     }
   }
 
+  async GetCommunityFromList(list: string[]) {
+    try {
+      return await this.communityRepository.GetCommunityFromList(list);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
+  }
+
   /**
    * Transforma el resultado de la consulta para que los items no tengan información de la DB
    * */

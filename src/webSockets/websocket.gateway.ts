@@ -20,7 +20,7 @@ import { IncidentsService } from 'src/incidents/incidents.service';
 import { WebsocketService } from './websocket.service';
 import { AphCases, PayLoadDto, ReportDto, UserWebsocketInfo } from './websocket.dto';
 import { Incident, Priorty } from 'src/incidents/dto/create-incident.dto';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { GenericError, GenericErrorWebsockets } from 'src/helpers/GenericError';
 import { UpdateIncident } from 'src/incidents/dto/update-incident.dto';
 import { PrehospitalCareService } from 'src/prehospital_care/prehospital_care.service';
@@ -35,6 +35,8 @@ import { AuthRepository } from 'src/auth/repositories/auth.repository';
 import { APH } from 'src/prehospital_care/models/aph.model';
 import { isNull } from 'util';
 import { isEmpty } from 'rxjs';
+import { Brigadier } from 'src/brigadiers/models/brigadiers.model';
+import { UpdateBrigadiersDto } from 'src/brigadiers/dto/update-brigadiers.dto';
 
 @WebSocketGateway({
   namespace: '/WebSocketGateway',
@@ -103,22 +105,25 @@ export class WebsocketGateway
   }
 
   async handleDisconnect(client: Socket) {
-    const user = client['user'];
-    console.log('handleDisconnect: ' + user);
-    if(user == null || user.isEmpty){
-      client.disconnect();
-    }else{
-      const operation : boolean = 
-      await this.websocketService.DeleteWebsocketInfo(user.id, user.roles);
-      if(operation){
-        console.log('Client disconnected:', client.id);
+    try{
+      const user = client['user'];
+      console.log('handleDisconnect: ' + user);
+      if(user == null || user.isEmpty){
         client.disconnect();
       }else{
-        console.log('Client disconnected pero no se elimino de la db:', client.id);
-        client.disconnect();
+        const operation : boolean = 
+        await this.websocketService.DeleteWebsocketInfo(user.id, user.roles);
+        if(operation){
+          console.log('Client disconnected:', client.id);
+          client.disconnect();
+        }else{
+          console.log('Client disconnected pero no se elimino de la db:', client.id);
+          client.disconnect();
+        }
       }
+    }catch(e){
+        new GenericErrorWebsockets('handleDisconnect', e);
     }
-
     
   }
   //-----------------------------------------------------------------------------
@@ -154,7 +159,8 @@ export class WebsocketGateway
         id: user.id,
         names: user_info.names,
         lastNames: user_info.last_names,
-        relationshipWithTheUniversity: user_info.relationshipWithTheUniversity
+        relationshipWithTheUniversity: user_info.relationshipWithTheUniversity,
+        roles: user.roles
       }
       console.log('incident_obj actualizado');
       console.log(incident_obj);
@@ -166,6 +172,7 @@ export class WebsocketGateway
       const date = now.toISOString().split('T')[0];
       const time = now.toISOString().split('T')[1].split('.')[0];
       const report: ReportDto = {
+        neededBrigadier: false,
         id: inicdent.id,
         WebSocket_id_attendant: client.id,
         brigadista_Id: '',
@@ -194,7 +201,7 @@ export class WebsocketGateway
   }
 
   @SubscribeMessage('Brigadiers')
-  @Roles(Role.Brigadiers, Role.Administration) // Usar roles para permisos específicos
+  @Roles(Role.Brigadiers, Role.Administration, Role.APH) // Usar roles para permisos específicos
   async handleBrigadiers(
     @MessageBody() data: any,
     @ConnectedSocket() client: Socket,
@@ -220,8 +227,21 @@ export class WebsocketGateway
             search_report.id,
             search_report.partition_key,
           );
-
         console.log('UpdateIncident good');
+        const aph_id_confirm: ReportDto = await this.websocketService
+          .GetReportById(case_data.case_id, case_data.partition_key);
+        const brigadiers_assigned: Brigadier = await this.brigadiersService
+          .GetBrigadierById(case_data.user_id);
+        this.EmitById(aph_id_confirm.aphThatTakeCare_Id, 'Brigadista_case_assigned', {
+
+          names: brigadiers_assigned.names,
+          lastNames: brigadiers_assigned.last_names,
+          phone_number: brigadiers_assigned.phone_number,
+          case_id: case_data.case_id
+        }  )
+
+        const aph_info: APH = await this.prehospitalCareService
+          .GetAPHById(aph_id_confirm.aphThatTakeCare_Id);
         this.EmitById(case_data.user_id, 'Brigadista_case', {
           message:
             'Se le a asignado como colavorador de un caso a un aph, dirijirse inmediatamente a : ',
@@ -229,9 +249,36 @@ export class WebsocketGateway
           Id_reporte: case_data.case_id,
           partition_key: case_data.partition_key,
           priority: incident.priority,
-          Reporter: incident.reporter
+          Reporter: incident.reporter,
+          aphPhone: aph_info.phone_number
         });
         console.log('se pidio alludam a un brigadista');
+      }else{
+        
+        const user = client['user']
+        console.log(data.in_service);
+        console.log(data);
+  
+        const brigadierDetails: Brigadier = await this.brigadiersService
+          .GetBrigadierById(user.id)
+        brigadierDetails.in_service = data.in_service;
+
+        const websocketinfo: UserWebsocketInfo = await this.websocketService
+          .GetWebsocketInfo(user.id);
+          
+        websocketinfo.inService = data.in_service
+        await this.websocketService.PatchWebsocketInfo(websocketinfo);
+
+        await this.brigadiersService
+          .UpdateBrigadiersById(
+            brigadierDetails.id, 
+            plainToInstance(UpdateBrigadiersDto, brigadierDetails)
+          )
+        this.AdminEmit("Brigadier_update_state", {
+            in_service: data.in_service,
+           brigadier_id: brigadierDetails.id })
+        client.emit('Brigadier_update_state_confirmation',{in_service: data.in_service});
+        
       }
     } catch (error) {
       throw new GenericError('handleBrigadiers', error);
@@ -297,11 +344,9 @@ export class WebsocketGateway
         console.log(aph_actions);
 
         if (aph_actions.close_case == 'true' && aph_actions.on_the_way == 'false') {
-          const search_report: ReportDto =
-            await this.websocketService.GetReportById(
-              aph_actions.help.case_id,
-              aph_actions.help.partition_key,
-            );
+        
+          const search_report: ReportDto =await this.websocketService
+            .GetReportById( aph_actions.help.case_id, aph_actions.help.partition_key );
 
           const now = new Date();
           const time = now.toISOString().split('T')[1].split('.')[0];
@@ -333,7 +378,13 @@ export class WebsocketGateway
               affected: incident.affected,
               id: report_close.id,
               partition_key: report_close.partition_key,
-              date: report_close.date,
+              classificationAttention: incident.priority,
+              date: {
+                date: report_close.date.date,
+                hourRequest: report_close.date.hourRequest,
+                hourArrive: report_close.date.hourArrive,
+                hourCloseAttentionn: report_close.date.hourCloseAttentionn
+              },
               location: {
                 block: incident.location.block,
                 classroom: incident.location.classroom,
@@ -346,7 +397,7 @@ export class WebsocketGateway
               },
               aphThatTakeCare: report_close.aphThatTakeCare_Id,
             });
-          const full_informe: EmergencyReports = plainToInstance(EmergencyReports, aph_actions)
+          const full_informe: EmergencyReports = plainToClass(EmergencyReports, aph_actions)
           const full_inform_incert: EmergencyReports =
             await this.emergencyReportsService.CreateEmergencyReport(
               full_informe,
@@ -360,11 +411,7 @@ export class WebsocketGateway
             incident_id: report_close.id,
           });
           console.log('se envio al admin');
-          await this.EmitById(
-            report_close.aphThatTakeCare_Id,
-            'Close_incident_broadcast',
-            { Message: 'incidente cerrado', id_incidente: report_close.id },
-          );
+           client.emit('close_case', 'Caso cerrado correctamente');
           console.log('se envio al aph');
           if (report_close.brigadista_Id) {
             await this.EmitById(
@@ -374,7 +421,6 @@ export class WebsocketGateway
             );
             console.log('se envio al brigadista');
           }
-
           await this.EmitById(
             report_close.reporter_Id,
             'Close_incident_broadcast',
@@ -384,15 +430,19 @@ export class WebsocketGateway
 
           console.log('caso cerrado correctmante');
         } else if(aph_actions.close_case == 'false' && aph_actions.on_the_way == 'false'){
+          // Modificamos el caso para que tenga el estado de ayuda activa
+          await this.websocketService.PatchCaseHelpAph(aph_actions.help.case_id, aph_actions.help.partition_key)
+          client.emit('Aph_help_confirm', 'A pedido ayuda correctamente')
           this.AdminEmit('Aph_help', {
-            message: 'Un ahp necesita alluda con un caso',
+            message: 'Un ahp necesita ayuda con un caso',
             case_info: aph_actions.help,
           });
-          console.log('aph pide alluda');
+          console.log('aph pide ayuda');
         }else{
           const case_info_user : Incident = await this.incidentsService
             .GetIncidentById(aph_actions.help.case_id, aph_actions.help.partition_key)
-          this.EmitById(case_info_user.reporter.id, 'on_the_way', true)
+            client.emit('on_the_way_aph', 'En camino!!!');
+          this.EmitById(case_info_user.reporter.id, 'on_the_way', true);
         }
       }
     } catch (error) {

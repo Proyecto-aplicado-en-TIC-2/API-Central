@@ -4,6 +4,7 @@ export interface IEmergencyReportsRepostiory {
   //-------------------- GET ------------------------
   GetAllEmergencyReports(): Promise<EmergencyReports[]>;
   GetEmergencyReportsById(Id: string): Promise<EmergencyReports | null>;
+  GetReportsFromList(ids: string[]): Promise<EmergencyReports[]>
   //-------------------- SET ------------------------
   CreateEmergencyReport(
     incident: EmergencyReports,

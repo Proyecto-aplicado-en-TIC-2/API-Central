@@ -11,8 +11,6 @@ export class IncidentsService {
   constructor(
     @Inject('IIncidensRepostiory')
     private readonly incidensRepostiory: IIncidensRepostiory,
-    @Inject(forwardRef(() => WebsocketRepository))
-    private readonly websocketRepository: WebsocketRepository,
   ) {}
 
   async GetAllIncidents(): Promise<Incident[]> {
